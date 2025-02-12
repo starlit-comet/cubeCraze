@@ -10,10 +10,14 @@ const toastr = require('toastr')
 
 const cors = require('cors')
 
-
+app.use(express.static('public', {
+    setHeaders: (res, path, stat) => {
+        res.set('X-Content-Type-Options', 'nosniff');
+    }
+}));
 
 //const expressLayouts=require('express-ejs-layouts')
-
+const userRoute = require('./routes/user')
 const adminRoute=require('./routes/admin');
 const connectDb = require('./mongoDb/connectDb');
 app.use(bodyParser.json())
@@ -29,7 +33,7 @@ app.use(express.urlencoded({extended:true}))
 //     .then((val)=>console.log('MongoDB Connected'))
 //     .catch((err)=>{console.log(`MongoDb connection Err : ${err}`)})
 
-
+app.use('/',userRoute)
 app.use('/admin',adminRoute)
 
 connectDb()
