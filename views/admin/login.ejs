@@ -1,0 +1,30 @@
+
+<%- include ('partials/header') %>
+</head>
+<body>
+    <div class="container">
+      <div class="login-section">
+    <form action="login" method="post">
+
+          <h2>ADMIN LOGIN</h2>
+          <p>Login With Your Credentials to Manage Shopping Experience</p>
+          <div class="input-group">
+            <input type="email" name="email" placeholder="email" required>
+          </div>
+          <div class="input-group">
+            <input type="password" name="password" placeholder="Password" required>
+          </div>
+          <div class="forgot-password">
+            <a href="/admin/forgetPassword
+            
+            ">Forgot password?</a>
+          </div>
+          <button class="login-button" type="submit">Login Now</button> 
+        </div>
+        <div class="image-section">
+          <img src="/img/home-logo-1-1.png" alt="CubeCraze Logo">
+    </form>
+        </div>
+      </div>
+
+    <%- include('partials/footer')  %>

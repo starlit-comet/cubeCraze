@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CubeCraze Admin Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/admin/adminDashboard.css">
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">CubeCraze</div>
+        <ul>
+            <li><i class="fas fa-home"></i> Dashboard</li>
+            <li><i class="fas fa-user"></i> Customers</li>
+            <li><i class="fas fa-box"></i> Products</li>
+            <li><i class="fas fa-shopping-cart"></i> Orders</li>
+            <li><i class="fas fa-image"></i> Banner Management</li>
+            <li><i class="fas fa-tag"></i> Coupons</li>
+            <li><i class="fas fa-chart-bar"></i> Sales Report</li>
+            <li><i class="fas fa-th-large"></i> Categories</li>
+            <li><i class="fas fa-gift"></i> Offers</li>
+            <li><i class="fas fa-cog"></i> Settings</li>
+            <li><i class="fas fa-sign-out-alt"></i> Logout</li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <input type="text" class="search-bar" placeholder="Search...">
+            <div>
+                <i class="fas fa-bell"></i>
+                <span>John</span>
+            </div>
+        </div>
+
+        <!-- Dashboard Cards -->
+        <div class="dashboard-cards">
+            <div class="card" style="background: #FF6B6B; color: white;">
+                <h2>Total Sales</h2>
+                <p>₹5,55,000</p>
+            </div>
+            <div class="card" style="background: #4ECDC4; color: white;">
+                <h2>Visitors</h2>
+                <p>2,500</p>
+            </div>
+            <div class="card" style="background: #5E60CE; color: white;">
+                <h2>Total Orders</h2>
+                <p>1,500</p>
+            </div>
+            <div class="card" style="background: #FFB703; color: white;">
+                <h2>Users</h2>
+                <p>1,013</p>
+            </div>
+        </div>
+
+        <!-- Revenue Chart Placeholder -->
+        <div class="revenue-chart">
+            <h2>Total Revenue: ₹50,237.80</h2>
+            <p>📊 [Graph Placeholder]</p>
+        </div>
+
+        <!-- Latest Orders -->
+        <div class="orders">
+            <h2>Latest Orders</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Product</th>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>#302012</td>
+                        <td>Golden Mirror Cube</td>
+                        <td>Dec 2022</td>
+                        <td>Jayadev</td>
+                        <td>₹6,599</td>
+                        <td><span class="processing">Processing</span></td>
+                    </tr>
+                    <tr>
+                        <td>#302112</td>
+                        <td>4x4 Cube</td>
+                        <td>Dec 2023</td>
+                        <td>Jackson</td>
+                        <td>₹3,792</td>
+                        <td><span class="processing">Processing</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>

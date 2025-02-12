@@ -1,0 +1,33 @@
+{
+  "name": "cubecraze",
+  "version": "1.0.0",
+  "description": "an E-Commerce platform for selling Rubik's cubes",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "e-comm",
+    "cubecraze",
+    "rubik's",
+    "cube",
+    "puzzles"
+  ],
+  "author": "atr",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
+    "env": "^0.0.2",
+    "express": "^4.21.2",
+    "express-ejs-layouts": "^2.5.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.10.0",
+    "nodemailer": "^6.10.0",
+    "toastr": "^2.1.4"
+  }
+}
