@@ -2,7 +2,7 @@ require('dotenv').config();
 const express= require('express')
 const app=express()
 const path = require('path')
-const mongoose = require('mongoose')
+// const mongoose = require('mongoose')
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const bodyParser = require('body-parser')
