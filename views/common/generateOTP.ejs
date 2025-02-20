@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CubeCraze - OTP Verification</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- SweetAlert -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .otp-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .otp-container h2 {
+            margin-bottom: 10px;
+        }
+        .otp-input {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .otp-input input {
+            width: 40px;
+            height: 50px;
+            text-align: center;
+            font-size: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .btn {
+            background-color: #ff6600;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        .btn:hover {
+            background-color: #e65c00;
+        }
+        .btn-clear {
+            background-color: #ccc;
+            color: black;
+        }
+        .btn-clear:hover {
+            background-color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="otp-container">
+        <h2>Enter OTP</h2>
+        <p>Dear <%= newUser.name %>  We've sent a 6-digit OTP to your email ID - <i id="emailToDisplay"> 
+            <%= newUser.email  %></i> </p>
+        
+        
+        <form id="otpForm">
+            <div class="otp-input">
+                <input type="text" maxlength="1" oninput="moveNext(this, 1)" required>
+                <input type="text" maxlength="1" oninput="moveNext(this, 2)" required>
+                <input type="text" maxlength="1" oninput="moveNext(this, 3)" required>
+                <input type="text" maxlength="1" oninput="moveNext(this, 4)" required>
+                <input type="text" maxlength="1" oninput="moveNext(this, 5)" required>
+                <input type="text" maxlength="1" required>
+            </div>
+            <button type="submit" class="btn">Verify OTP</button>
+            <button type="button" class="btn btn-clear" onclick="clearFields()">Clear</button>
+            <p id="resendText" style="margin-top: 10px;">Didn’t receive the OTP? Resend OTP in <span id="timer">01:00</span></p>
+<button type="button" id="resendBtn" class="btn btn-clear" onclick="resendOTP()" disabled>Resend OTP</button>
+
+        </form>
+    </div>
+    
+    <script>
+
+let user = <%- JSON.stringify(newUser) %>;
+console.log(user); // Use this in JavaScript
+         function moveNext(currentInput, index) {
+            let nextInput = document.querySelectorAll(".otp-input input")[index];
+            if (currentInput.value && nextInput) {
+                nextInput.focus();
+            }
+        }
+
+        function clearFields() {
+            document.querySelectorAll(".otp-input input").forEach(input => input.value = "");
+            document.querySelector(".otp-input input").focus(); // Focus on first input
+        }
+
+        document.getElementById("otpForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+            
+            // Collect OTP from inputs
+            let otpInputs = document.querySelectorAll(".otp-input input");
+            let otp = "";
+            otpInputs.forEach(input => otp += input.value);
+
+            // Validate OTP: Check if it's 6 digits and numeric
+            let regex = /^[0-9]{6}$/; // Only numbers, exactly 6 digits
+            if (!regex.test(otp)) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Invalid OTP",
+                    text: "Please enter a valid 6-digit OTP (numbers only)."
+                });
+                return;
+            }
+            
+            // Send OTP to the server
+            console.log(otp)
+            const userEmail = document.getElementById('emailToDisplay').textContent
+            console.log(userEmail)
+            const response = await fetch("/verify-otp", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ otp,user })
+            });
+
+            const result = await response.json();
+            console.log(result)
+            try {
+                if(result.success){
+
+                    Swal.fire({
+                        icon: result.success ? "success" : "error",
+                        title: result.success ? "OTP Verified" : "Verification Failed",
+                        text: result.message,
+                        timer: 2000,
+                        showConfirmButton:false
+                    }).then(()=>{
+                        window.location.href='/profile'
+                    });
+                }else{
+                    Swal.fire({
+                        icon: result.success ? "success" : "error",
+                        title: result.success ? "OTP Verified" : "Verification Failed",
+                        text: result.message,
+                        showConfirmButton:true
+                    })
+                }
+                
+            } catch (error) {
+                
+            }
+        });
+
+
+        let timerDuration = 60; // 60 seconds
+let timerDisplay = document.getElementById("timer");
+let resendBtn = document.getElementById("resendBtn");
+
+function startResendTimer() {
+    resendBtn.disabled = true;
+    let timeLeft = timerDuration;
+    let countdown = setInterval(() => {
+        let minutes = Math.floor(timeLeft / 60);
+        let seconds = timeLeft % 60;
+        timerDisplay.textContent = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        timeLeft--;
+
+        if (timeLeft < 0) {
+            clearInterval(countdown);
+            timerDisplay.textContent = "";
+            resendBtn.disabled = false;
+        }
+    }, 1000);
+}
+
+function resendOTP() {
+    resendBtn.disabled = true;
+    timerDisplay.textContent = "01:00";
+    startResendTimer();
+
+    fetch("/resend-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ otp:null,user })
+    })
+    .then(response => response.json())
+    .then(result => {
+        Swal.fire({
+            icon: result.success ? "success" : "error",
+            title: result.success ? "OTP Resent" : "Resend Failed",
+            text: result.message,
+        });
+    })
+    .catch(error => console.error("Error resending OTP:", error));
+}
+
+// Start the timer when the page loads
+window.onload = startResendTimer;
+
+    </script>
+</body>
+</html>

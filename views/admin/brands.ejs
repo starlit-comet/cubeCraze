@@ -1,0 +1,182 @@
+<%-include ('partials/headSection.ejs') %>
+
+    <div class="screen-overlay"></div>
+    <%-include('partials/sidebar.ejs') %>
+    <main class="main-wrap">
+
+    <%-include('partials/header.ejs')  %>
+
+    <section class="content-main">
+        <div class="content-header">
+            <div>
+                <h2 class="content-title card-title">Brand </h2>
+                <p>Brand and vendor management</p>
+            </div>
+            <div>
+                <a onclick="addBrand()" class="btn btn-primary"><i class="text-muted material-icons md-post_add"></i>Add New Brand</a>
+            </div>
+        </div>
+        <div class="card mb-4">
+            <header class="card-header">
+                <div class="row gx-3">
+                    <div class="col-lg-4 mb-lg-0 mb-15 me-auto">
+                        <input type="text" placeholder="Search..." class="form-control">
+                    </div>
+                    <div class="col-lg-2 col-6">
+                        <div class="custom_select">
+                            <select class="form-select select-nice">
+                                <option selected>Categories</option>
+                                <option>Technology</option>
+                                <option>Fashion</option>
+                                <option>Home Decor</option>
+                                <option>Healthy</option>
+                                <option>Travel</option>
+                                <option>Auto-car</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-6">
+                        <input type="date" class="form-control" name="">
+                    </div>
+                </div>
+            </header> <!-- card-header end// -->
+            
+            <div class="card-body">
+                <div class="row gx-3">
+                        <% brandsData.forEach(brand=>{ %>
+                                
+                                <div class="col-xl-2 col-lg-3 col-md-4 col-6">
+                                    <figure class="card border-1">
+                                        <div class="card-header bg-white text-center">
+                                            <img height="76%" src="<%= brand.brandImage %>" class="img-fluid" alt="<%= brand.brandName%> logo">
+                                        </div>
+                                        <figcaption class="card-body text-center">
+                                            <h6 class="card-title m-0"><%= brand.brandName%></h6>
+                                            <a href="#"> 398 items </a>
+                                        </figcaption>
+                                    </figure>
+                                </div> <!-- col.// -->
+                                <% }) %>
+                       
+                    
+                    <!-- <div class="col-xl-2 col-lg-3 col-md-4 col-6">
+                        <figure class="card border-1">
+                            <div class="card-header bg-white text-center">
+                                <img height="76" src="assets/imgs/brands/brand-9.jpg" class="img-fluid" alt="Logo">
+                            </div>
+                            <figcaption class="card-body text-center">
+                                <h6 class="card-title m-0">TwoHand</h6>
+                                <a href="#"> 398 items </a>
+                            </figcaption>
+                        </figure>
+                    </div>  -->
+                    <!-- col.// -->
+                    
+                </div> <!-- row.// -->
+            </div> <!-- card-body end// -->
+        </div> <!-- card end// -->
+    </section> <!-- content-main end// -->
+
+
+    <script>
+        document.getElementById("brands12e").classList.add("active");
+
+        function addBrand() {
+    let brandNameInput;
+    let brandImageInput;
+    let imagePreview;
+
+    Swal.fire({
+        title: 'Add New Brand',
+        html: `
+            <input type="text" id="brandName" class="swal2-input" placeholder="Brand Name">
+            <input type="file" id="brandImage" class="swal2-file" accept="image/*">
+            <img id="imagePreview" src="" style="max-width: 100px; display: none; margin-top: 10px;">
+        `,
+        confirmButtonText: 'Add Brand',
+        showCancelButton:true,
+        focusConfirm: false,
+        didOpen: () => {
+            const popup = Swal.getPopup();
+            brandNameInput = popup.querySelector('#brandName');
+            brandImageInput = popup.querySelector('#brandImage');
+            imagePreview = popup.querySelector('#imagePreview');
+
+            // Image preview functionality
+            brandImageInput.addEventListener('change', () => {
+                const file = brandImageInput.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        imagePreview.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    imagePreview.style.display = 'none';
+                }
+            });
+        },
+        preConfirm: () => {
+            const brandName = brandNameInput.value.trim();
+            const brandImage = brandImageInput.files[0];
+
+            if (!brandName || !brandImage) {
+                Swal.showValidationMessage('Please enter brand name and upload an image');
+                return false;
+            }
+
+            return { brandName, brandImage };
+        }
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            console.log('Brand Name:', result.value.brandName);
+            console.log('Brand Image:', result.value.brandImage);
+
+            // Send data using FormData
+            const formData = new FormData();
+            formData.append('brandName', result.value.brandName);
+            formData.append('brandImage', result.value.brandImage);
+
+            // fetch('/admin/addBrand', {
+            //     method: 'POST',
+            //     body: formData,
+            //     enctype:'multipart/form-data'
+            // })
+            // .then(response => response.json())
+            // .then(data => Swal.fire('Success', 'Brand added successfully!', 'success'))
+            // .catch(error => Swal.fire('Error', 'Failed to add brand', 'error'));
+
+                    try {
+              const response = await fetch("/admin/addBrand", {
+                method: "POST",
+                body: formData
+              });
+          
+              const result = await response.json();
+          
+              if (!response.ok) {
+                throw new Error(result.message || "Something went wrong");
+              }
+          
+              return result; // Pass response data to `then()`
+            } catch (error) {
+              Swal.showValidationMessage(error.message);
+              return false;
+            }
+          }
+        }).then((result) => {
+          if (result.isConfirmed) {
+            Swal.fire({
+              title: "Success!",
+              text: result.value.message, // Show response message
+              icon: "success"
+            });
+
+                }
+            });
+        }
+
+    </script>
+
+    <%- include('partials/footer.ejs') %>

@@ -67,7 +67,7 @@
         <div class="signup-form">
             <h3 class="text-center fw-bold">CREATE ACCOUNT</h3>
             <div class="d-flex justify-content-center gap-2">
-                <button class="btn btn-outline-dark d-flex align-items-center">
+                <button onclick="window.location.href='/google/login'" class="btn btn-outline-dark d-flex align-items-center">
                     <svg class="social-icon" viewBox="0 0 48 48">
                         <path fill="#EA4335" d="M24 20v8h11c-1 3-4 8-11 8a12 12 0 1 1 0-24c3 0 6 1 8 3l6-6c-4-4-9-6-14-6a20 20 0 1 0 20 20c0-1 0-2-1-3H24z"></path>
                     </svg>
@@ -81,23 +81,23 @@
                 </button>
             </div>
             <p class="text-center mt-2">- OR -</p>
-            <form>
+            <form action='signup' method='post' >
                 <div class="mb-3">
-                    <input type="text" class="form-control" placeholder="Full Name">
+                    <input type="text" name='name' class="form-control" placeholder="Full Name">
                 </div>
                 <div class="mb-3">
-                    <input type="email" class="form-control" placeholder="Email Address">
+                    <input type="email" name='email' class="form-control" placeholder="Email Address">
                 </div>
                 <div class="mb-3 input-group">
-                    <input type="password" class="form-control" id="password" placeholder="Password">
+                    <input type="password" name='password' class="form-control" id="password" placeholder="Password">
                     <span class="password-toggle" onclick="togglePassword('password')">👁️</span>
                 </div>
                 <div class="mb-3 input-group">
-                    <input type="password" class="form-control" id="confirm-password" placeholder="Confirm Password">
+                    <input type="password" name='confirmPassword' class="form-control" id="confirm-password" placeholder="Confirm Password">
                     <span class="password-toggle" onclick="togglePassword('confirm-password')">👁️</span>
                 </div>
-                <button type="button" class="btn btn-primary btn-custom">Create Account</button>
-                <p class="text-center mt-3">Already have an account? <a href="#">Log in</a></p>
+                <button type="submit" class="btn btn-primary btn-custom">Create Account</button>
+                <p class="text-center mt-3">Already have an account? <a href="login">Log in</a></p>
             </form>
         </div>
     </div>
