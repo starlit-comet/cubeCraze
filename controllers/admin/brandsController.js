@@ -15,25 +15,28 @@ res.render('admin/brands',{brandsData})
 
 const addBrand=async (req,res)=>{
     try {
-        const { brandName } = req.body;
-        const brandImage = req.file ? `/uploads/${req.file.filename}` : null;
-
+        const { brandName ,brandDescription } = req.body;
+        const brandImage = req.file.path
+       
         if (!brandName || !brandImage) {
-            return res.status(400).json({ message: "Brand1 name and image are required",result:{isConfirmed:true} });
+            return res.status(400).json({ message: "Brand name and image are required",result:{isConfirmed:true} });
         }
         const isBrandAvailabe = await brandsSchema.findOne({brandName})
-        console.log(`hi ${isBrandAvailabe}`)
+        
         if(isBrandAvailabe){
-             return res.status(201).json({message:"BrandName Already Exists"})
+            console.log(`the brand tried to add already exists `)
+             return res.status(201).json({message:"BrandName Already Exists",isconfirmed:false})
         }
-             const newBrand = new brandsSchema({ brandName, brandImage });
+             const newBrand = new brandsSchema({ brandName, brandImage,brandDescription });
         await newBrand.save();
-
-        res.status(201).json({ message: "Brand added successfully", brand: newBrand });
+        console.log(`new Brand added`)
+        res.status(201).json({ message: `New "${brandName}" Brand added successfully` ,isConfirmed:true });
     } catch (error) {
         console.error("Error adding brand:", error);
         res.status(500).json({ message: "Server error" });
     }
+    
+
 }
 
 module.exports={viewBrands,addBrand}

@@ -75,7 +75,7 @@
                                                 <td><b> <%= category.categoryName %> </b></td>
                                                 <td><%= category.description %></td>
                                                 
-                                                <% if(category.isLrsisted){ %>
+                                                <% if(category.isListed){ %>
                                                     <td>
                                                         <span class="badge rounded-pill alert-success">Active</span>
                                                     </td>
@@ -87,10 +87,10 @@
                                                         <!-- <span class="badge rounded-pill alert-success">Active</span> -->
                                                 <td class="text-end">
                                                     <div class="dropdown">
-                                                        <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
+                                                        <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-s font-m"> <i class="material-icons md-settings"></i> </a>
                                                         <div class="dropdown-menu">
-                                                            <a class="dropdown-item" href="#">View detail</a>
-                                                            <a class="dropdown-item" href="#">Edit info</a>
+                                                            <a class="dropdown-item" onclick="showCategoryDetails('<%= category.categoryName%>','<%= category.description%>','<%= category.isListed%>')" href="#">View detail</a>
+                                                            <a class="dropdown-item" href="#" onclick="editCategoryDetails('<%= category.categoryName%>', '<%= category.description%>', '<%= category._id%>', '<%= category.isListed%>')">Edit info</a>
                                                             <a class="dropdown-item text-danger" href="#">Delete</a>
                                                         </div>
                                                     </div> <!-- dropdown //end -->
@@ -152,6 +152,96 @@
             </div> <!-- card .// -->
         </section> <!-- content-main end// -->
                     <script>
+                        function showCategoryDetails(name,description,status){
+                             let isActive=status === 'true' ? '✅ Active' : '❌ Inactive';
+
+                            let statusColor = status === 'true' ? 'green' : 'red';
+                            Swal.fire({
+                                title:name,
+                                text:description,
+                                html:`<p style="margin-top: 10px;">${description}</p>
+                                      <p style="color: ${statusColor}; font-weight: bold;">Status: ${isActive}</p>`,
+                            })
+                        }
+
+
+                        function editCategoryDetails(name, description, categoryId, isListed) {
+    Swal.fire({
+        title: "Edit Category",
+        html: `
+            <input id="categoryName" class="swal2-input" placeholder="Category Name" value="${name}">
+            <textarea id="categoryDescription" class="swal2-textarea" placeholder="Description">${description}</textarea>
+            <div style="display: flex; align-items: center; justify-content: center; margin-top: 10px;">
+                <label for="categoryStatus" style="margin-right: 10px; font-weight: bold;">Status:</label>
+                <input type="checkbox" id="categoryStatus" ${isListed === "true" ? "checked" : ""}>
+                <span id="statusLabel">${isListed === "true" ? "✅ Active" : "❌ Inactive"}</span>
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: "Save",
+        cancelButtonText: "Cancel",
+        didOpen: () => {
+            const toggle = document.getElementById("categoryStatus");
+            const statusLabel = document.getElementById("statusLabel");
+
+            toggle.addEventListener("change", function () {
+                if (this.checked) {
+                    statusLabel.innerHTML = "✅ Active";
+                } else {
+                    statusLabel.innerHTML = "❌ Inactive";
+                }
+            });
+        },
+        preConfirm: () => {
+            const updatedName = document.getElementById("categoryName").value.trim();
+            const updatedDescription = document.getElementById("categoryDescription").value.trim();
+            const updatedStatus = document.getElementById("categoryStatus").checked; // Boolean
+
+            if (!updatedName) {
+                Swal.showValidationMessage("Category name cannot be empty");
+                return false;
+            }
+
+            return { updatedName, updatedDescription, updatedStatus, categoryId };
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+           // console.log(result.value)
+            updateCategory(result.value);
+        }
+    });
+}
+
+function updateCategory(data) {
+  //  console.log(data)
+    fetch(`/admin/updateCategory`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            id:data.categoryId,
+            categoryName: data.updatedName,
+            description: data.updatedDescription,
+            isListed: data.updatedStatus // Send updated status
+        })
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            Swal.fire("Updated!", "Category updated successfully.", "success")
+            .then(() => location.reload()); // Reload page to reflect changes
+        } else {
+            Swal.fire("Error!", "Failed to update category.", "error");
+        }
+    })
+    .catch(error => {
+        Swal.fire("Error!", "Something went wrong.", "error");
+    });
+}
+
+
+
                     document.getElementById("products12e").classList.add("active");
                     </script>
         <%- include('partials/footer.ejs') %>

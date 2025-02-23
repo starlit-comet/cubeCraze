@@ -53,11 +53,11 @@ const adminRoute=require('./routes/admin');
 const authRoutes = require('./routes/auth')
 const connectDb = require('./mongoDb/connectDb');
 app.use(bodyParser.json())
-app.use(express.json())
+app.use(express.json({limit:"50MB"}))
 app.set('views',path.join(__dirname,'views'))
 app.set('view engine','ejs')
 app.use(express.static(path.join(__dirname,'public')))
-app.use(express.urlencoded({extended:true}))
+app.use(express.urlencoded({extended:true,limit: "50MB"}))
 //app.use(expressLayouts)
 //app.set('layout','layouts/main')
 

@@ -1,0 +1,89 @@
+<%-include ('partials/headSection.ejs') %>
+
+    <div class="screen-overlay"></div>
+    <%-include('partials/sidebar.ejs') %>
+    <main class="main-wrap">
+
+    <%-include('partials/header.ejs')  %>
+        <section class="content-main">
+
+            <div class="content-header">
+                <div>
+                    <h2 class="content-title card-title">Rubix Cube Sizes </h2>
+                    <p>Add, edit or delete a Size</p>
+                </div>
+                <!-- <div>
+                    <input type="text" placeholder="Search Categories" class="form-control bg-white">
+                </div> -->
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <form action="/admin/addSize" method ='post'>
+                                <div class="mb-4">
+                                    <label for="product_name"  class="form-label">Cube Size</label>
+                                    <input type="text" name="cubeSize" placeholder="Type here" class="form-control" id="product_name" />
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label">Description</label>
+                                    <textarea placeholder="Type here" name="description" class="form-control"></textarea>
+                                </div>
+                                <div class="d-grid">
+                                    <button  type="submit" class="btn btn-primary">Create New Size</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Sl.No</th>
+                                            <th>Size</th>
+                                            <th>Description</th>
+                                            
+                                            <th class="text-end">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        
+                                        <% sizeData.forEach((size,index)=>{  %>
+                                         <tr>
+                                            
+                                            <td> <%= index+1 %>
+ </td>
+                                            <td><b> <%= size.size  %>    </b></td>
+                                            <td><%= size.description %></td>
+                                            <td class="text-end">
+                                                <div class="dropdown">
+                                                    <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
+                                                    <div class="dropdown-menu">
+                                                        <a class="dropdown-item" href="#">View detail</a>
+                                                        <a class="dropdown-item" href="#">Edit info</a>
+                                                        <a class="dropdown-item text-danger" href="#">Delete</a>
+                                                    </div>
+                                                </div> 
+                                                
+                                            </td>
+                                        </tr>
+                                        <% })  %>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div> <!-- .col// -->
+                    </div> <!-- .row // -->
+                </div> <!-- card body .// -->
+            </div>
+
+
+
+
+
+        </section> <!-- content-main end// -->
+        <script>
+        document.getElementById("products12e").classList.add("active");
+    </script>
+<%- include('partials/footer.ejs') %>
