@@ -3,13 +3,13 @@
 	box-shadow: none;
   border: 1px solid #eee;
   border-radius: 10px;
-  transition-duration: 0.3s;
+ // transition-duration: 0.3s;
   overflow: hidden;
-  &:hover {
-    transform: translateY(-2px);
-    transition-duration: 0.3s;   
-	  box-shadow: none;
-  }
+  // &:hover {
+  //   transform: translateY(-2px);
+  //   transition-duration: 0.3s;   
+	//   box-shadow: none;
+  // }
 }
 
 .icontext{

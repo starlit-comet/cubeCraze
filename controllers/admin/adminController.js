@@ -53,9 +53,7 @@ const sentOtp = async (req,res)=>{
     }
 }
 
-const loadProducts=(req,res)=>{
-    res.render('admin/products')
-}
+
 const logout = (req,res)=>{
     req.session.destroy()
     res.redirect('/admin/login')
@@ -63,15 +61,11 @@ const logout = (req,res)=>{
 
 
 
-const addProduct = (req,res)=>{
-    res.render('admin/addProduct')
-}
+
 
 
 
 
 module.exports={loadLogin,logout,formValidate,loadDashboard,forgetPassword,sentOtp,
-
-    loadProducts,addProduct,
     
 }
