@@ -47,6 +47,9 @@
                 </header> <!-- card-header end// -->
                 <div class="card-body">
                     <div class="row gx-3 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 row-cols-xxl-5">
+                        <% if(productData.length==0){ %>
+                            <div> <h3>Nothing to show</h3></div>
+                            <% } %>
                         <% productData.forEach((product,index)=>{  %>
                         
 
@@ -81,11 +84,12 @@
 
 
                                     <div class="col-lg-3 col-sm-2 col-4 col-price">
-                                        <span class="badge rounded-pill <%= product.status === 'Available' ? 'alert-success' : 'alert-danger' %>">
-                                            <%= product.status %>
+                                        <span class="badge rounded-pill <%= !product.isBlocked ? 'alert-success' : 'alert-danger' %>">
+                                            <%= product.isBlocked ? 'Blocked' : 'Not Blocked' %>
                                         </span><br>
                                         <span>Regular Price Rs. <%= product.regularPrice %></span><br>
-                                        <span>createdAt:<%= new Date(product.createdAt).toLocaleDateString() %></span><br>
+                                        <span>created On:<%= new Date(product.createdAt).toISOString().split('T')[0] %> at: <%= new Date(product.createdAt).toISOString().split('T')[1].split('.')[0]  %></span><br>
+                                        <span>Last Updated On:<%= new Date(product.updatedAt).toISOString().split('T')[0] %> at: <%= new Date(product.updatedAt).toISOString().split('T')[1].split('.')[0]  %></span><br>
                                         <span>Stock Status: <%= product.quantity? product.quantity : 'out of Stock' %></span><br>
 
                                     </div>
@@ -93,11 +97,23 @@
                                     
                             
                                     <div class="col-lg-1 col-sm-2 col-1 col-action text-end">
-                                        <a href="/admin/editProduct/<%= product._id %>" class="btn btn-sm font-sm rounded btn-brand">
+                                        <a href="/admin/editProduct/<%= product._id %>" class="btn btn-sm font-sm rounded btn-brand ">
                                             <i class="material-icons md-edit"></i> Edit
                                         </a>
-                                        <a href="/admin/deleteProduct/<%= product._id %>" class="btn btn-sm font-sm btn-light rounded">
-                                            <i class="material-icons md-delete_forever"></i> Delete
+                                        <a href="#" 
+                                                   class="btn btn-sm font-sm btn-danger rounded delete-btn" 
+                                                   data-id="<%= product._id %>" 
+                                                   data-name="<%= product.productName %>">
+                                                    <i class="material-icons md-delete_forever"></i> Delete
+                                                </a>
+
+                                         
+                                        <a href="#" class="btn btn-sm font-sm btn-warning warning-btn rounded" 
+                                        data-id="<%= product._id %>" 
+                                        data-name="<%= product.productName %>"
+                                        data-status="<%= product.isBlocked %>"
+                                        >
+                                            <i class="material-icons md-block"></i> Change Status
                                         </a>
                                     </div>
                                 </div> <!-- row .// -->
@@ -150,6 +166,114 @@
                     <script>
                         // to make the button active in side bar
                         document.getElementById("products12e").classList.add("active");
+
+                        //delete functions
+                       document.addEventListener("DOMContentLoaded", () => {
+                        document.querySelectorAll(".delete-btn").forEach(button => {
+                            button.addEventListener("click", function (e) {
+                                e.preventDefault(); // Prevent default click action
+                            
+                                const productId = this.getAttribute("data-id"); // Get Product ID
+                                const productName = this.getAttribute("data-name"); // Get Product Name
+                                const deleteUrl = `/admin/deleteProduct/${productId}`; // API Endpoint
+                                const productElement = this.closest(".product-row"); // Find product row to remove
+                            
+                                Swal.fire({
+                                    title: `Delete ${productName}?`,
+                                    text: "This action cannot be undone!",
+                                    icon: "warning",
+                                    showCancelButton: true,
+                                    confirmButtonColor: "#d33",
+                                    cancelButtonColor: "#3085d6",
+                                    confirmButtonText: "Yes, delete it!"
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        // Send DELETE request via fetch API
+                                        fetch(deleteUrl, { method: "DELETE" })
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                if (data.success) {
+                                                    Swal.fire({
+                                                                //      "Deleted!", `${productName} has been removed.`, "success"
+                                                                title: "Status Changed!",
+                                                                  text: `${productName} has been removed.` ,
+                                                                  icon: "success",
+                                                                  confirmButtonText: "OK"     
+                                                 } ).then((result) => {
+                                                         if (result.isConfirmed) {
+                                                             location.reload(); // Reload the page when "OK" is clicked
+                                                         };
+
+
+                                                } )} 
+                                                else {
+                                                    Swal.fire("Error!", "Failed to delete the product.", "error");
+                                                }
+                                            })
+                                            .catch(error => {
+                                                console.error("Error:", error);
+                                                Swal.fire("Error!", "Something went wrong.", "error");
+                                            });
+                                    }
+                                });
+                            });
+                        });
+                    });
+
+
+                    //change status funcitons
+                    document.addEventListener("DOMContentLoaded", () => {
+                        document.querySelectorAll(".warning-btn").forEach(button => {
+                            button.addEventListener("click", function (e) {
+                                e.preventDefault(); // Prevent default click action
+                            
+                                const productId = this.getAttribute("data-id"); // Get Product ID
+                                const productName = this.getAttribute("data-name"); // Get Product Name
+                                const productSatus = this.getAttribute('data-status') ==='true'
+                                const changeStatusUrl = `/admin/changeStatus-Product/${productId}`; // API Endpoint
+                                const productElement = this.closest(".product-row"); // Find product row to remove
+                                Swal.fire({
+                                    title: `Make ${productName} into ${!productSatus ? 'Blocked' : 'Unblocked'} ?`,
+                                    text: `Approving will change the Current status of the product form ${!productSatus ? 'Not Blocked' : 'Blocked'} to ${productSatus ? 'NotBlocked' : 'Blocked'}`,
+                                    icon: "warning",
+                                    showCancelButton: true,
+                                    confirmButtonColor: "#d33",
+                                    cancelButtonColor: "#3085d6",
+                                    confirmButtonText: "Yes, Change it!"
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        // Send DELETE request via fetch API
+                                        fetch(changeStatusUrl, { method: "PATCH" ,headers:{'content-Type':'application/json'},
+                                            body: JSON.stringify({changeStatusTo:!productSatus})}
+                                        )
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                if (data.success) {
+                                                 Swal.fire({
+                                                        title: "Status Changed!",
+                                                        text: "",
+                                                        icon: "success",
+                                                        confirmButtonText: "OK"
+                                                    }).then((result) => {
+                                                        if (result.isConfirmed) {
+                                                            location.reload(); // Reload the page when "OK" is clicked
+                                                        }
+                                                    });
+
+                                                } else {
+                                                    Swal.fire("Error!", "Failed to Change status of the product.", "error");
+                                                }
+                                            })
+                                            .catch(error => {
+                                                console.error("Error:", error);
+                                                Swal.fire("Error!", "Something went wrong.", "error");
+                                            });
+                                    }
+                                });
+                            });
+                        });
+                    });
+
 
                         
                     </script>

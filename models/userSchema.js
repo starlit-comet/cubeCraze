@@ -68,9 +68,15 @@ const userSchema = new mongoose.Schema ({
         required:true,
         default:false
     },
-    OTP:{
-        type:Schema.Types.ObjectId,
-        ref:'otpSchema'
+    otp:{
+        type:String,
+        default:'',
+    },
+    otpExpires:{
+        type:Date,
+        required:true,
+        default:Date.now,
+
     },
   
     avatar: { type: String },

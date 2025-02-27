@@ -24,7 +24,7 @@ const storage = new CloudinaryStorage({
         folder:'CubeCraze/brands',
         format: async (req,file)=> file.mimetype === 'image/png' ? 'png' :'jpg',
         public_id: (req,file) => Date.now() + '-' + file.originalname.replace(/\s+/g,'-'),
-        transformation:[{width:200,height:200,crop:'fit'}]
+       // transformation:[{width:200,height:200,crop:'fit'}]
     }
 })
 

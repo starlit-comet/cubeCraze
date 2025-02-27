@@ -61,7 +61,7 @@
                                 <div class="row gx-2">
                                     <div class="col-lg-6">
                                         <label for="brand" class="form-label">Select Brand</label>
-                                        <select name="brand" class="form-select" id="brand" required >
+                                        <select name="brand" class="form-select" id="brand"  >
                                             <option value=""><%= productData.brand.brandName %></option>
                                             <% activeBrandNames.forEach(brand => { %>
                                                 <option value="<%= brand._id %>"><%= brand.brandName %></option>
@@ -70,7 +70,7 @@
                                     </div>
                                     <div class="col-lg-6">
                                         <label for="category" class="form-label">Select Category</label>
-                                        <select name="category" class="form-select" id="category" required>
+                                        <select name="category" class="form-select" id="category" >
                                             <option value=""><%= productData.category.categoryName %></option>
                                             <% activeCategories.forEach(category => { %>
                                                 <option value="<%= category._id %>"><%= category.categoryName %></option>
@@ -79,7 +79,7 @@
                                     </div>
                                     <div class="col-lg-6">
                                         <label for="cube_size" class="form-label">Select Cube Size</label>
-                                        <select name="cubeSize" class="form-select" id="cube_size" required>
+                                        <select name="cubeSize" class="form-select" id="cube_size" >
                                             <option value=""><%= productData.size.size %></option>
                                             <% cubeSizes.forEach(size => { %>
                                                 <option value="<%= size._id %>"><%= size.size %></option>
@@ -101,17 +101,24 @@
 
                      <!-- Image Upload -->
                      <div class="d-flex justify-content-between flex-wrap">
+                        <div class="text"> </div>
                         <% for (let i = 0; i < 4; i++) { %>
                             <div class="col-lg-3">
                                 <div class="card col-lg-12">
                                     <div class="mb-3">
                                         <div class="card-header d-flex justify-content-between align-items-center">
-                                            <h4>Media</h4>
+                                            <h4>Image <%= i+1 %></h4>
                                             <button type="button" class="btn btn-danger btn-sm remove-image" data-index="<%= i %>">Remove</button>
                                         </div>
                                         <div class="card-body">
                                             <div class="input-upload text-center">
-                                                <img src=" <%= productData.productImages[i] %> " alt="Upload Image" class="img-preview" data-index="<%= i %>" width="100%">
+                                                <img src='
+                                                <% if(productData.productImages[i]){ %>
+                                                    <%= productData.productImages[i] %>
+                                                    <%  } else { %>
+                                                       <%- "../../assets/imgs/theme/upload.svg"%>
+                                                       <% } %>
+                                                '  alt="Upload Image" class="img-preview" data-index="<%= i %>" width="100%">
                                                 <input type="file" name="productImages" class="form-control img-input" data-index="<%= i %>" accept="image/*">
                                             </div>
                                         </div>
@@ -152,7 +159,7 @@
             
             <!-- Add Bootstrap & Cropper.js Scripts -->
                         <script>
-         
+                            var productData = <%- JSON.stringify(productData) %>
                         document.querySelectorAll(".img-input").forEach((input) => {
                     const index = input.dataset.index;
                     const previewImage = document.querySelector(`.img-preview[data-index="${index}"]`);
@@ -200,5 +207,54 @@
                         input.value = "";
                     });
                 });
+
+                // Form handling
+
+                document.querySelector("#productForm").addEventListener("submit", async function (event) {
+    event.preventDefault(); // Prevent default form submission
+    // console.log('ji')
+    let formData = new FormData(this);
+    formData.append('productId',`${productData._id}`)
+    // Collect images
+    let images = document.querySelectorAll('.img-input');
+    let hasImage = true;
+
+    images.forEach((input) => {
+        if (input.files.length > 0) {
+            formData.append("productImages", input.files[0]);
+            hasImage = true;
+        }
+    });
+
+    if (!hasImage) {
+        alert("At least one image is required!");
+        return;
+    }
+    // console.log([...formData])
+
+    try {
+        let response = await fetch(`/admin/editProduct`, {
+            method: "POST",
+            body: formData,
+           
+        });
+        
+       let result = await response.json();
+        
+        if (result.success) {
+            Swal.fire("Success!", "Product Edited successfully!", "success")
+
+                window.location.href = "/admin/products"// Redirect to product page
+
+        } else {
+            Swal.fire("Error!", result.message || "Something went wrong.", "error");
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        Swal.fire("Error!", "Failed to Edit product.", "error");
+    }
+});
+
+
                         </script>
       <%- include('partials/footer.ejs') %>

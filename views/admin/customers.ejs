@@ -17,15 +17,26 @@
             <header class="card-header">
                 <div class="row gx-3">
                     <div class="col-lg-4 col-md-6 me-auto">
-                        <form action="">
-                            <input type="text" placeholder="Search..." class="form-control">
+                        <form id="searchForm" class="flex items-center space-x-2">
+                            <!-- Search Input -->
+                            <input type="text" id="searchInput" placeholder="Search..." class="form-control border px-3 py-2 rounded w-64">
+                            <br>
+                            <!-- Search Button -->
+                            <button type="submit" class="bg-blue-500 text-black px-4 py-2 rounded">Search</button>
+                        
+                            <!-- Clear Button -->
+                            <button type="button" id="clearButton" class="bg-gray-300 text-black px-4 py-2 rounded">Clear</button>
                         </form>
+                        
+                        <!-- Search Results (For Displaying Results) -->
+                        <div id="searchResults" class="mt-4"></div>
+                        
                     </div>
                     <div class="col-lg-2 col-md-3 col-6">
                         <select class="form-select">
                             <option>Status</option>
                             <option>Active</option>
-                            <option>Disabled</option>
+                            <option>Inactive</option>
                             <option>Show all</option>
                         </select>
                     </div>
@@ -127,11 +138,11 @@
                    <%= 'active' %>
                     <%}%>
                     "><a class="page-link" href="/admin/customers?page=<%=`${x}`%>"> <%= `0${x}` %></a></li>
+                    <% }%>
                     <!-- <li class="page-item"><a class="page-link" href="#">02</a></li>
                     <li class="page-item"><a class="page-link" href="#">03</a></li>
                     <li class="page-item"><a class="page-link dot" href="#">...</a></li>
                     <li class="page-item"><a class="page-link" href="#">16</a></li> -->
-                    <% }%>
 
                     <li class="page-item"><a class="page-link" href="/admin/customers?page=<%= (1*page)+1 %>"><i class="material-icons md-chevron_right"></i></a></li>
                 </ul>
@@ -158,6 +169,44 @@
                 }
             });
         }
+
+
+        //search functions
+        document.addEventListener("DOMContentLoaded", () => {
+    const searchForm = document.getElementById("searchForm");
+    const searchInput = document.getElementById("searchInput");
+    const clearButton = document.getElementById("clearButton");
+
+    // Handle form submission
+    searchForm.addEventListener("submit", (e) => {
+        e.preventDefault(); // Prevent default form submission
+
+        const query = searchInput.value.trim();
+        if (query === "") return;
+
+        // Redirect to /admin/customers with search query as a parameter
+        window.location.href = `/admin/customers?search=${encodeURIComponent(query)}`;
+    });
+
+    // Clear search input and remove query params
+    clearButton.addEventListener("click", () => {
+        searchInput.value = "";
+
+        // Remove search parameter from the URL
+        const url = new URL(window.location);
+        url.searchParams.delete("search");
+        window.history.pushState({}, "", url);
+    });
+
+    // Preserve search query in the input field on page load
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchQuery = urlParams.get("search");
+    if (searchQuery) {
+        searchInput.value = searchQuery;
+    }
+});
+
+
         </script>
         
 <%- include('partials/footer.ejs') %>

@@ -1,6 +1,10 @@
 const express = require('express')
 const router = express.Router()
 const userController= require('../controllers/user/userController')
+const profileController = require('../controllers/user/profileController')
+const productController = require('../controllers/user/productController')
+const shopController = require('../controllers/user/shopController')
+const userAuth = require('../middlewares/userAuth')
 const passport=require('passport')
 
 router.get('/home',userController.loadHome)
@@ -8,25 +12,29 @@ router.get('/login',userController.userLogin)
 router.get('/pagenotfound',userController.errorPage)
 router.get('/signup',userController.signUp)
 router.get('/about',userController.aboutPage)
-
+router.get('/verifyOTP',userController.viewOTPpage)
+router.get('/get-otp-timer',userController.getOTPTimer)
+router.get('/forgotPassword',userController.viewForgotPassword)
+router.post('/forgetPassword',userController.findUserAccount)
+router.get('/setPassword',userController.viewSetPassword)
+router.post('/setPassword',userController.updatePassword)
 
 router.post('/signin',userController.signIn)
 router.post('/signup',userController.createUser)
-router.get('/profile')
+router.get('/profile',profileController.viewProfilePage)
 router.get('/google/login',passport.authenticate('google',{ scope:['profile','email']}))
-router.get('/auth/google/callback',passport.authenticate('google',{failureRedirect:'/login'}),
-    //  (req,res)=>{  res.redirect('/profile') }
-    userController.userProfile)
-router.get('/profile',userController.loadProfile
-   // (req,res)=>{    res.render(`users/profile`)}
-   )
-router.get('/logout',userController.logout
-    
-)
+router.get('/auth/google/callback',passport.authenticate('google',{failureRedirect:'/login'}), userController.userProfile)
+router.get('/profile',userController.loadProfile )
+router.get('/googleProfile',userController.googleUserProfile)
+router.get('/logout',userController.logout)
 router.post('/send-otp',userController.sendOTPtoEmail)
 router.post('/verify-otp',userController.verifyOTP)
 router.post('/resend-otp',userController.sendOTPtoEmail)
 
-router.get('/products',userController.showProducts)
-router.get('/sentOTP',userController.generateOTP)
+
+
+router.get('/viewProduct/:productId',productController.viewProduct)
+
+router.get('/shop',shopController.viewShop)
+// router.get('/sentOTP',userController.generateOTP)
 module.exports=router

@@ -19,33 +19,37 @@ const multer = require('multer')
 
 
 router.get('/login',adminAuth.isAdminLoggedin,adminController.loadLogin)
-router.post('/login',adminController.formValidate)
+router.post('/login',adminAuth.isAdminLoggedin,adminController.formValidate)
 router.get('/dashboard',adminAuth.isAdminLoggedOut,adminController.loadDashboard)
 router.get('/forgetPassword',adminController.forgetPassword) 
-router.post('/findAdmin',adminController.sentOtp)   
+//router.post('/findAdmin',adminController.sentOtp)   
 router.get('/logout',adminController.logout)
 
 
-router.get('/customers',customerController.viewCustomers)
-router.get('/blockCustomer',customerController.blockCustomer)
-router.get('/unblockcustomer',customerController.unblockCustomer)
+router.get('/customers',adminAuth.isAdminLoggedOut,customerController.viewCustomers)
+router.get('/blockCustomer',adminAuth.isAdminLoggedOut,customerController.blockCustomer)
+router.get('/unblockcustomer',adminAuth.isAdminLoggedOut,customerController.unblockCustomer)
+router.post('/searchCustomers',adminAuth.isAdminLoggedOut,customerController.searchCustomer)
+
+router.get('/brands',adminAuth.isAdminLoggedOut,brandsController.viewBrands)
+router.post('/addBrand',adminAuth.isAdminLoggedOut,upload.single('brandImage'),brandsController.addBrand)
 
 
-router.get('/brands',brandsController.viewBrands)
-router.post('/addBrand',upload.single('brandImage'),brandsController.addBrand)
+router.get('/categories',adminAuth.isAdminLoggedOut,categoryController.loadCategories)
+router.post('/addCategory',adminAuth.isAdminLoggedOut,categoryController.addCategory)
+router.post('/updateCategory',adminAuth.isAdminLoggedOut,categoryController.editCategory)
 
+router.get('/products',adminAuth.isAdminLoggedOut,productController.viewProducts)
+router.get('/addProduct',adminAuth.isAdminLoggedOut,productController.viewAddProductPage)
+router.post ('/addProduct',adminAuth.isAdminLoggedOut,upload.array("productImages",4),productController.addProduct)
+router.get('/editProduct/:productId',adminAuth.isAdminLoggedOut,productController.viewEditProduct)
+router.post('/editProduct',adminAuth.isAdminLoggedOut,upload.array('productImages',4),productController.editProduct)
+router.patch('/changeStatus-Product/:id',adminAuth.isAdminLoggedOut,productController.changeStatus)
 
-router.get('/categories',categoryController.loadCategories)
-router.post('/addCategory',categoryController.addCategory)
-router.post('/updateCategory',categoryController.editCategory)
+router.get('/productSizes',adminAuth.isAdminLoggedOut,productSizeController.viewCubeSizes)
+router.post('/addSize',adminAuth.isAdminLoggedOut,productSizeController.addSize)
+router.delete('/deleteProduct/:id',adminAuth.isAdminLoggedOut,productController.deleteProduct)
 
-router.get('/products',productController.viewProducts)
-router.get('/addProduct',productController.viewAddProductPage)
-router.post ('/addProduct',upload.array("productImages",4),productController.addProduct)
-router.get('/editProduct/:productId',productController.viewEditProduct)
-
-router.get('/productSizes',productSizeController.viewCubeSizes)
-router.post('/addSize',productSizeController.addSize)
 
 
 

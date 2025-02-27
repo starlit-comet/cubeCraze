@@ -1,3 +1,4 @@
+const { query } = require('express')
 const User = require('../../models/userSchema')
 
 // const viewCustomers=(req,res)=>{
@@ -57,6 +58,16 @@ const blockCustomer = async(req,res)=>{
 }
 
 
+const searchCustomer = async (req,res)=>{
+const {searchValue} = req.body
+if(!searchValue) return res.status(400).json({message:'Enter a Search Value'})
 
+    try {
+        const regex = new RegExp(searchValue,'i')
+        
+    } catch (error) {
+        
+    }
+}
 
-module.exports={viewCustomers,unblockCustomer,blockCustomer}
+module.exports={viewCustomers,unblockCustomer,blockCustomer, searchCustomer}
