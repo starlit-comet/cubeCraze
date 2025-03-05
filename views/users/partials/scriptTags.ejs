@@ -1,4 +1,7 @@
  <!-- Vendor JS-->
+
+ <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
  <script src="/asset-front/js/vendor/modernizr-3.6.0.min.js"></script>
  <script src="/asset-front/js/vendor/jquery-3.6.0.min.js"></script>
  <script src="/asset-front/js/vendor/jquery-migrate-3.3.0.min.js"></script>
@@ -24,19 +27,67 @@
  <script src="/asset-front/js/shop.js?v=3.4"></script>
  <script>
     $(document).ready(function() {
-    $("#slider-range").slider({
-    range: true,
-    min: 0,    // Minimum price
-    max: 5000,  // Maximum price
-    values: [1000, 3000], // Default selected range
-    slide: function(event, ui) {
-        $("#amount").val("₹" + ui.values[0] + " - ₹" + ui.values[1]);
-    }
+        let minPrice =  <%=minPrice%> ;
+        let maxPrice = <%=maxPrice%> ;
+        //console.log(minPrice,maxPrice)
+        $("#slider-range").slider({
+            range: true,
+            min: 500, // Minimum price range
+            max: 7500, // Maximum price range
+            values: [minPrice, maxPrice], // Set default values dynamically
+            slide: function(event, ui) {
+                $("#amount").val("₹" + ui.values[0] + " to ₹" + ui.values[1]);
+            }
+        });
+
+        // Set initial values in input field
+        $("#amount").val("₹" + $("#slider-range").slider("values", 0) +
+        " - ₹" + $("#slider-range").slider("values", 1));
     });
 
-    // Set initial values in input field
-    $("#amount").val("₹" + $("#slider-range").slider("values", 0) +
-    " - ₹" + $("#slider-range").slider("values", 1));
-    });
+    //add to wishlist
+    async function addtoWishList(_id){
+       const request= await Swal.fire({
+            icon:'warning',
+            title:'Are You sure to add this product to Wishlist?',
+            text:'please Confirm',
+            showCancelButton:true,
+            confirmButtonText: 'Yes!!',
+            cancelButtonText: 'Cancel'
+        })
+        if(request.isConfirmed){
+            
+            try {
+                const response = await fetch ('/addtoWishList',{
+                    method:'POST',
+                    headers:{'content-type':'application/json'},
+                    body:JSON.stringify({productId:_id}),
+                })
+                console.log(response)
+                const data = await response.json();  // ✅ Read the response
+            if (response.ok) {
+                Swal.fire({
+                    icon:'success',
+                    title: 'Product Added to wishlist',
+                    showCancelButton:true,
+                    text:data.message,
+                    showConfirmButton:false,
+                    cancelButtonText:'Done'
+                }).then(()=>{
+                    //window.location.reload()
+                });
+                //document.getElementById(`wishlist-item-${_id}`)?.remove();  // ✅ Remove from UI
+            } else {
+                Swal.fire('Error', data.message || 'Something went wrong', 'error');
+            }
+                
+            } catch (error) {
+                console.error('Error:', error);
+            Swal.fire('Error', 'Failed to add product. Please try again later.', 'error');
+       
+            }
+        }
+    }
 
 </script>
+

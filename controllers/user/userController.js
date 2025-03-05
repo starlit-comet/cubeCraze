@@ -5,6 +5,8 @@ const nodemailer= require('../../helpers/nodemailer')
 
 const generateNewOTP = () =>{
     return Math.floor(100000 + Math.random() * 900000). toString()
+    // if(value >100000 && value < 999999) return value
+    // else {generateNewOTP()}
 }
 
 
@@ -14,17 +16,7 @@ function isStrongPassword(password) {
 }
 
 
-const loadHome = async(req,res)=>{
-    try {
-        const userData = req.session.user
-        res.render('users/userhome',{userData})
-    } catch (error) {
-        console.log(error)
-       // res.status(500).send('PageNotFound')
-        res.status(500).redirect('/pagenotfound')
 
-    }
-}
 const userLogin =async (req,res)=>{
     try {
         res.render('users/login')
@@ -59,15 +51,12 @@ const signIn = async (req,res)=>{
     try {
         console.log(req.body)
         const {email,password}=req.body
-        const user= await userSchema.findOne({email,googleId:'noGoogleId'})
+        const user= await userSchema.findOne({email,googleId:'noGoogleId',isBlocked:false})
        // console.log(user)
-        if(!user) res.status(200).json({message:'email not found'})
-            // if (!user.hashedPassword) {
-            //     return res.status(200).json({ message: 'Password is missing' });
-            // }
+        if(!user) return res.status(200).json({message:'email not found'})
     
         const isMatchPassword = await bcrypt.compare(password,user.hashedPassword)
-        console.log(isMatchPassword)
+        //console.log(isMatchPassword)
         if(!isMatchPassword) return res.status(200).json({message:'passwords not matching',success:false})
         if(!user.isOTPVerified ){
             console.log(`user otp not verified`)
@@ -105,10 +94,6 @@ const createUser = async(req,res)=>{
          console.log(`new User added : ${name}`)
          req.session.userEmail = email
          return res.status(200).json({message:'New Account Created Please verify OTP to continue',success:true})
-        // req.session.email=newUser.email
-        // sendOTPtoEmail(req,res,newUser)
-        // res.render('common/generateOTP',{newUser})
-
     } catch (error) {
         console.log(error)
     }
@@ -118,11 +103,8 @@ const userProfile=(req,res)=>{
 
     if(!req.user) return res.redirect('/login')
     console.log(req.user,'requser')
-    req.session.user = req.user
-    res.redirect('/googleProfile')
-}
-const loadProfile=(req,res)=>{
-    res.render('users/profile')
+    req.session._id = req.user._id
+    res.redirect('/profile')
 }
 const logout = (req,res)=>{
     req.logout((err)=>{
@@ -133,10 +115,6 @@ const logout = (req,res)=>{
 }
 
 
-// function giveNewOTP(){
-//     let newOTP= Math.floor(100000 + Math.random() * 900000).toString();
-//     return newOTP
-// }
 const viewOTPpage = async (req,res)=>{
   //  req.session.userEmail = 'akshaitr031@gmail.com'
     const email = req.session.userEmail
@@ -175,65 +153,16 @@ const verifyOTP=async (req,res)=>{
     else if( otp!==userData.otp && userData.otpExpires > Date.now()){
         return res.status(200).json({message:'OTP not matching', success:false})
     }
-    
-    // if (otp === newOTP) {
-    //    // console.log(user)
-    //         const email = user.email
-    //         const hashedPassword=user.hashedPassword
-    //         const name=user.name
-    //     const userToDatabase = new userSchema({email,hashedPassword,name})
-    //    await userToDatabase.save()
-
-    //     return res.json({ success: true, message: "OTP Verified Successfully! Redirecting..." });
-
      else {
         return res.status(400).json({ success: false, message: "Incorrect OTP. Please try again." });
     }
 }
 
-// const sendOTPtoEmail=async (req,res)=>{
-//     try{
-//     const email = req.session.userEmail
-//     const emailFromFront = req.body.email
-//    // if(email!==emailFormFront) return res.status(200).json({message:'email error',success:false})
-//     let  userData = await  userSchema.findOne({email,isOTPVerified:false})
-//    console.log(userData)
-//    if(!userData.otp){
-//    let newSecretOTP = await generateNewOTP()
-//     console.log(newSecretOTP)
-//     userData = await userSchema.findOneAndUpdate({email,isOTPVerified:false},{otp:newSecretOTP,otpExpires:Date.now() + 1*60*1000},{new : true})
-   
-//     const mailOptions= {
-//         from:process.env.GOOGLE_APP_EMAIL,
-//         to:userData.email,
-//         subject: 'Your OTP for CubeCraze SignUp',
-//         text:`your otp code is ${userData.otp}. It is valid for 5 minutes.`
-//     }
-//     await transporter.sendMail(mailOptions);
-//     console.log(`mail sent1`)
-//     let timer = req.session.timer = Date.now()
-//     return res.status(200).json({message:'OTP sent to mail id',success:true,time:timer})
-
-// }
-// else {
-//     return res.status(200).json({message:"OTP Already created and sent to mail id, use resend button to send otp again" ,success:false})
-// }
-// }
-//         catch(error){
-//             console.log(error)
-//         }
-// }
-
 const sendOTPtoEmail = async (req, res) => {
     try {
         const email = req.session.userEmail
         let userData = await userSchema.findOne({ email });
-
-        //for forget password
-       // const forgetPassword = req.session.forgetPassword
-        
         if(userData.isOTPVerified == true  ) return res.status(200).json({success:false,message:'User Already Verified'})
-        
         const resendOTPafter = req.session.resendOTPafter
         console.log('hiiehq2',resendOTPafter);
         if(resendOTPafter && userData.otpExpires > Date.now()){
@@ -299,33 +228,7 @@ const sendOTPtoEmail = async (req, res) => {
 const googleSignin= async(req,res)=>{
 
 }
-const products=[
-    { 'name':'product1',
-    'price':'56.23',},
-    {
-        'name':'product2',
-        'price':'45.12'
-    },{ 'name':'product1',
-        'price':'56.23',},
-        {
-            'name':'product2',
-            'price':'45.12'
-        },{ 'name':'product1',
-            'price':'56.23',},
-            {
-                'name':'product2',
-                'price':'45.12'
-            },{ 'name':'product1',
-                'price':'56.23',},
-                {
-                    'name':'product2',
-                    'price':'45.12'
-                }
 
-]
-const showProducts=async(req,res)=>{
-    res.render('users/products',{products})
-}
 
 const getOTPTimer = async (req, res) => {
     try {
@@ -407,8 +310,8 @@ const googleUserProfile =async (req,res)=>{
 }
 
 
-module.exports={showProducts,loadHome,userLogin,errorPage,signUp,aboutPage,signIn,createUser,googleSignin,
-    userProfile,loadProfile,logout,verifyOTP,sendOTPtoEmail,
+module.exports={userLogin,errorPage,signUp,aboutPage,signIn,createUser,googleSignin,
+    userProfile,logout,verifyOTP,sendOTPtoEmail,
     viewOTPpage,getOTPTimer,
     viewForgotPassword,findUserAccount, viewSetPassword, updatePassword,
     googleUserProfile

@@ -11,8 +11,8 @@
         <div class="page-header breadcrumb-wrap">
             <div class="container">
                 <div class="breadcrumb">
-                    <a href="home" rel="nofollow">Home</a>
-                    <span></span> Products
+                    <a href="/home" >Home</a>
+                    <span></span> <a href="/shop" >Shop</a>
                     <span></span> <%= productData.productName %>
                 </div>
             </div>
@@ -102,15 +102,22 @@
                                             </ul>
                                         </div> -->
                                         <div class="bt-1 border-color-1 mt-30 mb-30"></div>
-                                        <div class="detail-extralink">
+                                        <div class="detail-extralink product-extra-link2 flex">
+
+                                            <button  id="addToCart" class="button hover-up button-add-to-cart">Add to cart</button>
+                                            <button  id="addToCart" class="button hover-up button-add-to-cart">Buy Now</button>
+
+                                        </div>
+
+                                        <div class="detail-extralink mt-30">
                                             <div class="detail-qty border radius">
                                                 <a href="#" class="qty-down"><i class="fi-rs-angle-small-down"></i></a>
                                                 <span class="qty-val">1</span>
                                                 <a href="#" class="qty-up"><i class="fi-rs-angle-small-up"></i></a>
                                             </div>
+                                            
                                             <div class="product-extra-link2">
-                                                <button type="submit" class="button button-add-to-cart">Add to cart</button>
-                                                <a aria-label="Add To Wishlist" class="action-btn hover-up" href="shop-wishlist.html"><i class="fi-rs-heart"></i></a>
+                                                <a aria-label="Add To Wishlist" class="action-btn hover-up" onclick="addtoWishList('<%= productData._id %>')"><i class="fi-rs-heart"></i></a>
                                                 <a aria-label="Compare" class="action-btn hover-up" href="shop-compare.html"><i class="fi-rs-shuffle"></i></a>
                                             </div>
                                         </div>
@@ -153,8 +160,8 @@
                                             <h4><%= productData.brand.brandName %> </h4>
                                             <p><strong>Qualities:  </strong> <%= productData.brand.brandDescription %> </p>
                                             <hr class="wp-block-separator is-style-dots">
-                                            <h3><br> Category Info</h3>
-                                            <h4><%= productData.category.categoryName %> </h4>
+                                            <h3><br> Category Info<br></h3>
+                                            <br><h4><%= productData.category.categoryName %> </h4>
                                             <p><strong>Details :  </strong> <%= productData.category.description %> </p>                                            
                                             <!-- <hr class="wp-block-separator is-style-dots">
                                             <p>Laconic overheard dear woodchuck wow this outrageously taut beaver hey hello far meadowlark imitatively egregiously hugged that yikes minimally unanimous pouted flirtatiously as beaver beheld above forward
@@ -410,8 +417,7 @@
 
                                 <!-- ... -->
                             </div>
-                            <!-- Related products section remains the same -->
-                            <!-- ... -->
+                            
                         </div>
                     </div>
                     <%- include('partials/leftSidebar.ejs') %>
@@ -441,18 +447,7 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/elevatezoom/3.0.8/jquery.elevatezoom.min.js"></script>
-<script>
-$(document).ready(function () {
-    $(".zoomImage").each(function () {
-        $(this).elevateZoom({
-            zoomType: "lens",
-            lensShape: "round",
-            lensSize: 200
-        });
-    });
-});
 
-</script>
 
    
 </body>

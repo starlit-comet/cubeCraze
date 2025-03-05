@@ -18,7 +18,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-3">
-                            <form action="/admin/addCategory" method ='post'>
+                            <form action="" id="categoryForm" method ='post'>
                                 <div class="mb-4">
                                     <label for="product_name"  class="form-label">Category Name</label>
                                     <input type="text" name="categoryName" placeholder="Type here" class="form-control" id="product_name" />
@@ -98,51 +98,7 @@
                                             </tr>
                                             <% }) %>
                                         
-                                        <!-- <tr>
-                                            <td class="text-center">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" value="" />
-                                                </div>
-                                            </td>
-                                            <td>3</td>
-                                            <td><b>Kids clothes</b></td>
-                                            <td>Clothes for kids</td>
-                                            <td>/kids</td>
-                                            <td>3</td>
-                                            <td class="text-end">
-                                                <div class="dropdown">
-                                                    <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
-                                                    <div class="dropdown-menu">
-                                                        <a class="dropdown-item" href="#">View detail</a>
-                                                        <a class="dropdown-item" href="#">Edit info</a>
-                                                        <a class="dropdown-item text-danger" href="#">Delete</a>
-                                                    </div>
-                                                </div> 
-                                                
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-center"><i class="material-icons md-subdirectory_arrow_right text-muted"></i></td>
-                                            <td>4</td>
-                                            <td><b>Hot Gifts</b></td>
-                                            <td>Hot Gifts</td>
-                                            <td>/gifts</td>
-                                            <td>4</td>
-                                            <td class="text-end">
-                                                <div class="dropdown">
-                                                    <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
-                                                    <div class="dropdown-menu">
-                                                        <a class="dropdown-item" href="#">View detail</a>
-                                                        <a class="dropdown-item" href="#">Edit info</a>
-                                                        <a class="dropdown-item text-danger" href="#">Delete</a>
-                                                    </div>
-                                                </div> 
-                                            </td>
-                                        </tr> -->
-                                        
-                                        
                                        
-                                        
                                     </tbody>
                                 </table>
                             </div>
@@ -239,7 +195,38 @@ function updateCategory(data) {
         Swal.fire("Error!", "Something went wrong.", "error");
     });
 }
+//new caategory submission
+document.querySelector('#categoryForm').addEventListener('submit',async event=>{
+    event.preventDefault()
 
+    let form = event.target
+    let formdata = new URLSearchParams( new FormData(form))
+
+    let response = await fetch('/admin/addCategory',{
+        method:'post',
+        headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        body:formdata,
+    })
+    let result = await response.json()
+    if(!result.success){
+        Swal.fire({
+            title:'Error!',
+            icon:'error',
+            text:result.message,
+            showConfirmButton:true,
+        })
+    }
+    else{
+        Swal.fire({
+            title:'Success!',
+            icon:'success',text:result.message,
+            showConfirmButton:true,
+            timer:2500,
+        }).then(()=>{
+            window.location.reload()
+        })
+    }
+})
 
 
                     document.getElementById("products12e").classList.add("active");

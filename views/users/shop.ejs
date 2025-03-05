@@ -8,7 +8,7 @@
         <div class="page-header breadcrumb-wrap">
             <div class="container">
                 <div class="breadcrumb">
-                    <a href="index.html" rel="nofollow">Home</a>
+                    <a href="home" rel="nofollow">Home</a>
                     <span></span> Shop
                 </div>
             </div>
@@ -19,7 +19,7 @@
                     <div class="col-lg-9">
                         <div class="shop-product-fillter">
                             <div class="totall-product">
-                                <p> We found <strong class="text-brand">688</strong> items for you!</p>
+                                <p> We found <strong class="text-brand"> <%= allProducts.length %> </strong> items for you!</p>
                             </div>
                             <div class="sort-by-product-area">
                                 <div class="sort-by-cover mr-10">
@@ -28,18 +28,22 @@
                                             <span><i class="fi-rs-apps"></i>Show:</span>
                                         </div>
                                         <div class="sort-by-dropdown-wrap">
-                                            <span> 50 <i class="fi-rs-angle-small-down"></i></span>
+                                            <span><% if (limit) {%>
+                                                 <%= limit %> 
+                                                 <%}%>
+                                                 <i class="fi-rs-angle-small-down"></i></span>
                                         </div>
                                     </div>
                                     <div class="sort-by-dropdown">
                                         <ul>
-                                            <li><a class="active" href="#">50</a></li>
-                                            <li><a href="#">100</a></li>
-                                            <li><a href="#">150</a></li>
-                                            <li><a href="#">200</a></li>
-                                            <li><a href="#">All</a></li>
+                                            <li><a href="#" class="limit-option" data-limit="10">10</a></li>
+                                            <li><a href="#" class="limit-option" data-limit="25">25</a></li>
+                                            <li><a href="#" class="limit-option" data-limit="50">50</a></li>
+                                            <li><a href="#" class="limit-option" data-limit="75">75</a></li>
+                                            <li><a href="#" class="limit-option" data-limit="all">All</a></li>
                                         </ul>
                                     </div>
+                                    
                                 </div>
                                 <div class="sort-by-cover">
                                     <div class="sort-by-product-wrap">
@@ -47,18 +51,23 @@
                                             <span><i class="fi-rs-apps-sort"></i>Sort by:</span>
                                         </div>
                                         <div class="sort-by-dropdown-wrap">
-                                            <span> Featured <i class="fi-rs-angle-small-down"></i></span>
+                                            <span> <% if(sort) { %>
+                                                 <%= sort %>
+                                                 <% } %>
+                                                 <i class="fi-rs-angle-small-down"></i></span>
                                         </div>
                                     </div>
                                     <div class="sort-by-dropdown">
                                         <ul>
-                                            <li><a class="active" href="#">Featured</a></li>
-                                            <li><a href="#">Price: Low to High</a></li>
-                                            <li><a href="#">Price: High to Low</a></li>
-                                            <li><a href="#">Release Date</a></li>
-                                            <li><a href="#">Avg. Rating</a></li>
+                                            <li><a href="#" class="sort-option" data-sort="Aa-Zz">Aa - Zz</a></li>
+                                            <li><a href="#" class="sort-option" data-sort="Zz-Aa">Zz - Aa</a></li>
+                                            <li><a href="#" class="sort-option" data-sort="price-asc">Offer Price: Low to High</a></li>
+                                            <li><a href="#" class="sort-option" data-sort="price-desc">Offer Price: High to Low</a></li>
+                                            <li><a href="#" class="sort-option" data-sort="latest">Latest First</a></li>
+                                            <!-- <li><a href="#" class="sort-option" data-sort="rating">Avg. Rating</a></li> -->
                                         </ul>
                                     </div>
+                                    
                                 </div>
                             </div>
                         </div>
@@ -76,7 +85,7 @@
                                         <div class="product-action-1">
                                             <a aria-label="Quick view" class="action-btn hover-up" data-bs-toggle="modal" data-bs-target="#quickViewModal">
                                             <i class="fi-rs-search"></i></a>
-                                            <a aria-label="Add To Wishlist" class="action-btn hover-up" href=""><i class="fi-rs-heart"></i></a>
+                                            <a aria-label="Add To Wishlist" class="action-btn hover-up" onclick="addtoWishList('<%= item._id %>')"><i class="fi-rs-heart"></i></a>
                                             <a aria-label="Compare" class="action-btn hover-up" href="shop-compare.html"><i class="fi-rs-shuffle"></i></a>
                                         </div>
                                         <div class="product-badges product-badges-position product-badges-mrg">
@@ -190,7 +199,96 @@
     <%- include('partials/scriptTags.ejs') %>
 
 
-    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("search-input");
+    const clearButton = document.getElementById("clear-search");
+    const suggestionsBox = document.getElementById("suggestions");
+    let debounceTimer;
+
+    // Show "Clear" button when typing
+    searchInput.addEventListener("input", function () {
+        clearButton.style.display = this.value ? "block" : "none";
+
+        // Debounce search suggestions
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(fetchSuggestions, 300);
+    });
+
+    // Clear search input
+    clearButton.addEventListener("click", function () {
+        searchInput.value = "";
+        clearButton.style.display = "none";
+        suggestionsBox.innerHTML = "";
+    });
+
+    // Fetch suggestions from server
+    function fetchSuggestions() {
+        const query = searchInput.value.trim();
+        if (!query) {
+            suggestionsBox.innerHTML = "";
+            return;
+        }
+
+        fetch(`/api/suggestions?query=${query}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length) {
+                    suggestionsBox.innerHTML = data.map(item => 
+                        `<div class="suggestion-item">${item}</div>`).join("");
+                } else {
+                    suggestionsBox.innerHTML = "";
+                }
+            })
+            .catch(error => console.error("Error fetching suggestions:", error));
+    }
+
+    // Click on suggestion to autofill search
+    suggestionsBox.addEventListener("click", function (event) {
+        if (event.target.classList.contains("suggestion-item")) {
+            searchInput.value = event.target.textContent;
+            suggestionsBox.innerHTML = "";
+        }
+    });
+});
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("shop-filter-form");
+    const searchInput = document.getElementById("search-input");
+
+    // Limit selection event
+    document.querySelectorAll(".limit-option").forEach(item => {
+        item.addEventListener("click", function (e) {
+            e.preventDefault();
+            updateURL("limit", this.getAttribute("data-limit"));
+        });
+    });
+
+    // Sort selection event
+    document.querySelectorAll(".sort-option").forEach(item => {
+        item.addEventListener("click", function (e) {
+            e.preventDefault();
+            updateURL("sort", this.getAttribute("data-sort"));
+        });
+    });
+
+    // Function to update URL parameters
+    function updateURL(param, value) {
+        const url = new URL(window.location.href);
+        url.searchParams.set(param, value);
+        window.location.href = url.toString(); // Reload page with new parameters
+    }
+
+    // Prevent form from submitting empty search
+    form.addEventListener("submit", function (e) {
+        if (!searchInput.value.trim()) {
+            e.preventDefault();
+        }
+    });
+});
+
+    </script>
 </body>
 
 </html>

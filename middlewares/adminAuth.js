@@ -9,7 +9,8 @@ const isAdminLoggedin =(req,res,next)=>{
 
 const isAdminLoggedOut=(req,res,next)=>{
     if(!req.session.admin){
-        res.redirect('/admin/login')
+       // res.redirect('/admin/login')
+       next()
     }
     else next()
 }

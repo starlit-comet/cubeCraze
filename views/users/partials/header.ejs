@@ -24,15 +24,15 @@
 				<div class="col-xl-3 col-lg-4">
 					<div class="header-info header-info-right">
 						<ul>
-							<li>
-								<a class="language-dropdown-active" href="#"> <i class="fi-rs-world"></i> English <i class="fi-rs-angle-small-down"></i></a>
-								<ul class="language-dropdown">
+							 <li>
+							<a class="language-dropdown-active" href="#"> <i class="fi-rs-world"></i> English (IN) </a>
+								<!-- <ul class="language-dropdown">
 									<li><a href="#"><img src="/asset-front/imgs/theme/flag-fr.png" alt="">Français</a></li>
 									<li><a href="#"><img src="/asset-front/imgs/theme/flag-dt.png" alt="">Deutsch</a></li>
 									<li><a href="#"><img src="/asset-front/imgs/theme/flag-ru.png" alt="">Pусский</a></li>
-								</ul>
-							</li>
-							<li><i class="fi-rs-user"></i><a href="page-login-register.html">Log In / Sign Up</a></li>
+								</ul> -->
+							</li> 
+							<li><i class="fi-rs-user"></i><a href="/login">Log In / Sign Up</a></li>
 						</ul>
 					</div>
 				</div>
@@ -43,33 +43,51 @@
 		<div class="container">
 			<div class="header-wrap">
 				<div class="logo logo-width-1">
-					<a href=""><img src="/asset-front/imgs/theme/logo.png"  alt="logo"></a>
+					<a href=""><img src="/asset-front/imgs/theme/logo.png" style="min-width: 60px;"  alt="logo"></a>
 				</div>
 				<div class="header-right">
 					<div class="search-style-2">
-						<form action="#">
+						<!-- <form action="#">
 							<select class="select-active">
 								<option>All Categories</option>
 								<option>Women's</option>
 								<option>Men's</option>
-								<option>Cellphones</option>
-								<option>Computer</option>
-								<option>Electronics</option>
-								<option> Accessories</option>
-								<option>Home & Garden</option>
-								<option>Luggage</option>
-								<option>Shoes</option>
-								<option>Mother & Kids</option>
+								
 							</select>
 							<input type="text" placeholder="Search for items...">
+						</form> -->
+
+						<!-- <select name="category" id="category-select" class="select-active">
+							<option value="">All Categories</option>
+							<option value="women">Women's</option>
+							<option value="men">Men's</option>
+						</select>
+						-->
+						<form id="shop-filter-form" action="/shop" method="GET">
+						<div class="search-container">
+							<input type="text" name="search" id="search-input" placeholder="Search for items..." value=
+								<% if(searchKeyWord){ %>
+								"<%= searchKeyWord %>"
+								<% } %>
+								>
+								<button type="button" class="" id="clear-search" style="display: none;">✖</button>
+								<div id="suggestions" class="suggestions-box"></div>
+							</div>
+						
+							<button type="submit">Search</button>
+
 						</form>
+						
+						
 					</div>
 					<div class="header-action-right">
 						<div class="header-action-2">
 							<div class="header-action-icon-2">
-								<a href="shop-wishlist.html">
+								<a href="wishList">
 									<img class="svgInject" alt="Evara" src="/asset-front/imgs/theme/icons/icon-heart.svg">
-									<span class="pro-count blue">4</span>
+									<span class="pro-count blue">
+										4
+									</span>
 								</a>
 							</div>
 							<div class="header-action-icon-2">
@@ -147,10 +165,6 @@
 															<li><a class="dropdown-item nav-link nav_item" href="#">Blouses & Shirts</a></li>
 															<li><a class="dropdown-item nav-link nav_item" href="#">Hoodies & Sweatshirts</a></li>
 															<li><a class="dropdown-item nav-link nav_item" href="#">Women's Sets</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Suits & Blazers</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Bodysuits</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Tanks & Camis</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Coats & Jackets</a></li>
 														</ul>
 													</li>
 													<li class="mega-menu-col col-lg-6">
@@ -159,11 +173,6 @@
 															<li><a class="dropdown-item nav-link nav_item" href="#">Leggings</a></li>
 															<li><a class="dropdown-item nav-link nav_item" href="#">Skirts</a></li>
 															<li><a class="dropdown-item nav-link nav_item" href="#">Shorts</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Jeans</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Pants & Capris</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Bikini Sets</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Cover-Ups</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Swimwear</a></li>
 														</ul>
 													</li>
 												</ul>
@@ -201,11 +210,6 @@
 															<li><a class="dropdown-item nav-link nav_item" href="#">Down Jackets</a></li>
 															<li><a class="dropdown-item nav-link nav_item" href="#">Jackets</a></li>
 															<li><a class="dropdown-item nav-link nav_item" href="#">Parkas</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Faux Leather Coats</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Trench</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Wool & Blends</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Vests & Waistcoats</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Leather Coats</a></li>
 														</ul>
 													</li>
 													<li class="mega-menu-col col-lg-6">
@@ -214,10 +218,6 @@
 															<li><a class="dropdown-item nav-link nav_item" href="#">Blazers</a></li>
 															<li><a class="dropdown-item nav-link nav_item" href="#">Suit Jackets</a></li>
 															<li><a class="dropdown-item nav-link nav_item" href="#">Suit Pants</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Suits</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Vests</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Tailor-made Suits</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Cover-Ups</a></li>
 														</ul>
 													</li>
 												</ul>
@@ -246,26 +246,12 @@
 															<li><span class="submenu-title">Hot & Trending</span></li>
 															<li><a class="dropdown-item nav-link nav_item" href="#">Cellphones</a></li>
 															<li><a class="dropdown-item nav-link nav_item" href="#">iPhones</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Refurbished Phones</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Mobile Phone</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Mobile Phone Parts</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Phone Bags & Cases</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Communication Equipments</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Walkie Talkie</a></li>
-														</ul>
 													</li>
 													<li class="mega-menu-col col-lg-6">
 														<ul>
 															<li><span class="submenu-title">Accessories</span></li>
 															<li><a class="dropdown-item nav-link nav_item" href="#">Screen Protectors</a></li>
 															<li><a class="dropdown-item nav-link nav_item" href="#">Wire Chargers</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Wireless Chargers</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Car Chargers</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Power Bank</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Armbands</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Dust Plug</a></li>
-															<li><a class="dropdown-item nav-link nav_item" href="#">Signal Boosters</a></li>
-														</ul>
 													</li>
 												</ul>
 											</li>

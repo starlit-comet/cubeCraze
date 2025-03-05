@@ -18,11 +18,11 @@ const addProduct = async (req,res)=>{
         const { productName, description, regularPrice, promotionalPrice, brand, category, cubeSize,productQuantity } = req.body;
       // console.log(productQuantity,description)
         if (!productName || !description || !regularPrice || !brand || !category || !cubeSize ||!productQuantity  ) {
-            return res.status(400).json({ success: false, message: "All required fields must be filled123!" });
+            return res.status(400).json({ success: false, message: "All required fields must be filled!" });
         }
 
-        if (!req.files || req.files.length === 0) {
-            return res.status(400).json({ success: false, message: "At least one image is required!" });
+        if (!req.files || req.files.length <=3) {
+            return res.status(400).json({ success: false, message: "Minimum Three Images are required" });
         }
 
         const imageUrls = req.files.map(file => file.path); // Extract Cloudinary URLs

@@ -17,7 +17,7 @@ const addSize = async (req,res)=>{
         const newSize = new sizeSchema({description,size:cubeSize})
         newSize.save()
         console.log(`New Size Added`)
-        res.redirect('/admin/productSizes')
+        res.redirect('/admin/prodiuctSizes')
     } catch (error) {
         
     }

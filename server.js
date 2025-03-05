@@ -1,7 +1,9 @@
+
 require('dotenv').config();
 const express= require('express')
 const path = require('path')
-// const mongoose = require('mongoose')
+const mongoose = require('mongoose')
+// mongoose.set('strictPopulate', false)
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const bodyParser = require('body-parser')
@@ -16,7 +18,7 @@ const OAuth2Strategy = require('passport-oauth2')
 const nocache = require('nocache')
 const GoogleStrategy = require("passport-google-oauth20").Strategy
 require('./config/passport')
-const User=require('./models/userSchema')
+//const User=require('./models/userSchema')
 
 const cloudinary = require('cloudinary').v2
 app.use('/uploads',express.static('uploads'))

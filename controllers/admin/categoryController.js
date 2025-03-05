@@ -9,9 +9,16 @@ const loadCategories = async (req,res)=>{
  const addCategory = async (req,res)=>{
     try {
     const {categoryName,description} = req.body
+    if(!categoryName || !description) return res.status(200).json({message:'Both fields are required'})
+    const isCategoryAlreadyExist = await categorySchema.findOne({categoryName})
+    console.log(isCategoryAlreadyExist,'ds')
+    if(isCategoryAlreadyExist) {
+        return res.status(200).json({message:'Category Already Exists'})
+    }
     const category = await new categorySchema({categoryName,description})
     category.save()
-    res.redirect('/admin/categories')}
+       return res.status(200).json({success:true,message:'New Category Created'})
+}
     catch(error){
         console.log(error)
     }

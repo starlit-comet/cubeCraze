@@ -31,7 +31,8 @@ const viewCustomers = async (req,res)=>{
                 {email :{$regex:'.*'+search+".*"}}
             ]
         }).countDocuments()
-        res.render('admin/customers',{userData,count,limit,page})
+        let link = ``
+        res.render('admin/customers',{userData,count,limit,page,link})
     } catch (error) {
         console.log(error)
         

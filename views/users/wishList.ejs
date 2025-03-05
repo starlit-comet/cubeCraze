@@ -1,0 +1,172 @@
+<%- include('partials/headSection.ejs') %>
+</head>
+
+<body>
+    <%- include('partials/header.ejs') %>
+
+    <%- include('partials/mobileMenu.ejs') %>
+    
+    <main class="main">
+       
+        <div class="page-header breadcrumb-wrap">
+            <div class="container">
+                <div class="breadcrumb">
+                    <a href="/home" >Home</a>
+                    <span></span> <a href="" >WishList</a>
+                </div>
+            </div>
+        </div>
+
+        <section class="mt-50 mb-50">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="table-responsive">
+                            <table class="table shopping-summery text-center">
+                                <thead>
+                                    <tr class="main-heading">
+                                        <th>sl.no</th>
+                                        <th scope="col" colspan="2">Product</th>
+                                        <th scope="col">Price</th>
+                                        <th scope="col">Stock Status</th>
+                                        <th scope="col">Action</th>
+                                        <th scope="col">Remove</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (data.length == 0) { %>
+                                        <td colspan="6">Sorry! No items in Your WishList</td>
+                                        </tbody>
+                                        <% } else { data.forEach((item,index)=>{  %>
+                                    <tr>
+                                        <td><%= index+1 %></td>
+                                        <td class="image product-thumbnail"><img src=" <%= item.productImages[0] %> " alt="#"></td>
+                                        <td class="product-des product-name">
+                                            <h5 class="product-name"><a href="shop-product-right.html"> <%= item.productName %> </a></h5>
+                                            <p class="font-xs"> Brand: <%= item.brand.brandName %> <br> Category: <%= item.category.categoryName %> 
+                                                .
+                                            </p>
+                                        </td>
+                                        <td class="price" data-title="Price"><span>₹<%= item.promotionalPrice %> </span></td>
+                                        <td class="text-center" data-title="Stock">
+                                            <% if (item.quantity==0) {  %>
+                                                <span class="text-danger font-weight-bold">
+                                                    SORRY! This Product is <br>Currently Out of stock
+                                                </span>
+                                                    <%} else if (item.quantity <= 10) { %>
+                                                        <span class="text-danger font-weight-bold">
+                                                            Only Few Stock available </span>
+                                                    <% } else { %>
+                                                        <span class="text-success font-weight-bold">
+                                                            In Stock</span>
+                                                    <% }%>
+                                        </td>
+                                        <td class="text-right" data-title="Cart">
+                                            <button class="btn btn-sm"><i class="fi-rs-shopping-bag mr-5"></i>Add to cart</button>
+                                        </td>
+                                        <td class="action" data-title="Remove"><a onclick="removeFromWishList('<%= item. _id %>')"><i class="fi-rs-trash"></i></a></td>
+                                    </tr>
+                                    <% }) }%>
+                                    <!-- <tr>
+                                        <td class="image"><img src="assets/imgs/shop/product-2-1.jpg" alt="#"></td>
+                                        <td class="product-des">
+                                            <h5 class="product-name"><a href="shop-product-right.html">Amazon Essentials Women's Tank</a></h5>
+                                            <p class="font-xs">Sit at ipsum amet clita no est,<br> sed amet sadipscing et gubergren</p>
+                                        </td>
+                                        <td class="price" data-title="Price"><span>$75.00 </span></td>
+                                        <td class="text-center" data-title="Stock">
+                                            <span class="color3 font-weight-bold">In Stock</span>
+                                        </td>
+                                        <td class="text-right" data-title="Cart">
+                                            <button class="btn btn-sm"><i class="fi-rs-shopping-bag mr-5"></i>Add to cart</button>
+                                        </td>
+                                        <td class="action" data-title="Remove"><a href="#"><i class="fi-rs-trash"></i></a></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="image"><img src="assets/imgs/shop/product-3-1.jpg" alt="#"></td>
+                                        <td class="product-des">
+                                            <h5 class="product-name"><a href="shop-product-right.html">Amazon Brand - Daily Ritual Women's Jersey </a></h5>
+                                            <p class="font-xs">Erat amet et et amet diam et et.<br> Justo amet at dolore
+                                            </p>
+                                        </td>
+                                        <td class="price" data-title="Price"><span>$62.00 </span></td>
+                                        <td class="text-center" data-title="Stock">
+                                            <span class="text-danger font-weight-bold">Out of stock</span>
+                                        </td>
+                                        <td class="text-right" data-title="Cart">
+                                            <button class="btn btn-sm btn-secondary"><i class="fi-rs-headset mr-5"></i>Contact Us</button>
+                                        </td>
+                                        <td class="action" data-title="Remove"><a href="#"><i class="fi-rs-trash"></i></a></td>
+                                    </tr> -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+    </main>
+    
+    <%- include('partials/footer.ejs') %>
+
+    <!-- Preloader Start -->
+    <div id="preloader-active">
+        <div class="preloader d-flex align-items-center justify-content-center">
+            <div class="preloader-inner position-relative">
+                <div class="text-center">
+                    <h5 class="mb-5">Now Loading</h5>
+                    <div class="loader">
+                        <div class="bar bar1"></div>
+                        <div class="bar bar2"></div>
+                        <div class="bar bar3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <%- include('partials/scriptTags.ejs') %>
+
+    
+
+   <script>
+    async function removeFromWishList(_id){
+       const request= await Swal.fire({
+            icon:'warning',
+            title:'Are You sure to remove this product from Wishlist?',
+            text:'please Confirm',
+            showCancelButton:true,
+            confirmButtonText: 'Yes, remove it!',
+            cancelButtonText: 'Cancel'
+        })
+        if(request.isConfirmed){
+            
+            try {
+                const response = await fetch ('/removeFromWishList',{
+                    method:'POST',
+                    headers:{'content-type':'application/json'},
+                    body:JSON.stringify({productId:_id}),
+                })
+                console.log(response)
+                const data = await response.json();  // ✅ Read the response
+            if (response.ok) {
+                Swal.fire('Removed!', 'The product has been removed from your Wishlist.', 'success').then(()=>{
+                    window.location.reload()
+                });
+                //document.getElementById(`wishlist-item-${_id}`)?.remove();  // ✅ Remove from UI
+            } else {
+                Swal.fire('Error', data.message || 'Something went wrong', 'error');
+            }
+                
+            } catch (error) {
+                console.error('Error:', error);
+            Swal.fire('Error', 'Failed to remove product. Please try again later.', 'error');
+       
+            }
+        }
+    }
+   </script>
+</body>
+
+</html>

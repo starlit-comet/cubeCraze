@@ -42,13 +42,13 @@ const userSchema = new mongoose.Schema ({
     //     type:boolean,
     //     default:false
     // },
-    cart:[{
-        type:Schema.Types.ObjectId,
-        ref:'Cart'
+    cart: [{  
+        product: { type: Schema.Types.ObjectId, ref: 'Product', required: true }, // ✅ Stores Product ID
+        quantity: { type: Number, required: true, default: 1 } // ✅ Stores quantity
     }],
     wallet:[{
         type:Schema.Types.ObjectId,
-        ref:'Wishlist'
+        ref:'wallet'
 
     }],
     orderHistory:[{
@@ -78,10 +78,18 @@ const userSchema = new mongoose.Schema ({
         default:Date.now,
 
     },
+    wishList:[{
+        type: Schema.Types.ObjectId,
+        ref:'Product',
+        default:[],
+    } ],
   
     avatar: { type: String },
 
 
 })
+
+// ✅ Setting default empty array for cart
+userSchema.path('cart').default([]);
 
 module.exports = mongoose.model('user',userSchema)

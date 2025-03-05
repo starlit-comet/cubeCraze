@@ -18,9 +18,9 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Shop</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Order</a></li>
+                    <li class="nav-item"><a class="nav-link" href="home">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="shop">Shop</a></li>
+                    <li class="nav-item"><a class="nav-link" href="">Order</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Cart</a></li>
                     <li class="nav-item"><a class="nav-link" href="/logout">LogOut</a></li>
@@ -36,7 +36,7 @@
                 <div class="card p-3 text-center">
                     <h4 class="mt-2"></h4>
                     <ul class="list-group list-group-flush text-start">
-                        <li class="list-group-item"><i class="fas fa-user"></i> Account Overview</li>
+                        <li class="list-group-item"><i class="fas fa-user"></i><a href="profile"> Account Overview</a> </li>
                         <li class="list-group-item"><i class="fas fa-box"></i> My Orders</li>
                         <li class="list-group-item"><i class="fas fa-map-marker-alt"></i> Manage Addresses</li>
                         <li class="list-group-item"><i class="fas fa-wallet"></i> Wallet</li>
@@ -47,25 +47,33 @@
             </div>
             <div class="col-md-9">
                 <div class="card p-4">
-                    <h4>Account Settings</h4>
+                    <h4>Account Details</h4>
                     <form>
                         <div class="mb-3">
                             <label class="form-label">Full Name</label>
-                            <input type="text" class="form-control" value=" <%= userData.name %>">
+                            <input type="text" class="form-control" value=" <%= userData.name%> " readonly>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Email</label>
-                            <input type="email" class="form-control" value="<%= userData.email %>">
+                            <input type="email" class="form-control" value=" <%= userData.email%> " readonly>
                         </div>
+                        <% if(userData.number) {%>
                         <div class="mb-3">
                             <label class="form-label">Phone Number</label>
-                            <input type="text" class="form-control" value="986543210">
+                            <input type="text" class="form-control" value=" <%= userData.phone %> ">
                         </div>
-                        <button class="btn btn-primary">Save Changes</button>
+                        <%} else {%>
+                            <div class="mb-3">
+                                <label class="form-label">Phone Number</label>
+                                <input type="text" id="phoneNumber" class="form-control" placeholder="Add a number">
+                                <button class="btn btn-primary pt-10" onclick="savePhoneNumber()">Add Phone Number</button>
+                            </div>
+                            <% } %>
+                        <!-- <button class="btn btn-primary">Save Changes</button> -->
                     </form>
                     <hr>
                     <h4>Change Password</h4>
-                    <form>
+                    <form id = 'changePassword'>
                         <div class="mb-3">
                             <label class="form-label">Current Password</label>
                             <input type="password" class="form-control">
@@ -104,7 +112,22 @@
             </div>
         </div>
     </footer>
-
+    <script>
+        async function savePhoneNumber(){
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            try {
+                const response = await fetch('/savePhoneNumber',{
+                    method: "POST",
+                    headers: {'Content-Type': 'application/json'},
+                    body:JSON.stringify({phone:phoneNumber})
+                })
+                const data = await response.json()
+                console.log(data)
+            } catch (error) {
+                
+            }
+        }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
