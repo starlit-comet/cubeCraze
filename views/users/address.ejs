@@ -1,0 +1,235 @@
+<%- include('partials/headSection.ejs') %>
+</head>
+
+<body>
+    <%- include('partials/header.ejs') %>
+
+    <%- include('partials/mobileMenu.ejs') %>
+    
+    <main class="main">
+       
+        <div class="page-header breadcrumb-wrap">
+            <div class="container">
+                <div class="breadcrumb">
+                    <a href="/home" >Home</a>
+                    <span></span> <a href="/profile" >Profile</a>
+                    <span></span> <a  >Address</a>
+
+                </div>
+            </div>
+        </div>
+
+        <section class="pt-50 pb-50">
+            <div class="container">
+                <div class="row">
+                    <div class="col-10 m-auto">
+                        <div class="row">
+                            
+                            <div class="col-12">
+                                <div class="login_wrap widget-taber-content p-30 background-white border-radius-5">
+                                    <div class="padding_eight_all bg-white">
+                                        <div class="heading_s1">
+                                            <h3 class="mb-30">Add New Address</h3>
+                                        </div>
+                                        <p class="mb-20 font-s">
+                                            Your personal data will be used to Deliver our Products, your data will not be used for any other purpose
+                                        </p>
+                                        <form  id="addAddress">
+
+                                            <h4>Name & Phone </h4>
+                                            <div class="row">
+
+                                                <div class="form-group col-6 ">
+                                                    <label for="username">Full Name:</label>
+                                                    <input type="text" id="username" required name="fullname" placeholder="Enter your full name" >
+                                                </div>
+                                                
+                                                <div class="form-group col-6">
+                                                    <label for="phone">Phone Number:</label>
+                                                    <input type="text" id="phone" required name="mobile" placeholder="Enter phone number">
+                                                </div>
+                                            </div>
+                                           
+                                            <h4>Address Details</h4>
+                                        <div class="row">
+                                            <div class="form-group col-6">
+
+                                            
+                                            <div class="form-group col-6 " >
+                                                <label for="addressType">Address Type:</label>
+                                                <select id="addressType" name="addressType" class="border font-xl" required>
+                                                    <option value="Home">Home</option>
+                                                    <option value="Work">Work</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                            </div>
+                                            <input type="text" id="customAddressType" name="customAddressType"  placeholder="Enter address type" style="display: none;">
+                                            
+                                        </div></div>
+                                        <div class="row">
+
+                                            <div class="form-group col-6">
+                                                <label for="house_flat">House/Flat Number:</label>
+                                                <input type="text" id="house_flat" required name="house_flat" placeholder="Enter house or flat number">
+                                            </div>
+                                            
+                                            <div class="form-group col-6">
+                                                <label for="street">Street:</label>
+                                                <input type="text" id="street" required name="street" placeholder="Enter street name">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+
+                                            <div class="form-group col-6">
+                                                <label for="city">Village or City :</label>
+                                                <input type="text" id="city" required name="village_city" placeholder="Enter city">
+                                            </div>
+                                            
+                                            <div class="form-group col-6">
+                                                <label for="district">District:</label>
+                                                <input type="text" id="district" required name="district" placeholder="Enter district">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+
+                                            <div class="form-group col-6">
+                                                <label for="state">State:</label>
+                                                <input type="text" id="state" required name="state" placeholder="Enter state">
+                                            </div>
+                                            
+                                            <div class="form-group col-6">
+                                                <label for="pincode">Pincode:</label>
+                                                <input type="number" id="pincode" required name="pincode" placeholder="Enter pincode">
+                                            </div>
+                                        </div>
+                                            
+                                            <div class="row">
+
+                                                <div class="form-group col-8">
+                                                    <label for="landmark">Landmark (Optional):</label>
+                                                    <input type="text" id="landmark" name="landmark" placeholder="Enter landmark">
+                                                </div>
+                                                <div class="form-group col-4">
+                                                    <label for="alt_phone">Alternative Phone (Optional):</label>
+                                                    <input type="number" id="alt_phone" name="alt_phone" placeholder="Enter alternative phone number">
+                                                </div>
+                                                
+                                            </div>
+                                            <div class="form-group">
+                                                <button type="submit" class="btn btn-fill-out btn-block hover-up">Submit &amp; Add Address</button>
+                                            </div>
+                                        </form>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+        </main>
+        <%- include('partials/footer.ejs') %>
+
+        <!-- Preloader Start -->
+        <div id="preloader-active">
+            <div class="preloader d-flex align-items-center justify-content-center">
+                <div class="preloader-inner position-relative">
+                    <div class="text-center">
+                        <h5 class="mb-5">Now Loading</h5>
+                        <div class="loader">
+                            <div class="bar bar1"></div>
+                            <div class="bar bar2"></div>
+                            <div class="bar bar3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <%- include('partials/scriptTags.ejs') %>
+        <script>
+            $(document).ready(function() {
+    $("#addressType").change(function() {
+        if ($(this).val() === "Other") {
+            $("#customAddressType").show().attr("required", true);
+        } else {
+            $("#customAddressType").hide().val("").removeAttr("required");
+        }
+    });
+});
+
+document.getElementById("addAddress").addEventListener("submit", async function (event) {
+    event.preventDefault(); // Prevent default form submission
+
+    // Collect form data
+    const formData = {
+        fullname: document.getElementById("username").value.trim(),
+        mobile: document.getElementById("phone").value.trim(),
+        alt_phone: document.getElementById("alt_phone").value.trim(),
+        addressType: document.getElementById("addressType").value === "Other" 
+                     ? document.getElementById("customAddressType").value.trim() 
+                     : document.getElementById("addressType").value,
+        house_flat: document.getElementById("house_flat").value.trim(),
+        street: document.getElementById("street").value.trim(),
+        village_city: document.getElementById("city").value.trim(),
+        district: document.getElementById("district").value.trim(),
+        state: document.getElementById("state").value.trim(),
+        pincode: document.getElementById("pincode").value.trim(),
+        landmark: document.getElementById("landmark").value.trim(),
+       // userId: "USER_ID_HERE" // Replace with actual user ID from authentication
+    };
+
+    // Basic frontend validation
+    if (!formData.fullname || !formData.mobile || !formData.state || !formData.district || !formData.pincode) {
+        Swal.fire({
+            icon: "warning",
+            title: "Validation Error",
+            text: "Please fill in all required fields."
+        });
+        return;
+    }
+  //  console.log(formData)
+    try {
+        const response = await fetch("/addAddress", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            Swal.fire({
+                icon: "success",
+                title: "Success!",
+                text: data.message
+            }).then(()=>{
+                window.location.href='/profile'
+            });
+            //document.getElementById("addAddress").reset(); // Reset form
+        } else {
+            Swal.fire({
+                icon: "error",
+                title: "Error!",
+                text: data.message || "Failed to add address."
+            });
+        }
+    } catch (error) {
+        Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: "Something went wrong. Please try again later."
+        });
+        console.error("Error:", error);
+    }
+});
+
+
+</script>
+</body>
+</html>

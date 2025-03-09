@@ -4,13 +4,14 @@ const userController= require('../controllers/user/userController')
 const profileController = require('../controllers/user/profileController')
 const productController = require('../controllers/user/productController')
 const shopController = require('../controllers/user/shopController')
+const addressController = require('../controllers/user/addressController')
 const userAuth = require('../middlewares/userAuth')
 const passport=require('passport')
 
 router.get('/pagenotfound',userController.errorPage)
 
-router.get('/login',userController.userLogin)
-router.get('/signup',userController.signUp)
+router.get('/login',userAuth.isUserLoggedin,userController.userLogin)
+router.get('/signup',userAuth.isUserLoggedin,userController.signUp)
 router.get('/about',userController.aboutPage)
 router.get('/verifyOTP',userController.viewOTPpage)
 router.get('/get-otp-timer',userController.getOTPTimer)
@@ -32,15 +33,19 @@ router.post('/send-otp',userController.sendOTPtoEmail)
 router.post('/verify-otp',userController.verifyOTP)
 router.post('/resend-otp',userController.sendOTPtoEmail)
 
-
+router.get('/add-new-Address',userAuth.isUserLoggedOut,addressController.viewAddressPage)
+router.post('/addAddress',userAuth.isUserLoggedOut,addressController.addAddress)
+router.get('/editAddress/:_id',userAuth.isUserLoggedOut,addressController.viewEditAddress)
+router.post('/editAddress',userAuth.isUserLoggedOut,addressController.editAddress)
+router.delete('/deleteAddress',userAuth.isUserLoggedOut,addressController.deleteAddress)
 
 router.get('/viewProduct/:productId',productController.viewProduct)
 
 router.get('/shop',shopController.viewShop)
 router.get('/home',shopController.loadHome)
 
-router.get('/wishList',productController.viewWishList)
-router.post('/removeFromWishList',productController.removeFromWishList)
-router.post('/addtoWishList',productController.addtoWishList)
+router.get('/wishList',userAuth.isUserLoggedOut,productController.viewWishList)
+router.post('/removeFromWishList',userAuth.isUserLoggedOut,productController.removeFromWishList)
+router.post('/addtoWishList',userAuth.isUserLoggedOut,productController.addtoWishList)
 // router.get('/sentOTP',userController.generateOTP)
 module.exports=router

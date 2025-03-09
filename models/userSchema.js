@@ -85,11 +85,15 @@ const userSchema = new mongoose.Schema ({
     } ],
   
     avatar: { type: String },
+    addresses:[{
+        type:Schema.Types.ObjectId,
+        ref:'Address'
+    }],
 
 
 })
 
 // ✅ Setting default empty array for cart
 userSchema.path('cart').default([]);
-
+//userSchema.path('Address').default([])
 module.exports = mongoose.model('user',userSchema)

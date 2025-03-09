@@ -3,8 +3,7 @@ const productSchema = require("../../models/productSchema")
 const sizeSchema = require('../../models/sizeSchema')
 const brandSchema = require('../../models/brandSchema')
 const categorySchema = require('../../models/categorySchema')
-const wishList = require('../../models/wishList')
-
+//const adressSchema = require()
 //const { search } = require("../../routes/user")
 const viewProduct = async (req,res)=>{
   try
@@ -39,14 +38,13 @@ const viewWishList = async (req,res)=>{
     // req.session._id= userId
 
     const userId = req.session._id
-    const wishListData = await userSchema.findById(userId)
-                                .select('wishList -_id')
-        
+    const wishListData = await userSchema.findById(userId).select('wishList -_id')
+        console.log(userId,wishListData)
     const data = await Promise.all(
         wishListData.wishList.map(item => productSchema.findById(item).populate([
-            { path: 'brand' },
-        { path: 'category' },
-        { path: 'size' },
+                 { path: 'brand' },
+                 { path: 'category' },
+                 { path: 'size' },
         ]))
     );
    // console.log(data)

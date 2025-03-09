@@ -48,7 +48,7 @@ const viewShop = async (req, res) => {
             $or: [
                 { productName: { $regex: search, $options: "i" } },
                 { description: { $regex: search, $options: "i" } }
-            ]
+            ] 
         };
 
         // Get total count before pagination
@@ -85,7 +85,7 @@ const viewShop = async (req, res) => {
             maxPrice,
             searchKeyWord:search
         });
-        console.log(search)
+       // console.log(search)
     } catch (error) {
         console.error(error);
         res.status(500).redirect("/pagenotfound");

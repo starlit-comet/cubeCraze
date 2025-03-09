@@ -102,7 +102,7 @@ const userProfile=(req,res)=>{
     // const user = req.session.user
 
     if(!req.user) return res.redirect('/login')
-    console.log(req.user,'requser')
+   // console.log(req.user,'requser')
     req.session._id = req.user._id
     res.redirect('/profile')
 }

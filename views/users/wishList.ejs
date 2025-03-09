@@ -2,6 +2,7 @@
 </head>
 
 <body>
+    
     <%- include('partials/header.ejs') %>
 
     <%- include('partials/mobileMenu.ejs') %>
@@ -42,7 +43,7 @@
                                         <td><%= index+1 %></td>
                                         <td class="image product-thumbnail"><img src=" <%= item.productImages[0] %> " alt="#"></td>
                                         <td class="product-des product-name">
-                                            <h5 class="product-name"><a href="shop-product-right.html"> <%= item.productName %> </a></h5>
+                                            <h5 class="product-name"><a href='viewProduct/<%= item._id%> '> <%= item.productName %> </a></h5>
                                             <p class="font-xs"> Brand: <%= item.brand.brandName %> <br> Category: <%= item.category.categoryName %> 
                                                 .
                                             </p>
@@ -67,22 +68,8 @@
                                         <td class="action" data-title="Remove"><a onclick="removeFromWishList('<%= item. _id %>')"><i class="fi-rs-trash"></i></a></td>
                                     </tr>
                                     <% }) }%>
+                                     
                                     <!-- <tr>
-                                        <td class="image"><img src="assets/imgs/shop/product-2-1.jpg" alt="#"></td>
-                                        <td class="product-des">
-                                            <h5 class="product-name"><a href="shop-product-right.html">Amazon Essentials Women's Tank</a></h5>
-                                            <p class="font-xs">Sit at ipsum amet clita no est,<br> sed amet sadipscing et gubergren</p>
-                                        </td>
-                                        <td class="price" data-title="Price"><span>$75.00 </span></td>
-                                        <td class="text-center" data-title="Stock">
-                                            <span class="color3 font-weight-bold">In Stock</span>
-                                        </td>
-                                        <td class="text-right" data-title="Cart">
-                                            <button class="btn btn-sm"><i class="fi-rs-shopping-bag mr-5"></i>Add to cart</button>
-                                        </td>
-                                        <td class="action" data-title="Remove"><a href="#"><i class="fi-rs-trash"></i></a></td>
-                                    </tr>
-                                    <tr>
                                         <td class="image"><img src="assets/imgs/shop/product-3-1.jpg" alt="#"></td>
                                         <td class="product-des">
                                             <h5 class="product-name"><a href="shop-product-right.html">Amazon Brand - Daily Ritual Women's Jersey </a></h5>
@@ -97,7 +84,7 @@
                                             <button class="btn btn-sm btn-secondary"><i class="fi-rs-headset mr-5"></i>Contact Us</button>
                                         </td>
                                         <td class="action" data-title="Remove"><a href="#"><i class="fi-rs-trash"></i></a></td>
-                                    </tr> -->
+                                    </tr>  -->
                                 </tbody>
                             </table>
                         </div>
@@ -126,6 +113,8 @@
             </div>
         </div>
     </div>
+
+    
     <%- include('partials/scriptTags.ejs') %>
 
     

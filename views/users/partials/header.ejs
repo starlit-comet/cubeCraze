@@ -43,7 +43,7 @@
 		<div class="container">
 			<div class="header-wrap">
 				<div class="logo logo-width-1">
-					<a href=""><img src="/asset-front/imgs/theme/logo.png" style="min-width: 60px;"  alt="logo"></a>
+					<a href=""><img src="/asset-front/imgs/theme/logo.png" style="min-width: 60px; max-width: 60px;"  alt="logo"></a>
 				</div>
 				<div class="header-right">
 					<div class="search-style-2">
@@ -83,10 +83,14 @@
 					<div class="header-action-right">
 						<div class="header-action-2">
 							<div class="header-action-icon-2">
-								<a href="wishList">
+								<a href="/wishList">
 									<img class="svgInject" alt="Evara" src="/asset-front/imgs/theme/icons/icon-heart.svg">
 									<span class="pro-count blue">
-										4
+										<% if (locals.userData) { %>
+											<% userData.wishList.length %>
+											<%} else { %>
+												01
+												<% } %>
 									</span>
 								</a>
 							</div>
