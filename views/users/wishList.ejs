@@ -36,7 +36,7 @@
                                 </thead>
                                 <tbody>
                                     <% if (data.length == 0) { %>
-                                        <td colspan="6">Sorry! No items in Your WishList</td>
+                                        <td colspan="7">Sorry! No items in Your WishList</td>
                                         </tbody>
                                         <% } else { data.forEach((item,index)=>{  %>
                                     <tr>
@@ -63,7 +63,7 @@
                                                     <% }%>
                                         </td>
                                         <td class="text-right" data-title="Cart">
-                                            <button class="btn btn-sm"><i class="fi-rs-shopping-bag mr-5"></i>Add to cart</button>
+                                            <button class="btn btn-sm" onclick=" addToCart('<%= item._id %>') "><i class="fi-rs-shopping-bag mr-5"></i>Add to cart</button>
                                         </td>
                                         <td class="action" data-title="Remove"><a onclick="removeFromWishList('<%= item. _id %>')"><i class="fi-rs-trash"></i></a></td>
                                     </tr>
@@ -99,7 +99,7 @@
     <%- include('partials/footer.ejs') %>
 
     <!-- Preloader Start -->
-    <div id="preloader-active">
+    <!-- <div id="preloader-active">
         <div class="preloader d-flex align-items-center justify-content-center">
             <div class="preloader-inner position-relative">
                 <div class="text-center">
@@ -112,9 +112,9 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
-    
+
     <%- include('partials/scriptTags.ejs') %>
 
     
@@ -125,11 +125,12 @@
             icon:'warning',
             title:'Are You sure to remove this product from Wishlist?',
             text:'please Confirm',
+          //  input: "number",
             showCancelButton:true,
             confirmButtonText: 'Yes, remove it!',
             cancelButtonText: 'Cancel'
         })
-        if(request.isConfirmed){
+        if(request.isConfirmed)
             
             try {
                 const response = await fetch ('/removeFromWishList',{
@@ -154,7 +155,8 @@
        
             }
         }
-    }
+    
+    
    </script>
 </body>
 

@@ -46,7 +46,7 @@ const orderSchema=new Schema({
     status:{
         type:String,
         required:true,
-        enum:['Pending','Processing','Shipped','Delivered',"Canacelled","Return Request",'Returned',]
+        enum:['Pending','Processing','Shipped','Delivered',"Canf celled","Return Request",'Returned',]
     },
     createdOn:{
         type:Date,
@@ -56,9 +56,7 @@ const orderSchema=new Schema({
     couponApplied:{
         type:Boolean,
         default:false
-    }
-
-})
+    }})
 
 const Order=mongoose.model("Order",orderSchema)
 

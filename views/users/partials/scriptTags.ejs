@@ -89,5 +89,67 @@
         }
     }
 
+    async function addToCart(productId){
+        const request = await Swal.fire({
+            icon:'question',
+            title:'Add this product to cart ?',
+            text:'Adding this product to cart will remove the product from your wishlist, Please confirm !?',
+            showCancelButton:true,
+            html:`
+            <h5> Enter Quantity of Product needed(max 10)<h5>
+                            <input type="number" min="0" max="10" step="1" id="swal-input1" value='1' type='Number' class="swal2-input">
+            `,
+            // input:'range',
+            // inputLabel :'Set Quantity Required',
+            // inputAttributes:{
+            //     min:'1',max:'10',step:"1",
+            // },
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'Cancel'
+        })
+        if(request.isConfirmed){
+            try {
+                const quantity = document.getElementById('swal-input1').value
+                const response = await fetch ('/addToCart',{
+                    method:'POST',
+                    headers: {'content-type':'application/json'},
+                    body: JSON.stringify({ productId,quantityToAdd:quantity })
+                })
+                const data = await response.json()
+                console.log(data)
+                if(data.status=='Added'){
+                    Swal.fire({
+                        icon:'success',
+                        title:'Success!!',
+                        text:data.message,
+                    })
+                }
+                else if (data.status==='updated'){
+                    Swal.fire({
+                        icon:'info',
+                        title:'Info!!',
+                        text:data.message,
+                    }).then(()=>{
+                        window.location.reload()
+                    })
+                }
+                else{
+                    Swal.fire({
+                        icon:'error',
+                        title:'oops!',
+                        text:data.message,
+                    }).then(()=>{
+                        window.location.reload()
+
+                    })
+                }
+            } catch (error) {
+                console.log(error)
+                Swal.fire({
+                    icon:'error',
+                    title:'Error!!',
+                    text:'Something went Wrong. Please try again later.'
+                }) } }  }
+
 </script>
 

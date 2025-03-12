@@ -43,7 +43,7 @@ const userSchema = new mongoose.Schema ({
     //     default:false
     // },
     cart: [{  
-        product: { type: Schema.Types.ObjectId, ref: 'Product', required: true }, // ✅ Stores Product ID
+        productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true }, // ✅ Stores Product ID
         quantity: { type: Number, required: true, default: 1 } // ✅ Stores quantity
     }],
     wallet:[{
@@ -73,9 +73,9 @@ const userSchema = new mongoose.Schema ({
         default:'',
     },
     otpExpires:{
-        type:Date,
-        required:true,
-        default:Date.now,
+        // default:Date.now,
+        // type:Date,
+        // required:true,
 
     },
     wishList:[{

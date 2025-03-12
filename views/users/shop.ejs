@@ -109,7 +109,7 @@
 
                                         </div>
                                         <div class="product-action-1 show">
-                                            <a aria-label="Add To Cart" class="action-btn hover-up" href=""><i class="fi-rs-shopping-bag-add"></i></a>
+                                            <a aria-label="Add To Cart" class="action-btn hover-up" onclick="addToCart('<%= item._id%>')"><i class="fi-rs-shopping-bag-add"></i></a>
                                         </div>
                                     </div>
                                 </div>
@@ -287,6 +287,57 @@
         }
     });
 });
+
+// async function addToCart(productId){
+//         const request = await Swal.fire({
+//             icon:'question',
+//             title:'Add this product to cart ?',
+//             text:'Adding this product to cart will remove the product from your wishlist, Please confirm !?',
+//             showCancelButton:true,
+//             confirmButtonText: 'Yes',
+//             cancelButtonText: 'Cancel'
+//         })
+//         if(request.isConfirmed){
+//             try {
+//                 const response = await fetch ('/addToCart',{
+//                     method:'POST',
+//                     headers: {'content-type':'application/json'},
+//                     body: JSON.stringify({ productId })
+//                 })
+//                 const data = await response.json()
+//                 console.log(data)
+//                 if(data.status=='Added'){
+//                     Swal.fire({
+//                         icon:'success',
+//                         title:'Success!!',
+//                         text:data.message,
+                    
+//                     })
+//                 }
+//                 else if (data.status==='updated'){
+//                     Swal.fire({
+//                         icon:'info',
+//                         title:'Info!!',
+//                         text:data.message,
+//                     })
+//                 }
+//                 else{
+//                     Swal.fire({
+//                         icon:'error',
+//                         title:'oops!',
+//                         text:data.message,
+//                     })
+//                 }
+//             } catch (error) {
+//                 console.log(error)
+//                 Swal.fire({
+//                     icon:'error',
+//                     title:'Error!!',
+//                     text:'Something went Wrong. Please try again later.'
+//                 })
+//             }
+//         }
+//     }
 
     </script>
 </body>

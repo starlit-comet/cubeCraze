@@ -5,6 +5,7 @@ const profileController = require('../controllers/user/profileController')
 const productController = require('../controllers/user/productController')
 const shopController = require('../controllers/user/shopController')
 const addressController = require('../controllers/user/addressController')
+const cartController = require('../controllers/user/cartController')
 const userAuth = require('../middlewares/userAuth')
 const passport=require('passport')
 
@@ -47,5 +48,8 @@ router.get('/home',shopController.loadHome)
 router.get('/wishList',userAuth.isUserLoggedOut,productController.viewWishList)
 router.post('/removeFromWishList',userAuth.isUserLoggedOut,productController.removeFromWishList)
 router.post('/addtoWishList',userAuth.isUserLoggedOut,productController.addtoWishList)
+
+router.get('/cart',userAuth.isUserLoggedOut,cartController.viewCart)
+router.post('/addToCart',userAuth.isUserLoggedOut ,cartController.addToCart)
 // router.get('/sentOTP',userController.generateOTP)
 module.exports=router

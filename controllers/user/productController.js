@@ -92,13 +92,17 @@ const addtoWishList = async (req, res) => {
 
         // Check if the product is already in the wishlist
         const isProductInWishlist = user.wishList.includes(productId);
-
+        const isProductInCart = user.cart.some(item=>item.productId.toString()===productId)
+        console.log(user,productId)
         if (isProductInWishlist) {
-            return res.status(200).json({ message: 'Product already in wishlist' });
+            return res.status(400).json({ message: 'Product already in wishlist' });
+        } 
+        if (isProductInCart) {
+            return res.status(400).json({ message: 'Product already in Cart' });
         } 
         
         // Add to wishlist if not present
-        await userSchema.findByIdAndUpdate(userId, { $push: { wishList: productId } });
+        const updatedUser=await userSchema.findByIdAndUpdate(userId, { $push: { wishList: productId } },{new:true});
 
         return res.status(200).json({ message: 'Product added to wishlist' });
 
