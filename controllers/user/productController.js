@@ -104,7 +104,7 @@ const addtoWishList = async (req, res) => {
         // Add to wishlist if not present
         const updatedUser=await userSchema.findByIdAndUpdate(userId, { $push: { wishList: productId } },{new:true});
 
-        return res.status(200).json({ message: 'Product added to wishlist' });
+        return res.status(200).json({ message: 'Product added to wishlist' ,success:true});
 
     } catch (error) {
         console.error('Error in wishlist:', error);
@@ -112,5 +112,55 @@ const addtoWishList = async (req, res) => {
     }
 };
 
+const  increaseQuantity = async (req,res)=>{
+   try{ const productId = req.body.productId
+    const userId = req.session._id
 
-module.exports={viewProduct,viewWishList,removeFromWishList,addtoWishList}
+    if(!userId) return res.status(401).json({message:'Unauthorised'})
+
+    const user = await userSchema.findById(userId)
+    if(!user) return res.status(404).json({message:'User Not Found'})
+   // console.log(user.cart)
+    const cartItem = user.cart.find(item=>
+        item.productId.toString() === productId
+    )
+    if(!cartItem) return res.status(404).json({message:"Product Not found in Cart"})
+    cartItem.quantity+=1
+console.log(cartItem,'jiji')
+    let stock = await productSchema.findById(cartItem.productId).select('quantity -_id')
+    if(cartItem.quantity > stock.quantity) return res.status(400).json({message:`This much of quantity is not availabe in Stock`,reload:true})
+    if(cartItem.quantity >10) return res.status(400).json({message:'Product Quantity Cannot be added more than 10',reload:true})
+    await user.save()
+    return res.status(200).json({message:`Quantity Increased to ${cartItem.quantity}`,success:true,value:cartItem.quantity})
+}
+catch(error){
+    console.log(error)
+    return res.status(500).json({message:'Internal Server ErrorOccured!!'})
+}}
+
+const decreaseQuantity = async (req,res)=>{
+    try{ const productId = req.body.productId
+        const userId = req.session._id
+    
+        if(!userId) return res.status(401).json({message:'Unauthorised'})
+    
+        const user = await userSchema.findById(userId)
+        if(!user) return res.status(404).json({message:'User Not Found'})
+        console.log(user.cart)
+        const cartItem = user.cart.find(item=>
+            item.productId.toString() === productId
+        )
+        if(!cartItem) return res.status(404).json({message:"Product Not found in Cart"})
+        cartItem.quantity-=1
+        if(cartItem.quantity <1 ) return res.status(400).json({message:'Product Quantity Cannot be less than 1'})
+        await user.save()
+        return res.status(200).json({message:`Quantity Decreased to ${cartItem.quantity}`,success:true,value:cartItem.quantity})
+    }
+    catch(error){
+        console.log(error)
+        return res.status(500).json({message:'Internal Server ErrorOccured!!'})
+    }
+}
+
+
+module.exports={viewProduct,viewWishList,removeFromWishList,addtoWishList,increaseQuantity,decreaseQuantity}

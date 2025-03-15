@@ -32,7 +32,14 @@
 									<li><a href="#"><img src="/asset-front/imgs/theme/flag-ru.png" alt="">Pусский</a></li>
 								</ul> -->
 							</li> 
-							<li><i class="fi-rs-user"></i><a href="/login">Log In / Sign Up</a></li>
+							<li>
+								<% if(locals.user){ %>
+									<i class="fi-rs-user"></i><a href="/profile">My Account</a> 
+
+								<%} else {	%>
+								<i class="fi-rs-user"></i><a href="/login">Log In</a> / <a href="/signup"> Sign Up</a>
+								<% } %>
+							</li>
 						</ul>
 					</div>
 				</div>
@@ -64,7 +71,7 @@
 						</select>
 						-->
 						<form id="shop-filter-form" action="/shop" method="GET">
-						<div class="search-container">
+						<div class="search-container col-12">
 							<input type="text" name="search" id="search-input" placeholder="Search for items..." value=
 								<% if(searchKeyWord){ %>
 								"<%= searchKeyWord %>"
@@ -86,30 +93,38 @@
 								<a href="/wishList">
 									<img class="svgInject" alt="Evara" src="/asset-front/imgs/theme/icons/icon-heart.svg">
 									<!-- <span class="pro-count blue">
-										
+										4
 									</span> -->
 								</a>
 							</div>
+							
 							<div class="header-action-icon-2">
 								<a class="mini-cart-icon" href="/cart">
 									<img alt="Evara" src="/asset-front/imgs/theme/icons/icon-cart.svg">
-									<!-- <span class="pro-count blue">2</span> -->
+									<% if(cart.length>0) { %>
+											<span class="pro-count blue"><%= cart.length %></span>
+											<%}%>
 								</a>
+								<% if(cart.length>0) { %>
 								<div class="cart-dropdown-wrap cart-dropdown-hm2">
 									<ul>
-										<li>
-											<div class="shopping-cart-img">
-												<a href="shop-product-right.html"><img alt="Evara" src="/asset-front/imgs/shop/thumbnail-3.jpg"></a>
+										<% cart.forEach(item=>{ %>
+										<li><div class="row">
+
+											<div class="shopping-cart-img col-4">
+												<a href="/viewProduct/<%=item._id%>"><img alt="Evara" src="<%= item.productImages[0] %>" ></a>
 											</div>
-											<div class="shopping-cart-title">
-												<h4><a href="shop-product-right.html">Daisy Casual Bag</a></h4>
-												<h4><span>1 × </span>$800.00</h4>
+											<div class="shopping-cart-title col-7">
+												<h4><a href="/viewProduct/<%=item._id%>"><%= item.productName %></a></h4>
+												<h4><span><%= item.cartQuantity %> × </span> <%= item.promotionalPrice %></h4>
 											</div>
-											<div class="shopping-cart-delete">
-												<a href="#"><i class="fi-rs-cross-small"></i></a>
+											<div class="shopping-cart-delete col-1">
+												<a onclick="removeFromCart('<%=item._id %>')"><i class="fi-rs-cross-small"></i></a>
 											</div>
+										</div>
 										</li>
-										<li>
+										<% }) %>
+										<!-- <li>
 											<div class="shopping-cart-img">
 												<a href="shop-product-right.html"><img alt="Evara" src="/asset-front/imgs/shop/thumbnail-2.jpg"></a>
 											</div>
@@ -120,18 +135,19 @@
 											<div class="shopping-cart-delete">
 												<a href="#"><i class="fi-rs-cross-small"></i></a>
 											</div>
-										</li>
+										</li> -->
 									</ul>
 									<div class="shopping-cart-footer">
 										<div class="shopping-cart-total">
-											<h4>Total <span>$4000.00</span></h4>
+											<h4>Total <span>₹ <%= grandTotal %></span></h4>
 										</div>
 										<div class="shopping-cart-button">
 											<a href="shop-cart.html" class="outline">View cart</a>
-											<a href="shop-checkout.html">Checkout</a>
+											<a href="/cartCheckout">Checkout</a>
 										</div>
 									</div>
 								</div>
+								<% } %>
 							</div>
 						</div>
 					</div>
@@ -291,18 +307,16 @@
 					<div class="main-menu main-menu-padding-1 main-menu-lh-2 d-none d-lg-block">
 						<nav>
 							<ul>
-								<li><a class="active" href="index.html">Home <i class="fi-rs-angle-down"></i></a>
+								<li><a class="active" href="/home">Home </a>
 									<ul class="sub-menu">
-										<li><a href="index.html">Home 1</a></li>
+										<!-- <li><a href="index.html">Home 1</a></li>
 										<li><a href="index-2.html">Home 2</a></li>
-										<li><a href="index-3.html">Home 3</a></li>
+										<li><a href="index-3.html">Home 3</a></li> -->
 									</ul>
 								</li>
-								<li>
-									<a href="page-about.html">About</a>
-								</li>
-								<li><a href="shop-grid-right.html">Shop <i class="fi-rs-angle-down"></i></a>
-									<ul class="sub-menu">
+								
+								<li><a href="/shop">Shop </a>
+									<!-- <ul class="sub-menu">
 										<li><a href="shop-grid-right.html">Shop Grid – Right Sidebar</a></li>
 										<li><a href="shop-grid-left.html">Shop Grid – Left Sidebar</a></li>
 										<li><a href="shop-fullwidth.html">Shop - Wide</a></li>
@@ -313,9 +327,15 @@
 										</li>
 										<li><a href="shop-filter.html">Shop – Filter</a></li>
 										<li><a href="shop-wishlist.html">Shop – Wishlist</a></li>
-									</ul>
+									</ul> -->
 								</li>
-								<li class="position-static"><a href="#">Mega menu <i class="fi-rs-angle-down"></i></a>
+								<li>
+									<a href="/about">About</a>
+								</li>
+								<li>
+									<a href="/profile">Profile</a>
+								</li>
+								<!-- <li class="position-static"><a href="#">Mega menu <i class="fi-rs-angle-down"></i></a>
 									<ul class="mega-menu">
 										<li class="sub-mega-menu sub-mega-menu-width-22">
 											<a class="menu-title" href="#">Women's Fashion</a>
@@ -360,28 +380,28 @@
 											</div>
 										</li>
 									</ul>
-								</li>
+								</li> -->
 								<li><a href="blog-category-grid.html">Blog <i class="fi-rs-angle-down"></i></a>
 									<ul class="sub-menu">
-										<li><a href="blog-category-grid.html">Blog Category Grid</a></li>
+										<!-- <li><a href="blog-category-grid.html">Blog Category Grid</a></li>
 										<li><a href="blog-category-list.html">Blog Category List</a></li>
 										<li><a href="#">Single Post <i class="fi-rs-angle-right"></i></a>
 											<ul class="level-menu level-menu-modify">
 												<li><a href="blog-post-left.html">Left Sidebar</a></li>
 											</ul>
-										</li>
+										</li> -->
 									</ul>
 								</li>
 								<li><a href="#">Pages <i class="fi-rs-angle-down"></i></a>
 									<ul class="sub-menu">
-										<li><a href="page-about.html">About Us</a></li>
+										<!-- <li><a href="page-about.html">About Us</a></li>
 										<li><a href="page-contact.html">Contact</a></li>
 										<li><a href="page-account.html">My Account</a></li>
 										<li><a href="page-login-register.html">login/register</a></li>
 										<li><a href="page-purchase-guide.html">Purchase Guide</a></li>
 										<li><a href="page-privacy-policy.html">Privacy Policy</a></li>
 										<li><a href="page-terms.html">Terms of Service</a></li>
-										<li><a href="page-404.html">404 Page</a></li>
+										<li><a href="page-404.html">404 Page</a></li> -->
 									</ul>
 								</li>
 								<li>

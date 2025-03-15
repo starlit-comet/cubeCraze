@@ -9,6 +9,7 @@ const brandsController = require('../controllers/admin/brandsController.js')
 const categoryController =require('../controllers/admin/categoryController.js')
 const productController = require('../controllers/admin/productController.js')
 const productSizeController = require('../controllers/admin/productSizeController.js')
+const orderController = require('../controllers/admin/orderController.js')
 
 const upload = require('../helpers/multer.js')
 const multer = require('multer')
@@ -51,8 +52,10 @@ router.post('/addSize',adminAuth.isAdminLoggedOut,productSizeController.addSize)
 router.delete('/deleteProduct/:id',adminAuth.isAdminLoggedOut,productController.deleteProduct)
 
 
-
-
+router.get('/orders',adminAuth.isAdminLoggedOut,orderController.viewOrders)
+router.get('/orderDetail/:orderId',adminAuth.isAdminLoggedOut,orderController.orderDetail)
+router.put('/change-order-status/:orderId',adminAuth.isAdminLoggedOut,orderController.changeOrderStatus)
+router.get('/order/invoice/:orderId',orderController.createInvoice)
 
 //     (req,res)=>{
 //     res.render('admin/login')

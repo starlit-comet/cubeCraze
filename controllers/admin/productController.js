@@ -20,8 +20,9 @@ const addProduct = async (req,res)=>{
         if (!productName || !description || !regularPrice || !brand || !category || !cubeSize ||!productQuantity  ) {
             return res.status(400).json({ success: false, message: "All required fields must be filled!" });
         }
+        if(productQuantity<5)return res.status(400).json({message:'Minimum Quanity of 5 is needed to add a product'})
 
-        if (!req.files || req.files.length <=3) {
+        if (!req.files || req.files.length <3) {
             return res.status(400).json({ success: false, message: "Minimum Three Images are required" });
         }
 
@@ -92,11 +93,11 @@ const editProduct= async (req,res)=>{
         
     }
     updatedFields.updatedAt = new Date()
-    console.log(`Edit Product Success` ,updatedFields)
-    
+    if(1*productQuantity<0) return res.status(400).json({success:false,message:" Quantity can't be less than 0 "})
     const updatedProduct = await productSchema.findByIdAndUpdate(productId,
         updatedFields,{new:true},
     )
+    console.log(`Edit Product Success` ,updatedFields)
     return res.status(200).json({ success: true, message: "Product Edited" });
 } catch (error) {
     

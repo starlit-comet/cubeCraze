@@ -4,9 +4,16 @@ const productSchema = require('../models/productSchema')
 const brandSchema = require('../models/brandSchema')
 const sizeSchema = require('../models/sizeSchema')
 
-const locals = (req,res,next)=>{
+const localsData = async (req,res,next)=>{
+    const userId = req.session._id
+    const user = await userSchema.findById(userId)
+    if(!user){
+        res.locals.cart = {}
+
+        next()
+    }
     
 }
 
 
-module.exports = locals
+module.exports = localsData

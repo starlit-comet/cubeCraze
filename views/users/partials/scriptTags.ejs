@@ -122,6 +122,9 @@
                         icon:'success',
                         title:'Success!!',
                         text:data.message,
+                    }).then(()=>{
+                        window.location.reload()
+
                     })
                 }
                 else if (data.status==='updated'){
@@ -150,6 +153,231 @@
                     title:'Error!!',
                     text:'Something went Wrong. Please try again later.'
                 }) } }  }
+
+async function removeFromCart(productId){
+   // console.log(productId)
+    const request = await Swal.fire({
+            icon:'question',
+            title:'Remove this product from cart ?',
+            text:' Please confirm !?',
+            showCancelButton:true,
+            confirmButtonText: 'Yes, Remove!',
+            cancelButtonText: 'Cancel'
+        })
+        if(request.isConfirmed){
+            try {
+                const response = await fetch ('/removeFromCart',{
+                    method:'POST',
+                    headers: {'content-type':'application/json'},
+                    body: JSON.stringify({ productId})
+                })
+                const data = await response.json()
+                console.log(data)
+                if(data.success){
+                 const successAlert = await   Swal.fire({
+                       // icon:'success',
+                        title:'Success!!',
+                      //  text:data.message,
+                        input:'checkbox',
+                        inputValue:1,
+                        inputPlaceholder:`Keep the Product in WishList ?`,
+                        confirmButtonText:'OK!',
+                        customClass: {
+                             input: 'custom-checkbox'
+                         },
+                         didOpen: () => {
+                             const checkbox = Swal.getInput();
+                             checkbox.style.width = '16px';   // smaller size
+                             checkbox.style.height = '16px';  // smaller size
+                             checkbox.style.accentColor = '#4f46e5'; // optional: color customization
+                             checkbox.style.cursor = 'pointer'; // better UX
+                         }   
+                     
+                                         })
+
+                    if(successAlert.isConfirmed && successAlert.value){
+                        try {
+                            const wishListResponse = await fetch('/addtoWishList',{
+                                method:'POST',
+                                headers: {'content-type':'application/json'},
+                                body:JSON.stringify({productId})
+                            })
+
+                            const wishListData  = await wishListResponse.json()
+
+                            if(wishListData.success){
+                                Swal.fire({
+                                    icon:'success',
+                                    title:'Added to wishList',
+                                    text : wishListData.message,
+                                    showConfirmButton:true
+                                })
+                                .then(()=>{
+                                    window.location.reload()
+
+                                })
+                            }
+                            else{
+                                Swal.fire({
+                                    icon:'error',
+                                    title:'Oops!!',
+                                    text:wishListData.message,
+                                    showConfirmButton:true
+                                }).then(()=>{
+                                    window.location.reload()
+
+                                })
+                            }
+
+                        } catch (error) {
+                            console.log(error)
+                            Swal.fire({
+                                icon:'error',
+                                title:'Error!!',
+                                text:'Internal Server Error. Please try again'
+                            })
+                            
+                        }
+                    }
+                    else{
+                        window.location.reload()
+
+                    }
+                }
+                
+                else{
+                    Swal.fire({
+                        icon:'error',
+                        title:'oops!',
+                        text:data.message,
+                    })
+                }
+            } catch (error) {
+                console.log(error)
+                Swal.fire({
+                    icon:'error',
+                    title:'Error!!',
+                    text:'Something went Wrong. Please try again later.'
+                }) } }  }    
+
+async function increaseQuantity(productId,index){
+    try {
+        const response = await fetch('/increaseQuantity',{
+            method:'POST',
+            headers:{"content-type":'application/json'},
+            body:JSON.stringify({productId})
+        })
+        let data = await  response.json()
+        if(data.success){
+        const Toast = Swal.mixin({
+            toast:true,
+            position:'top-end',
+            timer:1500,
+            timerProgressBar:true,
+            
+        })
+            Toast.fire({
+                icon:'success',
+                title:'Quantity Increased',
+                text:data.message
+            })
+            setTimeout(()=>{
+                window.location.reload()
+            },1400)            
+        }
+        else if( data.reload){
+            const Toast = Swal.mixin({
+            toast:true,
+            position:'top-end',
+            timer:1500,
+            timerProgressBar:true,
+            
+        })
+            Toast.fire({
+                icon:'error',
+                title:'Error!',
+                text:data.message
+            })
+            setTimeout(()=>{
+                window.location.reload()
+            },1400) 
+
+        }
+        else{
+            const Toast = Swal.mixin({
+            toast:true,
+            position:'top-end',
+            timer:1500,
+            timerProgressBar:true,
+            
+        })
+            Toast.fire({
+                icon:'error',
+                title:'Error!',
+                text:data.message
+            })
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+async function decreaseQuantity(productId,index){
+    try {
+        const response = await fetch('/decreaseQuantity',{
+            method:'POST',
+            headers:{"content-type":'application/json'},
+            body:JSON.stringify({productId})
+        })
+        let data = await  response.json()
+        if(data.success){
+        const Toast = Swal.mixin({
+            toast:true,
+            position:'top-end',
+            timer:1500,
+            timerProgressBar:true,
+            showConfirmButton:false
+            
+        })
+            Toast.fire({
+                icon:'success',
+                title:'Quantity Decreased',
+                text:data.message
+            })
+            setTimeout(()=>{
+                window.location.reload()
+            },1400)
+
+                // const quantityInput = document.getElementById(`value_${index}`)
+                // if(quantityInput){
+                //     quantityInput.textContent= data.value
+                // }
+                // console.log(quantityInput)
+                // console.log(data.value,'hiiihf')
+            
+        }
+        else{
+            const Toast = Swal.mixin({
+            toast:true,
+            position:'top-end',
+            timer:1500,
+            timerProgressBar:true,
+            showConfirmButton:false,
+            
+        })
+            Toast.fire({
+                icon:'error',
+                title:'Error!',
+                text:data.message
+            })
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
+
 
 </script>
 

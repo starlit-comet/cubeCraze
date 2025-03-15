@@ -1,0 +1,290 @@
+<%- include('partials/headSection.ejs') %>
+</head>
+
+<body>
+    <%- include('partials/header.ejs') %>
+
+    <%- include('partials/mobileMenu.ejs') %>
+   
+
+<main class="main">
+        <div class="page-header breadcrumb-wrap" >
+            <div class="container">
+                <div class="breadcrumb">
+                    <a href="home" rel="nofollow">Home</a>
+                    <span></span> <a href="/profile" rel="nofollow">Profile</a>
+
+                    <span></span> <a href="/cart" rel="nofollow">Cart</a>
+                    <span></span> CheckOut
+                </div>
+            </div>
+        </div>
+        <div class="row mt-15">
+            <div class="col-1"></div>
+
+            
+        <section class="content-main col-10 center">
+            <div class="content-header">
+                <div>
+                    <h2 class="content-title card-title">Order detail</h2>
+                    
+                    <p>Details for Order ID:<b class="text-danger"> <%= order.orderId %></b>
+                    </p>
+                </div>
+            </div>
+            <div class="card">
+                <header class="card-header">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6 col-md-6 mb-lg-0 mb-15">
+                            <span>
+                                <i class="material-icons md-calendar_today"></i> Order Placed on : <b>
+                                    <% const options = {
+                                        hour: 'numeric',
+                                        hour12: true,     
+                                        minute: '2-digit',
+                                        weekday: 'short', 
+                                        year: 'numeric',  
+                                        month: 'short',   
+                                        day: 'numeric',  
+                                      };
+                                       %>
+                                    <% const formattedDate = order.invoiceDate.toLocaleString('en-US', options); %>
+                                      <%= formattedDate %>
+                                </b>
+                            </span> <br>
+                            <small class="text-muted">Order ID: <%= order.orderId %></small>
+                        </div>
+                        <!-- 
+                        <div class="col-lg-6 col-md-6 ms-auto text-md-end">
+                            <select class="form-select d-inline-block mb-lg-0 mb-15 mw-200" disabled>
+                                <option>Change status</option>
+                                <option>Awaiting payment</option>
+                                <option>Confirmed</option>
+                                <option>Shipped</option>
+                                <option>Delivered</option>
+                            </select>
+                            <a class="btn btn-primary" href="#">Save</a>
+                            <a class="btn btn-secondary print ms-2" href="#"><i class="icon material-icons md-print"></i></a> -->
+                        </div>
+                    </div>
+                </header> <!-- card-header end// -->
+                <div class="card-body">
+                    <div class="row mb-50 mt-20 order-info-wrap">
+                        <div class="col-md-3">
+                            <article class="icontext align-items-start">
+                                <span class="icon icon-sm rounded-circle bg-primary-light">
+                                    <i class="text-primary material-icons md-person"></i>
+                                </span>
+                                <div class="text">
+                                    <h6 class="mb-1">Ordered BY</h6>
+                                    <p class="mb-1">
+                                        <%= order.userId.name  %> <br> <%= order.userId.email  %> <br> <%= order.userId.phone  %>
+                                    </p>
+                                    <a href="/profile">View profile</a>
+                                </div>
+                            </article>
+                        </div> <!-- col// -->
+                        <div class="col-md-5">
+                            <article class="icontext align-items-start">
+                                <span class="icon icon-sm rounded-circle bg-primary-light">
+                                    <i class="text-primary material-icons md-local_shipping"></i>
+                                </span>
+                                <div class="text">
+                                    <h6 class="mb-1">Deliver To</h6>
+                                    <p class="mb-1">
+                                        <%= order.address.fullname %><br> <%= order.address.house_flat %><br>  <%= order.address.street %>, &nbsp; <%= order.address.village_city %>, &nbsp; <%= order.address.district %>
+                                                        ,<%= order.address.state %>,<br> PIN Code: <%= order.address.pincode %>
+                                                        <% if (order.address.landmark){ %>
+                                                            <br>LandMark: <%= order.address.landmark %>
+                                                        <%}%>
+                                                        <br>Phone: <%= order.address.mobile %>
+                                                        <% if (order.address.alt_phone){ %>
+                                                            <br>Alt Num: <%= order.address.alt_phone %>
+                                                        <%}%>
+                                    </p>
+                                </div>
+                            </article>
+                        </div> <!-- col// -->
+                        <div class="col-md-4">
+                            <article class="icontext align-items-start">
+                                <span class="icon icon-sm rounded-circle bg-primary-light">
+                                    <i class="text-primary material-icons md-place"></i>
+                                </span>
+                                <div class="text">
+                                    <h6 class="mb-1">Shipped BY</h6>
+                                    <p class="mb-1">
+                                        CubeCraze Logistics <br>Block A, House 123, Floor 2 <br> Po Box 678 000
+                                    </p>
+                                </div>
+                            </article>
+                        </div> <!-- col// -->
+                    </div> <!-- row // -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="table-responsive mb-15">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th width =5%> Sl.no</th>
+                                            <th width="50%">Product</th>
+                                            <th width="15%">Unit Price</th>
+                                            <th width="15%">Quantity</th>
+                                            <th width="150%" class="text-end">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% order.orderedItems.forEach((item,index)=>{  %>
+                                        <tr>
+                                            <td><%= index+1 %></td>
+                                            <td>
+                                                <a class="itemside" href="#">
+                                                    
+                                                    <div class="left">
+                                                        <% item.product.productImages.forEach((img)=>{ %>
+                                                        <img src="<%= img %>" width="40" height="40" class="img-xs" alt="Item">
+                                                        <% }) %>
+
+                                                    </div>
+                                                    <div class="info"> <%= item.product.productName %> </div>
+                                                    <div class="data">Brand: <%= item.product.brand.brandName %> </div>
+
+                                                </a>
+                                            </td>
+                                            <td> <%= item.price %> </td>
+                                            <td> <%= item.quantity %> </td>
+                                            <td class="text-end"> <%= item.price * item.quantity %> </td>
+                                        </tr>
+                                        <% }) %>
+                                            <td colspan="5">
+                                                <article class="float-end">
+                                                    <dl class="dlist">
+                                                        <dt>Subtotal :  ₹ <%= order.totalPrice %></dt>
+                                                        <!-- <dd>$973.35</dd> -->
+                                                    </dl>
+                                                    <dl class="dlist">
+                                                        <dt>Shipping cost: ₹ <%= order.shippingCharge %></dt>
+                                                        <!-- <dd>$10.00</dd> -->
+                                                    </dl>
+                                                    <dl class="dlist">
+                                                        <dt>Grand total: <b class="h5">  ₹ <%= order.finalAmount %></b></dt>
+                                                        <!-- <dd> <b class="h5">$983.00</b> </dd> -->
+                                                    </dl>
+                                                    <dl class="dlist">
+                                                        <dt class="text-color h4    ">Status: <%= order.status%></dt>
+                                                        <dd>
+                                                            <span class="badge rounded-pill alert-success text-success">Payment done</span>
+                                                        </dd>
+                                                    </dl>
+                                                </article>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div> <!-- table-responsive// -->
+                            <a class="btn btn-primary" href="/trackOrder/<%= order.orderId %>">View Order Tracking</a>
+                            <a class="btn btn-primary" href="/orderList">View All Orders</a>
+                            <button id="cancelOrderBtn" class="btn btn-primary" data-order-id="<%= order.orderId %>" >
+                                Cancel Order
+                              </button>
+                              <button id="printInvoiceBtn" class="btn btn-primary"  >
+                                Print Invoice
+                              </button>  
+                        <div class="col-lg-1"></div>
+                        <div class="col-lg-4 mt-15">
+                            <div class="box shadow-m bg-light">
+                                <h4 class="mb-15">Payment info</h4>
+                                <p><h6>Payment Method : <%= order.paymentMethod.toUpperCase() %></h6></p>
+                                <!-- <p>
+                                    <img src="assets/imgs/card-brands/2.png" class="border" height="20"> Master Card **** **** 4768 <br>
+                                    Business name: Grand Market LLC <br>
+                                    Phone: +1 (800) 555-154-52
+                                </p> -->
+                            </div>
+                            <div class="h-25 pt-4">
+                                <div class="mb-3">
+                                    <label>Notes</label>
+                                    <textarea disabled class="form-control" name="notes" id="notes" placeholder="<%= order.orderNotes %>" ></textarea>
+                                </div>
+                                <!-- <button class="btn btn-primary">Save note</button> -->
+                            </div>
+                        </div> <!-- col// -->
+                    </div>
+                </div> <!-- card-body end// -->
+            </div> <!-- card end// -->
+        </section>
+    </div> <!-- content-main end// -->
+        
+        </main>
+      
+    
+
+
+        <script>
+            
+document.getElementById('printInvoiceBtn').addEventListener('click', () => {
+  const orderId = '<%= order.orderId  %>'; // replace this dynamically in template
+  const downloadUrl = `/order/invoice/${orderId}`;
+
+  // Opens the PDF in a new tab or triggers download
+  window.open(downloadUrl, '_blank');
+});
+
+document.getElementById('cancelOrderBtn').addEventListener('click', function () {
+    const orderId = this.getAttribute('data-order-id');
+    const cancelBtn = this;
+
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "Do you really want to cancel this order?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, cancel it!',
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Send async PATCH request
+        fetch(`/orders/cancel/${orderId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+          .then(response => response.json())
+          .then(data => {
+            if (data.ok) {
+              Swal.fire({
+                title: 'Cancelled!',
+                text: data.message,
+                icon: 'success'
+              });
+
+              // Optionally update status in DOM
+            //  document.getElementById('orderStatus').innerText = 'Cancelled';
+              cancelBtn.disabled = true;
+              cancelBtn.innerText = 'Order Cancelled';
+             // cancelBtn.style.backgroundColor = 'gray';
+            } else {
+              Swal.fire({
+                title: 'Failed!',
+                text: data.message || 'Something went wrong.',
+                icon: 'error'
+              });
+            }
+          })
+          .catch(error => {
+            console.error(error);
+            Swal.fire({
+              title: 'Error!',
+              text: 'An unexpected error occurred.',
+              icon: 'error'
+            });
+          });
+      }
+    });
+  });
+        </script>
+        
+    <%- include('partials/scriptTags.ejs') %>
+</body>

@@ -1,0 +1,109 @@
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
+const { v4: uuidv4 } = require('uuid');
+
+
+const orderSchema = new Schema({
+    orderId: {
+        type: String,
+        default: () => uuidv4(),
+        unique: true
+    },
+    userId:{
+        type:Schema.Types.ObjectId,
+        required:true,
+        ref:'user'
+    },
+
+    orderedItems: [{
+        product: {
+            type: Schema.Types.ObjectId,
+            ref: "Product",
+            required: true
+        },
+        quantity: {
+            type: Number,
+            required: true
+        },
+        price: {
+            type: Number,
+            default: 0
+        },
+        status: {
+            type: String,
+            enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Return Requested', 'Returned'],
+            default: 'Pending'
+        },
+        cancellationReason: String,
+        cancelledAt: Date,
+        returnReason: String,
+        returnRequestedOn: Date,
+        returnedOn: Date
+    }],
+    totalPrice: {
+        type: Number,
+        required: true
+    },
+    discount: {
+        type: Number,
+        default: 0
+    },
+    finalAmount: {
+        type: Number,
+        required: true
+    },
+    shippingCharge:{
+        type:Number,
+        required:true,
+        default:0
+    },
+    totalQuantity:Number,
+    address: {
+        fullname: { type: String },
+        state: { type: String },
+        district: { type: String },
+        house_flat: { type: String },
+        pincode: { type: Number },
+        landmark: { type: String },
+        mobile: { type: String },
+        alt_phone: { type: String },
+        village_city: { type: String },
+        street: { type: String },
+        addressType: { type: String }
+      },
+      
+    invoiceDate: {
+        type: Date
+    },
+    status: {
+        type: String,
+        required: true,
+        enum: ['Pending', 'Processing', 'Paid', 'Shipped', 'Delivered', 'Cancelled', 'Return Request', 'Returned'],
+        default: 'Pending'
+    },
+    paymentMethod: {
+        type: String,
+        enum: ['cardPayment', 'upi', 'wallet', 'cod', 'netBanking'],
+        default: 'Online Payment'
+    },
+    createdOn: {
+        type: Date,
+        default: Date.now,
+        required: true
+    },
+    paymentDetails: {
+        transactionId: String,
+        orderId: String
+    },
+    couponApplied: {
+        type: Boolean,
+        default: false
+    },
+    cancellationReason: String,
+    cancellationDate: Date,
+    orderNotes:String,
+});
+
+
+const Order = mongoose.model("order", orderSchema);
+module.exports = Order;

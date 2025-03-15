@@ -51,6 +51,7 @@
                                         <li class="nav-item">
                                             <a class="nav-link"  href="/cart"  ><i class="fi-rs-shopping-bag mr-10"></i>My Cart</a>
                                         </li>
+                                        
                                         <li class="nav-item">
                                             <a class="nav-link" href="/logout"><i class="fi-rs-sign-out mr-10"></i>Logout</a>
                                         </li>
@@ -79,7 +80,7 @@
                                                 <div class="table-responsive">
                                                     <table class="table">
                                                         <thead>
-                                                            <tr>
+                                                            <tr> <th>Sl.No</th>
                                                                 <th>Order</th>
                                                                 <th>Date</th>
                                                                 <th>Status</th>
@@ -88,14 +89,25 @@
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            <tr>
-                                                                <td>#1357</td>
-                                                                <td>March 45, 2020</td>
-                                                                <td>Processing</td>
-                                                                <td>$125.00 for 2 item</td>
-                                                                <td><a href="#" class="btn-small d-block">View</a></td>
-                                                            </tr>
-                                                            <tr>
+                                                            <% orders.forEach((item,index)=>{ %>
+
+                                                                <tr><td><%= index +1%></td>
+                                                                    <td><a href="/viewOrder/<%= item.orderId %>">OrderId</a></td>
+                                                                    <td>
+                                                                        <%= new Date(item.invoiceDate).toLocaleString('en-IN', {
+                                                                              year: 'numeric',
+                                                                              month: 'short',
+                                                                              day: 'numeric',
+                                                                              hour: '2-digit',
+                                                                              minute: '2-digit'
+                                                                            }) %>
+                                                                      </td>                             
+                                                                    <td><%= item.status %></td>
+                                                                    <td>₹<%= item.finalAmount %> for <%= item.totalQuantity %> item</td>
+                                                                    <td><a href="#" class="btn-small d-block">View</a></td>
+                                                                </tr>
+                                                                <% }) %>
+                                                            <!-- <tr>
                                                                 <td>#2468</td>
                                                                 <td>June 29, 2020</td>
                                                                 <td>Completed</td>
@@ -108,7 +120,7 @@
                                                                 <td>Completed</td>
                                                                 <td>$280.00 for 3 item</td>
                                                                 <td><a href="#" class="btn-small d-block">View</a></td>
-                                                            </tr>
+                                                            </tr> -->
                                                         </tbody>
                                                     </table>
                                                 </div>
@@ -218,15 +230,19 @@
                                                             <input  class="form-control square" name="password" value="<%=(userData.phone)??'Not Added' %>" readonly>  
                                                         </div>
                                                         <div class="form-group col-md-12">
+                                                            <label>Current Password <span class="required">*</span></label>
+                                                            <input required="" class="form-control square" name="curpassword" type="password">
+                                                        </div>
+                                                        <div class="form-group col-md-12">
                                                             <label>New Password <span class="required">*</span></label>
                                                             <input required="" class="form-control square" name="npassword" type="password">
                                                         </div>
                                                         <div class="form-group col-md-12">
-                                                            <label>Confirm Password <span class="required">*</span></label>
+                                                            <label>Confirm New Password <span class="required">*</span></label>
                                                             <input required="" class="form-control square" name="cpassword" type="password">
                                                         </div> 
                                                         <div class="col-md-12">
-                                                            <button  class="btn btn-fill-out submit" name="submit" value="Submit">Edit Details</button>
+                                                            <button  class="btn btn-fill-out submit" name="submit" value="Submit">Change Password</button>
                                                         </div>
                                                     </div>
                                                 <!-- </form> -->
@@ -312,6 +328,70 @@
     });
 }
 
+            
+// document.getElementById('printInvoiceBtn').addEventListener('click', () => {
+//   const orderId = '= order.orderId  '; // replace this dynamically in template
+//   const downloadUrl = `/order/invoice/${orderId}`;
+
+//   // Opens the PDF in a new tab or triggers download
+//   window.open(downloadUrl, '_blank');
+// });
+
+// document.getElementById('cancelOrderBtn').addEventListener('click', function () {
+//     const orderId = this.getAttribute('data-order-id');
+//     const cancelBtn = this;
+
+//     Swal.fire({
+//       title: 'Are you sure?',
+//       text: "Do you really want to cancel this order?",
+//       icon: 'warning',
+//       showCancelButton: true,
+//       confirmButtonColor: '#d33',
+//       cancelButtonColor: '#3085d6',
+//       confirmButtonText: 'Yes, cancel it!',
+//       reverseButtons: true
+//     }).then((result) => {
+//       if (result.isConfirmed) {
+//         // Send async PATCH request
+//         fetch(`/orders/cancel/${orderId}`, {
+//           method: 'PATCH',
+//           headers: {
+//             'Content-Type': 'application/json'
+//           }
+//         })
+//           .then(response => response.json())
+//           .then(data => {
+//             if (data.message) {
+//               Swal.fire({
+//                 title: 'Cancelled!',
+//                 text: data.message,
+//                 icon: 'success'
+//               });
+
+//               // Optionally update status in DOM
+//               document.getElementById('orderStatus').innerText = 'Cancelled';
+//               cancelBtn.disabled = true;
+//               cancelBtn.innerText = 'Order Cancelled';
+//               cancelBtn.style.backgroundColor = 'gray';
+//             } else {
+//               Swal.fire({
+//                 title: 'Failed!',
+//                 text: data.message || 'Something went wrong.',
+//                 icon: 'error'
+//               });
+//             }
+//           })
+//           .catch(error => {
+//             console.error(error);
+//             Swal.fire({
+//               title: 'Error!',
+//               text: 'An unexpected error occurred.',
+//               icon: 'error'
+//             });
+//           });
+//       }
+//     });
+//   });
 
         </script>
     </body>
