@@ -1,15 +1,15 @@
 <div class="col-lg-3 primary-sidebar sticky-sidebar">
-    <div class="widget-category mb-30">
+   <!-- <div class="widget-category mb-30">
         <h5 class="section-title style-1 mb-30 wow fadeIn animated">Brands We have</h5>
         <ul class="categories">
             <% allBrands.forEach((cat,index)=>{  %>
-            <li><a href="efef"><%= cat.brandName %></a></li>
+            <li><a href='?brand=<%= cat.brandName%>'><%= cat.brandName %></a></li>
             <% })%>
             
         </ul>
-    </div>
+    </div> -->
     <!-- Fillter By Price -->
-    <form id="shop-filter-form" action="/shop" method="GET">
+    <!-- <form id="shop-filter-form" action="/shop" method="GET"> -->
         <div class="sidebar-widget price_range range mb-30">
             <div class="widget-header position-relative mb-20 pb-10">
                 <h5 class="widget-title mb-10">Filter BY</h5>
@@ -29,38 +29,107 @@
                     </div>
                 </div>
             </div>
+            <div class="list-group">
+                <div class="list-group-item mb-10 mt-10">
+                    <label class="fw-900">Filter By Brands</label>
+                    <div class="custome-checkbox">
+                        <% allBrands.forEach((brand,index)=>{  %>
+                        <input class="form-check-input" type="checkbox" name="brand" id="<%= brand.brandName %>"  value="<%= brand.brandName %>">
+                        <label class="form-check-label" for="<%= brand.brandName %>"><span><%= brand.brandName %></span></label>
+                        <br>
+                        <% }) %>
+                         </div>
+                    <label class="fw-900 mt-15">Categories </label>
+                    <div class="custome-checkbox">
+                        <% allCategories.forEach((cat,index)=>{ %>
+
+                            <input class="form-check-input" type="checkbox"  name="category" id="<%=cat.categoryName %>" value="<%=cat.categoryName %>">
+                            <label class="form-check-label" for="<%=cat.categoryName %>"><span><%=cat.categoryName %></span></label>
+                            <br>
+                            <% }) %>
+                        <!-- <input class="form-check-input" type="checkbox" name="checkbox" id="exampleCheckbox21" value="">
+                        <label class="form-check-label" for="exampleCheckbox21"><span>Refurbished (27)</span></label>
+                        <br>
+                        <input class="form-check-input" type="checkbox" name="checkbox" id="exampleCheckbox31" value="">
+                        <label class="form-check-label" for="exampleCheckbox31"><span>Used (45)</span></label> -->
+                    </div>
+                </div>
+            </div>
     
-            <!-- Categories Filter -->
+            <!-- Categories Filter 
             <div class="list-group">
                 <div class="list-group-item mb-10 mt-10">
                     <label class="fw-900">Categories</label>
                     <div class="custome-checkbox">
                         <% allCategories.forEach((category, index) => { %>
-                            <input class="form-check-input category-checkbox" type="checkbox" name="category" value="<%= category._id %>">
+                            <input class="form-check-input " type="checkbox" name="category" value="<%= category._id %>">
                             <label class="form-check-label"><span><%= category.categoryName %></span></label><br>
-                        <% }) %>
-                    </div>
-    
-                    <!-- Cube Sizes Filter -->
+                            <% }) %>
+                        </div>
+                         -->
+                        <!--
+                    Cube Sizes Filter 
                     <label class="fw-900 mt-15">Cube Sizes</label>
                     <div class="custome-checkbox">
                         <% allSizes.forEach(size => { %>
-                            <input class="form-check-input size-checkbox" type="checkbox" name="size" value="<%= size._id %>">
-                            <label class="form-check-label"><span><%= size.size %></span></label><br>
+                        <input class="form-check-input size-checkbox" type="checkbox" name="size" value="<%= size._id %>">
+                        <label class="form-check-label"><span><%= size.size %></span></label><br>
                         <% }) %>
                     </div>
                 </div>
             </div>
+            -->
     
             <!-- Apply Filters Button -->
-            <button type="submit" class="btn btn-sm btn-default">
-                <i class="fi-rs-filter mr-5"></i> Filter
-            </button>
+             <div class="row">
+                <div class="col-6">
+
+                    <button type="submit" class="btn btn-sm btn-default">
+                        <i class="fi-rs-filter mr-5"></i> Filter
+                    </button>
+                </div>
+                <div class="col-6">
+
+                    <a href='/shop' class="btn btn-sm btn-default">
+                        <i class="fi-rs-clear mr-5"></i> Clear All Filters
+                    </a>
+                </div>
+                </div>
         </div>
     </form>
 
    
+<script>
+    const queryString = window.location.search
+    //console.log('urlpp',queryString)
+    const params = new URLSearchParams(queryString);
+    const price = params.get('price')
+    const selectedBrands = params.getAll('brand')
+    const selectedCategories = params.getAll('category')
+    const searchVal = params.get('search')
+    if(searchVal){
+    document.getElementById('search-input').value = searchVal
+    }
+    //console.log('resut',price,selectedBrands,selectedCategories)
+    // making check box active for the slected tags
+    for(let x of selectedBrands ){
+      if ( document.getElementById(x)){
+        const inputTag = document.getElementById(x)
+        inputTag.checked = true
+       // console.log('function123',x,inputTag)
+      }
+       
+    }
+    for(let x of selectedCategories ){
+      if ( document.getElementById(x)){
+        const inputTag = document.getElementById(x)
+        inputTag.checked = true
+       // console.log('function123',x,inputTag)
+      }
+       
+    }
 
+</script>
     
     <!-- Product sidebar Widget -->
     <!-- <div class="sidebar-widget product-sidebar  mb-30 p-30 bg-grey border-radius-10">

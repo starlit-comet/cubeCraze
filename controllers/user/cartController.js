@@ -21,7 +21,7 @@ for(let item of cartItems.cart){
    // product.cartQuantity = item.quantity
     cart.push(product)
 }
- console.log(cart)
+ //console.log(cart)
  let totalQuantity =0,totalAmount =0,shipping=0, grandTotal=0
  cart.forEach(item=>{
     totalQuantity += item.cartQuantity
@@ -139,16 +139,22 @@ const cartCheck = async (req,res)=>{
         return res.status(200).json({success:true})
 }
 const checkout = async (req,res)=>{
+
+   grandTotal = req.session.grandTotal   
+   shipping = req.session.shipping     
+   totalAmount = req.session.totalAmount  
+   totalQuantity = req.session.totalQuantity
     try{
         
           const   userId = req.session._id
-          const AllAddress = await userSchema.findById(userId).select('addresses -_id')
+          const AllAddress = await userSchema.findOne({_id:userId,isBlocked:false,isOTPVerified:true}).select('addresses -_id')
           let addressData = await Promise.all(
             AllAddress.addresses.map(async (id) => {
                 const temp = await addressSchema.findById(id);
                 return temp;
             })
         );
+        const userData = await userSchema.findById(userId).select('name email phone')
 
 
          // console.log(addressData,'hello')
@@ -169,10 +175,13 @@ const checkout = async (req,res)=>{
             if(product.isBlocked===false )     cart.push(product) 
         }
 
-         // console.log(cartItems,'fff',cart)
+        // console.log(cartItems,'fff',cart)
         return res.render ('users/checkout' , {
             //searchKeyWord:'',minPrice:500,maxPrice:7500,
-            cart,grandTotal:0,addressData
+            cart,grandTotal,addressData ,userData,
+            shipping,
+            totalAmount,
+            totalQuantity,
         }
         )
         }

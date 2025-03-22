@@ -2,6 +2,7 @@ const userSchema = require('../../models/userSchema')
 const bcrypt=require('bcrypt')
 //const saltRound=process.env.SALTROUND
 const nodemailer= require('../../helpers/nodemailer')
+const { validate } = require('uuid')
 
 const generateNewOTP = () =>{
     return Math.floor(100000 + Math.random() * 900000). toString()
@@ -9,13 +10,21 @@ const generateNewOTP = () =>{
     // else {generateNewOTP()}
 }
 
-
 function isStrongPassword(password) {
     const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     return strongPasswordRegex.test(password);
 }
 
+function validatePhoneNumber(phone) {
+    const phoneRegex = /^[6-9]\d{9}$/;
+    return phoneRegex.test(phone);
+  }
+  
 
+function validateName(name) {
+    const nameRegex = /^[A-Za-z\s]{2,50}$/;
+    return nameRegex.test(name);
+  }
 
 const userLogin =async (req,res)=>{
     try {
@@ -49,7 +58,7 @@ const aboutPage = async (req,res)=>{
 }
 const signIn = async (req,res)=>{
     try {
-        console.log(req.body)
+      //  console.log(req.body)
         const {email,password}=req.body
         const user= await userSchema.findOne({email,googleId:'noGoogleId',isBlocked:false})
        // console.log(user)
@@ -59,14 +68,14 @@ const signIn = async (req,res)=>{
         //console.log(isMatchPassword)
         if(!isMatchPassword) return res.status(200).json({message:'passwords not matching',success:false})
         if(!user.isOTPVerified ){
-            console.log(`user otp not verified`)
+           // console.log(`user otp not verified`)
             req.session.userEmail = user.email
             return res.status(200).json({message:"User is Not OTP verified redirecting to verify otp",success:false,redirectOTP:true})
         }
         if(isMatchPassword) {
-            console.log(`user login success`)
+          //  console.log(`user login success`)
             req.session._id = user._id
-            return res.status(200).json({message:'Login SuccesFull', success:true})
+            return res.status(202).json({message:'Login SuccesFull', success:true})
         }
             else res.send('password not matching')
     } catch (error) {
@@ -75,7 +84,7 @@ const signIn = async (req,res)=>{
 }
 const createUser = async(req,res)=>{
     try {
-        console.log(req.body)
+       // console.log(req.body)
         const {email,name,password,confirmPassword}=req.body
         if(password=='' || confirmPassword=='') return  res.status(200).json({message:'Passwords cannot be empty'})
         if(name=='') return res.status(200).json({message:'Name cannot be empty'})
@@ -86,7 +95,7 @@ const createUser = async(req,res)=>{
         const passwordStrength = isStrongPassword(password)
         if(!passwordStrength) return res.status(200).json({message:`Password Not Strong, kindly incluede a Captial letter, a small letter, a symbol, a number
              ,a special character. Password should have length of 8`,success:false})
-            console.log(process.env.SALTROUND)
+           // console.log(process.env.SALTROUND)
          const hashedPassword = await  bcrypt.hash(password,10)
          const newUser = new userSchema({email,name,hashedPassword})
          await newUser.save()
@@ -113,7 +122,6 @@ const logout = (req,res)=>{
     res.redirect('/home')
         })})
 }
-
 
 const viewOTPpage = async (req,res)=>{
   //  req.session.userEmail = 'akshaitr031@gmail.com'
@@ -164,7 +172,7 @@ const sendOTPtoEmail = async (req, res) => {
         let userData = await userSchema.findOne({ email });
         if(userData.isOTPVerified == true  ) return res.status(200).json({success:false,message:'User Already Verified'})
         const resendOTPafter = req.session.resendOTPafter
-        console.log('hiiehq2',resendOTPafter);
+       // console.log('hiiehq2',resendOTPafter);
         if(resendOTPafter && userData.otpExpires > Date.now()){
             if( resendOTPafter >= Date.now()) return res.status(200).json({success:false,message:'kindly wait for some time to redend the otp'})
             else if(resendOTPafter <Date.now()){
@@ -223,12 +231,9 @@ const sendOTPtoEmail = async (req, res) => {
     }
 };
 
-
-
 const googleSignin= async(req,res)=>{
 
 }
-
 
 const getOTPTimer = async (req, res) => {
     try {
@@ -240,7 +245,7 @@ const getOTPTimer = async (req, res) => {
         // }
         const resendOTPafter = req.session.resendOTPafter
         const remainingTime = Math.max(0,  resendOTPafter-Date.now());
-        console.log('tiem',remainingTime)
+       // console.log('tiem',remainingTime)
         return res.status(200).json({ success: true, remainingTime });
     } catch (error) {
         console.error("Error fetching OTP timer:", error);
@@ -309,10 +314,152 @@ const googleUserProfile =async (req,res)=>{
         res.render('users/profile',{userData})
 }
 
+const editPassword = async (req,res)=>{
+    try{
+    const {email,currentPassword,newPassword,confirmNewPassword} = req.body
+    const userId = req.session._id
+    const user = await userSchema.findOne({_id:userId,email,isBlocked:false,isOTPVerified:true})
+    if(!user) return res.status(404).json({message:'User Not Found'})
+       // console.log(user)
+    if(!user.hashedPassword) return res.status(400).json({message:'You are Not authorised to change password'})
+    if(newPassword !== confirmNewPassword) return res.status(400).json({message:'Passwords Not Matching'})
+    const isMatchPassword = await bcrypt.compare(currentPassword,user.hashedPassword)
+    if(!isMatchPassword) return res.status(400).json({message:'Current Password is Incorrect'})   
+        const isPasswordStrong = isStrongPassword(newPassword) 
+    if(!isPasswordStrong) return res.status(400).json({message:'Your New Password is not strong'})
+        const newHashPassword = await bcrypt.hash(newPassword,10)
+    user .hashedPassword = newHashPassword
+    await user.save()
+    return res.status(200).json({message:'password Updated'})
+    }
+catch(err){
+    console.log(err)
+    return res.status(500).json({message:`server error: ${err}`})
+}
+}
 
+const updateAccount = async(req,res)=>{
+   const userId = req.session._id
+   const {name,phone} = req.body
+   const user= await user.findOne({_id:userId,isBlocked:false,isOTPVerified:true})
+
+
+
+  //  console.log(req.body,userId)
+}
+
+const addUserImage = async(req,res)=>{
+    const userId = req.session._id
+    const avatar = req.file.path
+    const user = await userSchema.findOne({_id:userId,isBlocked:false,isOTPVerified:true})
+    if(!user) return res.status(400).json({message:'user Not Found'})
+     user.avatar = avatar
+    await user.save()
+    console.log(avatar,'je')
+    return res.status(200).json({message:'Profile Image Updated'})
+}
+
+const editUserDetails = async (req, res) => {
+    try {
+      const userId = req.session._id;
+      const { name, phone } = req.body;
+  
+      // Validate the inputs first
+      if (!validateName(name)) {
+        return res.status(400).json({ message: 'Invalid name format' });
+      }
+  
+      if (!validatePhoneNumber(phone)) {
+        return res.status(400).json({ message: 'Invalid phone number format' });
+      }
+  
+      // Find the user
+      const user = await userSchema.findOne({
+        _id: userId,
+        isBlocked: false,
+        isOTPVerified: true
+      });
+  
+      if (!user) {
+        return res.status(400).json({ message: 'User not found' });
+      }
+  
+  const editUserDetails = async (req, res) => {
+  try {
+    const userId = req.session._id;
+    const { name, phone } = req.body;
+
+    
+    if (!validateName(name)) {
+      return res.status(400).json({ message: 'Invalid name format' });
+    }
+
+    if (!validatePhoneNumber(phone)) {
+      return res.status(400).json({ message: 'Invalid phone number format' });
+    }
+
+    // Find the user
+    const user = await userSchema.findOne({
+      _id: userId,
+      isBlocked: false,
+      isOTPVerified: true
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'User not found' });
+    }
+
+    let changes = false;
+
+    if (user.name !== name) {
+      user.name = name;
+      changes = true;
+    }
+
+    if (user.phone !== phone) {
+      user.phone = phone;
+      changes = true;
+    }
+
+    if (!changes) {
+      return res.status(200).json({ message: 'No changes detected' });
+    }
+
+    await user.save();
+    return res.status(200).json({ message: 'User details changed successfully' });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: `Server error: ${err.message}` });
+  }
+};
+
+      let changes = false;
+  
+      if (user.name !== name) {
+        user.name = name;
+        changes = true;
+      }
+  
+      if (user.phone !== phone) {
+        user.phone = phone;
+        changes = true;
+      }
+  
+      if (!changes) {
+        return res.status(200).json({ message: 'No changes detected' });
+      }
+  
+      await user.save();
+      return res.status(200).json({success:true, message: 'User details changed successfully' });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({ message: `Server error: ${err.message}` });
+    }
+  };
+  
 module.exports={userLogin,errorPage,signUp,aboutPage,signIn,createUser,googleSignin,
     userProfile,logout,verifyOTP,sendOTPtoEmail,
     viewOTPpage,getOTPTimer,
     viewForgotPassword,findUserAccount, viewSetPassword, updatePassword,
-    googleUserProfile
+    googleUserProfile,editPassword,updateAccount,addUserImage,editUserDetails
 }

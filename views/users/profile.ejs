@@ -25,13 +25,24 @@
                             <div class="col-md-4">
                                 <div class="dashboard-menu">
                                     <ul class="nav flex-column" role="tablist">
-                                        <li> <img src="<%= userData.avatar %>">
-                                        </li>
-                                        <li class="nav-item">
+                                       
+                                            <li class="col-12"> 
+                                                <div class="row mt-10 mb-10">
+                                                    <div class="col-2">
+                                                    </div>
+                                                    <div  style="max-height:100px; max-width: 100px; display: flex; text-align: center; justify-content: center;  align-items: center;">
+    
+                                                    <img src="<%= userData.avatar %>">
+                                                </div>
+                                                    <div class="col-2"></div>
+                                                </div>
+                                            </li>
+                                       
+                                        <li class="nav-item ">
                                             <a class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" href="#dashboard" role="tab" aria-controls="dashboard" aria-selected="false"><i class="fi-rs-settings-sliders mr-10"></i>Dashboard</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" id="account-detail-tab" data-bs-toggle="tab" href="#account-detail" role="tab" aria-controls="account-detail" aria-selected="true"><i class="fi-rs-user mr-10"></i>Account details</a>
+                                            <a class="nav-link" id="account-detail-tab" data-bs-toggle="tab" href="#account-detail" role="tab" aria-controls="account-detail" aria-selected="true"><i class="fi-rs-user mr-10"></i>Change Password</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" id="orders-tab" data-bs-toggle="tab" href="#orders" role="tab" aria-controls="orders" aria-selected="false"><i class="fi-rs-shopping-bag mr-10"></i>Orders</a>
@@ -51,7 +62,6 @@
                                         <li class="nav-item">
                                             <a class="nav-link"  href="/cart"  ><i class="fi-rs-shopping-bag mr-10"></i>My Cart</a>
                                         </li>
-                                        
                                         <li class="nav-item">
                                             <a class="nav-link" href="/logout"><i class="fi-rs-sign-out mr-10"></i>Logout</a>
                                         </li>
@@ -74,7 +84,20 @@
                                     <div class="tab-pane fade " id="orders" role="tabpanel" aria-labelledby="orders-tab">
                                         <div class="card">
                                             <div class="card-header">
-                                                <h5 class="mb-0">Your Orders</h5>
+                                                <h4 class="mb-0">Your Orders</h4>
+                                                <div>
+                                                        <div class="row">
+                                                            <div class="col-8">
+                                                                
+                                                                <input type="text" id="orderSearchInput" placeholder="Enter order Id to search" class="form-control bg-white">
+                                                            </div>
+                                                            <div class="col-2">
+
+                                                                <button class="btn bth-fill btn-small" onclick="searchOrder()" > Search Order</button>
+                                                            </div>
+                                                        </div>
+                                                    
+                                                </div>
                                             </div>
                                             <div class="card-body">
                                                 <div class="table-responsive">
@@ -92,7 +115,7 @@
                                                             <% orders.forEach((item,index)=>{ %>
 
                                                                 <tr><td><%= index +1%></td>
-                                                                    <td><a href="/viewOrder/<%= item.orderId %>">OrderId</a></td>
+                                                                    <td><a href="/viewOrder/<%= item.orderId %>"  >OrderId</a></td>
                                                                     <td>
                                                                         <%= new Date(item.invoiceDate).toLocaleString('en-IN', {
                                                                               year: 'numeric',
@@ -136,7 +159,7 @@
                                                 <p>To track your order please enter your OrderID in the box below and press "Track" button. This was given to you on your receipt and in the confirmation email you should have received.</p>
                                                 <div class="row">
                                                     <div class="col-lg-8">
-                                                        <form class="contact-form-style mt-30 mb-50" action="#" method="post">
+                                                        <form class="contact-form-style mt-30 mb-50" id="searchOrder">
                                                             <div class="input-style mb-20">
                                                                 <label>Order ID</label>
                                                                 <input name="order-id" placeholder="Found in your order confirmation email" type="text" class="square">
@@ -221,34 +244,79 @@
                                                             <input required="" class="form-control square" name="phone">
                                                         </div> -->
                                                         
+                                                        <form id="updatePassword">
                                                         <div class="form-group col-md-12">
                                                             <label>Email Address</label>
                                                             <input value="<%= userData.email %>" readonly class="form-control square" name="email" type="email">
                                                         </div>
-                                                        <div class="form-group col-md-12">
-                                                            <label>Mobile Number </label>
-                                                            <input  class="form-control square" name="password" value="<%=(userData.phone)??'Not Added' %>" readonly>  
-                                                        </div>
+                                                       
                                                         <div class="form-group col-md-12">
                                                             <label>Current Password <span class="required">*</span></label>
-                                                            <input required="" class="form-control square" name="curpassword" type="password">
+                                                            <input required="" class="form-control square" name="currentPassword" type="password" required>
                                                         </div>
                                                         <div class="form-group col-md-12">
                                                             <label>New Password <span class="required">*</span></label>
-                                                            <input required="" class="form-control square" name="npassword" type="password">
+                                                            <input required="" class="form-control square" name="newPassword" type="password" required>
                                                         </div>
                                                         <div class="form-group col-md-12">
                                                             <label>Confirm New Password <span class="required">*</span></label>
-                                                            <input required="" class="form-control square" name="cpassword" type="password">
+                                                            <input required="" class="form-control square" name="confirmNewPassword" type="password" required>
                                                         </div> 
                                                         <div class="col-md-12">
                                                             <button  class="btn btn-fill-out submit" name="submit" value="Submit">Change Password</button>
                                                         </div>
+                                                            
+                                                        </form>
                                                     </div>
                                                 <!-- </form> -->
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="tab-pane fade" id="account-edit" role="tabpanel" aria-labelledby="account-edit-tab">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5>Edit Account Details</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <!-- <p>Already have an account? <a href="page-login-register.html">Log in instead!</a></p> -->
+                                                <!-- <form method="post" name="enq"> -->
+                                                    <div class="row">
+                                                        <div class="form-group col-md-12">
+                                                            <label>Email Address</label>
+                                                            <input value="<%= userData.email %>"  class="form-control square" name="email" type="email" readonly>
+                                                        </div>
+                                                        
+                                                        <!-- <div class="form-group col-md-6">
+                                                            <label>Last Name <span class="required">*</span></label>
+                                                            <input required="" class="form-control square" name="phone">
+                                                        </div> -->
+                                                        
+                                                        <form id="editUserData">
+                                                            <div class="form-group col-md-12">
+                                                                <label>Name</label>
+                                                                <input  class="form-control square" name="name" value="<%= userData.name %>" type="text" >
+                                                            </div>
+                                                        <div class="form-group col-md-12">
+                                                            <label>Mobile Number </label>
+                                                            <input  class="form-control square" type="number" name="phone"  value="<%=(userData.phone)??'Add Mobile Number' %>" >  
+                                                        </div>
+                                                        
+                                                        
+
+                                                            <div class="col">
+                                                                <button  class="btn btn-fill-out submit" name="submit" value="Submit">Update Account </button>
+                                                            </div>
+                                                            
+                                                        </form>
+                                                            <div class="=col">
+                                                                <button onclick="addProfileImage()" class="btn btn-fill-out" > Add profileImage</button>
+                                                            </div>
+                                                        
+                                                <!-- </form> -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
                                 </div>
                             </div>
                         </div>
@@ -327,6 +395,112 @@
         }
     });
 }
+document.getElementById('updatePassword').addEventListener('submit',async function (event){
+    event.preventDefault()
+    let formData = new FormData(this);
+    const formDataObj = Object.fromEntries(formData.entries())
+    console.log(formData)
+    Swal.fire({
+        title:'Are you Sure to update Password?',
+        text:'please Confirm !',
+        icon:'warning',
+        confirmButtonText:'Yes!',
+        showCancelButton:true
+    }).then((async result=>{
+        if(result.isConfirmed){
+            Swal.fire({
+                title:'Changing Password!!',
+                text:'Please wait!!',
+                allowOutsideClick:false,
+                didOpen:()=>{
+                    Swal.showLoading()
+                }
+            })
+
+            try {
+                let response = await fetch ('/updatePassword',{
+                    method:'post',
+                    headers:{'content-type':'application/json'},
+                    body:JSON.stringify(formDataObj)
+                })
+                let data = await response.json()
+                console.log(data)
+                if(data.success){
+                    Swal.fire({
+                        icon:'success',
+                        title:'Password updated !',
+                        text:'Successful!!',
+                    
+                    }).then(result=>{})
+
+                    
+                }
+                else{
+                    Swal.fire({
+                        icon:"error",
+                        title:'Unsuccessful!',
+                        text:data.message
+                    })
+                }
+            } catch (error) {
+                
+            }
+        }
+    }))
+
+})
+
+document.getElementById('editUserData').addEventListener('submit',async function (event){
+    event.preventDefault()
+    let formData = new FormData(this);
+    const formDataObj = Object.fromEntries(formData.entries())
+    console.log(formData)
+    Swal.fire({
+        title:'Are you Sure to update Account details?',
+        text:'please Confirm !',
+        icon:'warning',
+        confirmButtonText:'Yes!',
+        showCancelButton:true
+    }).then((async result=>{
+        if(result.isConfirmed){
+            Swal.fire({
+                title:'Changing details!!',
+                text:'Please wait!!',
+                allowOutsideClick:false,
+                didOpen:()=>{
+                    Swal.showLoading()
+                }
+            })
+            try {
+                let response = await fetch ('/updateAccount',{
+                    method:'post',
+                    headers:{'content-type':'application/json'},
+                    body:JSON.stringify(formDataObj)
+                })
+                let data = await response.json()
+                console.log(data)
+                if(data.success){
+                    Swal.fire({
+                        icon:'success',
+                        title:'Details updated !',
+                        text:'Successful!!',
+                    }).then(result=>{})
+                }
+                else{
+                    Swal.fire({
+                        icon:"error",
+                        title:'Unsuccessful!',
+                        text:data.message
+                    })
+                }
+            } catch (error) {
+                
+            }
+        }
+    }))
+
+})
+
 
             
 // document.getElementById('printInvoiceBtn').addEventListener('click', () => {
@@ -392,6 +566,158 @@
 //       }
 //     });
 //   });
+
+async function addProfileImage() {
+  let profileImageInput, imagePreview;
+
+  Swal.fire({
+    title: 'Add New Profile Image',
+    html: `
+      <input type="file" id="profileImage" class="swal2-file" accept="image/*">
+      <img id="imagePreview" src="" style="max-width: 100px; display: none; margin-top: 10px;">
+    `,
+    confirmButtonText: 'Add Photo',
+    showCancelButton: true,
+    focusConfirm: false,
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+
+    didOpen: () => {
+      const popup = Swal.getPopup();
+      profileImageInput = popup.querySelector('#profileImage');
+      imagePreview = popup.querySelector('#imagePreview');
+
+ 
+      profileImageInput.addEventListener('change', () => {
+        const file = profileImageInput.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            imagePreview.src = e.target.result;
+            imagePreview.style.display = 'block';
+          };
+          reader.readAsDataURL(file);
+        } else {
+          imagePreview.style.display = 'none';
+        }
+      });
+    },
+
+    preConfirm: async () => {
+      const file = profileImageInput.files[0];
+
+      if (!file) {
+        Swal.showValidationMessage('Please select an image file!');
+        return false;
+      }
+      const formData = new FormData();
+      formData.append('profileImage', file);
+
+      try {
+        const response = await fetch('/addProfilePicture', {
+          method: 'POST',
+          body: formData
+        });
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result.message || 'Something went wrong!');
+        }
+
+        return result; 
+      } catch (error) {
+        Swal.showValidationMessage(error.message);
+        return false; 
+      }
+    }
+  })
+  .then((result) => {
+    if (result.isConfirmed && result.value) {
+      Swal.fire({
+        title: 'Success!',
+        text: result.value.message || 'Profile image updated successfully!',
+        icon: 'success'
+      });
+    }
+  });
+}
+
+document.getElementById('editUserData').addEventListener('submit',async function (event){
+    event.preventDefault()
+    let formData = new FormData(this);
+    const formDataObj = Object.fromEntries(formData.entries())
+    console.log(formData)
+    Swal.fire({
+        title:'Are you Sure to Update account details?',
+        text:'please Confirm !',
+        icon:'warning',
+        confirmButtonText:'Yes!',
+        showCancelButton:true
+    }).then((async result=>{
+        if(result.isConfirmed){
+            Swal.fire({
+                title:'Changing details!!',
+                text:'Please wait!!',
+                allowOutsideClick:false,
+                didOpen:()=>{
+                    Swal.showLoading()
+                }
+            })
+
+            try {
+                let response = await fetch ('/editUserDetails',{
+                    method:'post',
+                    headers:{'content-type':'application/json'},
+                    body:JSON.stringify(formDataObj)
+                })
+                let data = await response.json()
+                console.log(data)
+                if(data.success){
+                    Swal.fire({
+                        icon:'success',
+                        title:'Details updated !',
+                        text:'Successful!!',
+                    
+                    }).then(result=>{})
+
+                    
+                }
+                else{
+                    Swal.fire({
+                        icon:"error",
+                        title:'Unsuccessful!',
+                        text:data.message
+                    })
+                }
+            } catch (error) {
+                
+            }
+        }
+    }))
+
+})
+
+function searchOrder(){
+    const searchOrderValue = document.getElementById('orderSearchInput').value
+    console.log(searchOrderValue)
+    if(searchOrderValue!==''){
+        window.location.href=`?search_order=${searchOrderValue}`
+        }
+
+}
+const queryString = window.location.search
+const params = new URLSearchParams(queryString)
+const searchValue = params.get('search_order')
+
+if(searchValue){
+    document.getElementById('dashboard-tab').classList.remove('active')
+    document.getElementById('dashboard').classList.remove('active','show')
+
+    document.getElementById('orders-tab').classList.add('active')
+    document.getElementById('orders').classList.add('active','show')
+
+
+}
+
 
         </script>
     </body>

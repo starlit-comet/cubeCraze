@@ -84,7 +84,7 @@
             </div>
         </div>
         <div class="login-image"></div>
-
+        
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -150,6 +150,28 @@
                 console.log(error)
             }
         })
+
+        const query = window.location.search
+        const params = new URLSearchParams(query)
+        const error= params.get('error')
+       // const userBlocked = JSON.stringify(userBlocked)  
+                  if(error=='userBlocked'){
+                    console.log('userBlocked')
+              const Toast = Swal.mixin({
+                  toast: true,
+              position: "top-end",
+              showConfirmButton: false,
+              timer: 3000,
+              timerProgressBar: true,
+              didOpen: (toast) => {
+                toast.onmouseenter = Swal.stopTimer;
+                toast.onmouseleave = Swal.resumeTimer;
+              }
+            });
+            Toast.fire({
+              icon: "error",
+              title: 'Cannot Login with your E-mail'
+            });         }
     </script>
     
 </body>

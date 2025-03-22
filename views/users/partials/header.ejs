@@ -70,18 +70,17 @@
 							<option value="men">Men's</option>
 						</select>
 						-->
-						<form id="shop-filter-form" action="/shop" method="GET">
-						<div class="search-container col-12">
-							<input type="text" name="search" id="search-input" placeholder="Search for items..." value=
-								<% if(searchKeyWord){ %>
-								"<%= searchKeyWord %>"
-								<% } %>
-								>
-								<button type="button" class="" id="clear-search" style="display: none;">✖</button>
-								<div id="suggestions" class="suggestions-box"></div>
+						<form id="shop-filter-form"  action="/shop" method="GET">
+							<div class="row">
+
+								<div class="search-container col-12">
+									<input type="text" name="search" id="search-input" placeholder="Search for items..." >
+									<!-- <button type="button" class="" id="clear-search" style="display: none;">✖</button> -->
+									<div id="suggestions" class="suggestions-box"></div>
+								</div>
 							</div>
 						
-							<button type="submit">Search</button>
+							<!-- <button type="submit">Search</button> -->
 
 						</form>
 						
@@ -159,7 +158,7 @@
 		<div class="container">
 			<div class="header-wrap header-space-between position-relative">
 				<div class="logo logo-width-1 d-block d-lg-none">
-					<a href="index.html"><img src="/asset-front/imgs/theme/logo.svg" alt="logo"></a>
+					<a href=""><img src="" alt="logo"></a>
 				</div>
 				<div class="header-nav d-none d-lg-flex">
 					<div class="main-categori-wrap d-none d-lg-block">

@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 const type = require('mongoose/lib/schema/operators/type');
-
 const {Schema}= mongoose;
-
 const userSchema = new mongoose.Schema ({
     
     name:{
@@ -27,7 +25,6 @@ const userSchema = new mongoose.Schema ({
         unique:false,
         default:'noGoogleId'
        // sparse:true,
-
     },
     hashedPassword:{
         type:String,
@@ -76,7 +73,6 @@ const userSchema = new mongoose.Schema ({
         // default:Date.now,
         // type:Date,
         // required:true,
-
     },
     wishList:[{
         type: Schema.Types.ObjectId,

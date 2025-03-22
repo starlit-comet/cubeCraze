@@ -12,6 +12,7 @@ const multer = require('multer')
 const session = require('express-session');
 const app=express()
 const cors = require('cors')
+const Razorpay = require('razorpay')
 
 const passport=require('passport')
 const OAuth2Strategy = require('passport-oauth2')

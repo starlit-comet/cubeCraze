@@ -78,7 +78,7 @@
                                 <div class="text">
                                     <h6 class="mb-1">Ordered BY</h6>
                                     <p class="mb-1">
-                                        <%= order.userId.name  %> <br> <%= order.userId.email  %> <br> <%= order.userId.phone  %>
+                                        <%= order.userData.name  %> <br> <%= order.userData.email  %> <br> <%= order.userData.phone  %>
                                     </p>
                                     <a href="/profile">View profile</a>
                                 </div>
@@ -140,13 +140,15 @@
                                                 <a class="itemside" href="#">
                                                     
                                                     <div class="left">
-                                                        <% item.product.productImages.forEach((img)=>{ %>
+                                                        <% item.productDetails.images.forEach((img)=>{ %>
                                                         <img src="<%= img %>" width="40" height="40" class="img-xs" alt="Item">
                                                         <% }) %>
 
                                                     </div>
-                                                    <div class="info"> <%= item.product.productName %> </div>
-                                                    <div class="data">Brand: <%= item.product.brand.brandName %> </div>
+                                                    <div class="info"> <%= item.productDetails.name %> </div>
+                                                    <div class="data">Brand: <%= item.productDetails.brand %>  </div>
+                                                    <div class="data">Category: <%= item.productDetails.category %>  </div>
+
 
                                                 </a>
                                             </td>

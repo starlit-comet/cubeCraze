@@ -11,7 +11,7 @@
                     <p>Add, edit or delete a category</p>
                 </div>
                 <div>
-                    <input type="text" placeholder="Search Categories" class="form-control bg-white">
+                    <input type="text" placeholder="Search Categories" on class="form-control bg-white">
                 </div>
             </div>
             <div class="card">
@@ -121,16 +121,16 @@
                         }
 
 
-                        function editCategoryDetails(name, description, categoryId, isListed) {
+    function editCategoryDetails(name, description, categoryId, isListed) {
     Swal.fire({
         title: "Edit Category",
         html: `
             <input id="categoryName" class="swal2-input" placeholder="Category Name" value="${name}">
             <textarea id="categoryDescription" class="swal2-textarea" placeholder="Description">${description}</textarea>
             <div style="display: flex; align-items: center; justify-content: center; margin-top: 10px;">
-                <label for="categoryStatus" style="margin-right: 10px; font-weight: bold;">Status:</label>
-                <input type="checkbox" id="categoryStatus" ${isListed === "true" ? "checked" : ""}>
-                <span id="statusLabel">${isListed === "true" ? "✅ Active" : "❌ Inactive"}</span>
+            <label for="categoryStatus" style="margin-right: 10px; font-weight: bold;">Status:</label>
+            <input type="checkbox" id="categoryStatus" ${isListed === "true" ? "checked" : ""}>
+            <span id="statusLabel">${isListed === "true" ? "✅ Active" : "❌ Inactive"}</span>
             </div>
         `,
         showCancelButton: true,
@@ -205,7 +205,7 @@ document.querySelector('#categoryForm').addEventListener('submit',async event=>{
     let response = await fetch('/admin/addCategory',{
         method:'post',
         headers:{'Content-Type':'application/x-www-form-urlencoded'},
-        body:formdata,
+        body:JSON.stringify(formData)
     })
     let result = await response.json()
     if(!result.success){

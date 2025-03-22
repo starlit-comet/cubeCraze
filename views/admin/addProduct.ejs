@@ -205,61 +205,83 @@
                 //form data handling
 
                 
-document.querySelector("#productForm").addEventListener("submit", async function (event) {
-    event.preventDefault(); // Prevent default form submission
-    // console.log('ji')
-    let formData = new FormData(this);
-    
-    // Collect text input fields
-    // formData.append("productName", document.querySelector('input[name="productName"]').value);
-    // formData.append("description", document.querySelector('textarea[name="description"]').value);
-    // formData.append("regularPrice", document.querySelector('input[name="regularPrice"]').value);
-    // formData.append("promotionalPrice", document.querySelector('input[name="promotionalPrice"]').value);
-    // formData.append("brand", document.querySelector('select[name="brand"]').value);
-    // formData.append("category", document.querySelector('select[name="category"]').value);
-    // formData.append("cubeSize", document.querySelector('select[name="cubeSize"]').value);
-   // formData.append("tags", document.querySelectorAll('input[type="text"]')[3].value);
-
-    // Collect images
-    let images = document.querySelectorAll('.img-input');
-    let hasImage = false;
-
-    images.forEach((input) => {
-        if (input.files.length > 0) {
-            formData.append("productImages", input.files[0]);
-            hasImage = true;
-        }
-    });
-
-    if (!hasImage) {
-        alert("At least one image is required!");
-        return;
-    }
-    // console.log([...formData])
-
-    try {
-        let response = await fetch("/admin/addProduct", {
-            method: "POST",
-            body: formData,
-           
-        });
-        
-       let result = await response.json();
-        
-        if (result.success) {
-            Swal.fire("Success!", "Product added successfully!", "success")
-
-                window.location.href = "/admin/addProduct"// Redirect to add product page
+                // Collect text input fields
+                // formData.append("productName", document.querySelector('input[name="productName"]').value);
+                // formData.append("description", document.querySelector('textarea[name="description"]').value);
+                // formData.append("regularPrice", document.querySelector('input[name="regularPrice"]').value);
+                // formData.append("promotionalPrice", document.querySelector('input[name="promotionalPrice"]').value);
+                // formData.append("brand", document.querySelector('select[name="brand"]').value);
+                // formData.append("category", document.querySelector('select[name="category"]').value);
+                // formData.append("cubeSize", document.querySelector('select[name="cubeSize"]').value);
+               // formData.append("tags", document.querySelectorAll('input[type="text"]')[3].value);
             
-
-
-        } else {
-            Swal.fire("Error!", result.message || "Something went wrong.", "error");
+                // Collect images
+                // Prevent default form submission
+               // console.log('ji')
+document.querySelector("#productForm").addEventListener("submit", async function (event) {
+    event.preventDefault();
+    Swal.fire({
+        title:'Confirm To Add New Product!',
+        text:'Please Confirm!!',
+        icon:'warning',
+        showCancelButton:true,
+        confirmButtonText:'Yes! Add New Product'
+    }).then((async result1=>{
+        if(result1.isConfirmed){
+            //loading alert
+            Swal.fire({
+                title:'Adding New Product !',
+                text:'Please wait...',
+                allowOutsideClick:false,
+                didOpen: ()=>{
+                    Swal.showLoading()
+                }
+            })
+            
+            let formData = new FormData(this);
+            
+            let images = document.querySelectorAll('.img-input');
+            let hasImage = false;
+            
+            images.forEach((input) => {
+                if (input.files.length > 0) {
+                    formData.append("productImages", input.files[0]);
+                    hasImage = true;
+                }
+            });
+            
+            if (!hasImage) {
+                alert("At least one image is required!");
+                return;
+            }
+            // console.log([...formData])
+            
+            try {
+                let response = await fetch("/admin/addProduct", {
+                    method: "POST",
+                    body: formData,
+                    
+                });
+                
+                let result = await response.json();
+                
+                if (result.success) {
+                    Swal.fire("Success!", "Product added successfully!", "success")
+                    setTimeout(()=>{
+                        window.location.href = "/admin/addProduct"// Redirect to add product page
+                    },1500)
+                    
+                    
+                    
+                } else {
+                    Swal.fire("Error!", result.message || "Something went wrong.", "error");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                Swal.fire("Error!", "Failed to add product.", "error");
+            }
         }
-    } catch (error) {
-        console.error("Error:", error);
-        Swal.fire("Error!", "Failed to add product.", "error");
-    }
+    }))
 });
 </script>
 

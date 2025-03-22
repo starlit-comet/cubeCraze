@@ -20,6 +20,7 @@ passport.use(
           //  console.log("Google Profile ID:", profile);
             try {
                 let user = await User.findOne({ googleId: profile.id });
+                if(user && user.isBlocked==true) return done(null,false,{message:'User is Blocked',userBlocked:true})
                 if (!user) {
                     user = new User({
                       //_id:new mongoose.Types.ObjectId(),

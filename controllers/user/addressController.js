@@ -3,6 +3,13 @@ const addressSchema = require('../../models/addressSchema');
 const { updateMany } = require('../../models/brandSchema');
 const userSchema = require('../../models/userSchema')
 
+function isValidData(input) {
+
+    const regex = /^[A-Za-z ]+$/;
+    const trimmedInput = input.trim();
+    return regex.test(trimmedInput);
+  }
+
 const addAddress = async (req,res)=>{
     try {
         // Retrieve user ID from session
@@ -18,6 +25,8 @@ const addAddress = async (req,res)=>{
         if (!fullname || !mobile || !state || !district || !pincode) {
             return res.status(400).json({ message: "All required fields must be filled!" });
         }
+        if(!isValidData(fullname)) return res.status(400).json({ message: "Name field Should not contain symbols, if required add space in between!" });
+
 
         if (!/^\d{6}$/.test(pincode)) {
             return res.status(400).json({ message: "Invalid Pincode! It must be 6 digits." });
@@ -54,7 +63,7 @@ const addAddress = async (req,res)=>{
             $push: { addresses: savedAddress._id } 
         });
         res.status(201).json({ message: "Address added successfully!" });
-
+        console.log('new address added')
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal Server Error" });

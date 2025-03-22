@@ -48,8 +48,11 @@ const storage = new CloudinaryStorage({
       if (file.mimetype === 'image/webp') return 'webp';
       return 'jpg'; // Default fallback
     },
-    public_id: (req, file) => Date.now() + '-' + file.originalname.replace(/\s+/g, '-'),
-    // Optional image transformation
+    public_id: (req, file) => {
+      const originalNameWithoutExt = file.originalname.replace(/\s+/g, '-').replace(/\.[^/.]+$/, '');
+      return Date.now() + '-' + originalNameWithoutExt;
+    }
+        // Optional image transformation
     // transformation: [{ width: 200, height: 200, crop: 'fit' }]
   }
 });

@@ -9,8 +9,15 @@ const cartController = require('../controllers/user/cartController')
 const orderController = require('../controllers/user/orderController')
 const userSchema = require('../models/userSchema')
 
+const upload = require('../helpers/multer')
 const userAuth = require('../middlewares/userAuth')
 const passport=require('passport')
+
+const userValidator = async (req,res,next)=>{
+    const user = req.session.user
+   // console.log(user,'validator')
+    next()
+}
 
 async function findUser(id){
     const user= await userSchema.findById(id)
@@ -36,6 +43,7 @@ router.get('/verifyOTP',userController.viewOTPpage)
 router.get('/get-otp-timer',userController.getOTPTimer)
 router.get('/forgotPassword',userController.viewForgotPassword)
 
+
 router.post('/signin',userController.signIn)
 router.post('/signup',userController.createUser)
 
@@ -45,7 +53,7 @@ router.post('/forgetPassword',userController.findUserAccount)
 
 router.get('/profile',userAuth.isUserLoggedOut,profileController.viewProfilePage)
 router.get('/google/login',passport.authenticate('google',{ scope:['profile','email']}))
-router.get('/auth/google/callback',passport.authenticate('google',{failureRedirect:'/login'}), userController.userProfile)
+router.get('/auth/google/callback',passport.authenticate('google',{failureRedirect:'/login?error=userBlocked'}), userController.userProfile)
 router.get('/googleProfile',userController.googleUserProfile)
 router.get('/logout',userController.logout)
 router.post('/send-otp',userController.sendOTPtoEmail)
@@ -57,6 +65,11 @@ router.post('/addAddress',userAuth.isUserLoggedOut,addressController.addAddress)
 router.get('/editAddress/:_id',userAuth.isUserLoggedOut,addressController.viewEditAddress)
 router.post('/editAddress',userAuth.isUserLoggedOut,addressController.editAddress)
 router.delete('/deleteAddress',userAuth.isUserLoggedOut,addressController.deleteAddress)
+
+router.post('/updatePassword',userAuth.isUserLoggedOut,userController.editPassword)
+router.post('/updateAccount',userAuth.isUserLoggedOut,userController.updateAccount)
+router.post('/addProfilePicture',upload.single('profileImage'),userController.addUserImage)
+router.post('/editUserDetails',userAuth.isUserLoggedOut,userController.editUserDetails)
 
 router.get('/viewProduct/:productId',productController.viewProduct)
 
@@ -77,10 +90,14 @@ router.get('/cartCheckout',userAuth.isUserLoggedOut,cartController.checkout)
 router.get('/cartCheck',userAuth.isUserLoggedOut,cartController.cartCheck)
 
 // router.get('/orderList',userAuth.isUserLoggedOut,cartController.viewOrderList)
-router.post('/createOrder',userAuth.isUserLoggedOut,orderController.createOrder)
+router.post('/createOrder',userAuth.isUserLoggedOut,orderController.createOrder)  // cod orders
 router.get('/orderList',userAuth.isUserLoggedOut,orderController.viewOrders)
 router.get('/viewOrder/:orderId',userAuth.isUserLoggedOut,orderController.orderDetail)
 router.get('/trackOrder/:orderId',userAuth.isUserLoggedOut,orderController.orderTrack)
+
+// Razorpay payments route
+router.post('/create-razorpay-order',userAuth.isUserLoggedOut,orderController.createOrderRazorpay)
+router.post('/verify-razorpay-payment',userAuth.isUserLoggedOut,orderController.verifyRazorpayPayment)
 
 //print invoice
 router.get('/order/invoice/:orderId',orderController.createInvoice)

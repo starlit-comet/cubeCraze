@@ -6,7 +6,7 @@ const { v4: uuidv4 } = require('uuid');
 const orderSchema = new Schema({
     orderId: {
         type: String,
-        default: () => uuidv4(),
+        default: () => uuidv4(8),
         unique: true
     },
     userId:{
@@ -14,13 +14,26 @@ const orderSchema = new Schema({
         required:true,
         ref:'user'
     },
+    userData:{
+        name:String,
+        email:String,
+        phone:String
+    },
 
     orderedItems: [{
+          
         product: {
             type: Schema.Types.ObjectId,
             ref: "Product",
             required: true
         },
+        productDetails:{
+            name:String,
+            images:[String],
+            brand:String,
+            category:String,
+        },
+        
         quantity: {
             type: Number,
             required: true
@@ -83,7 +96,7 @@ const orderSchema = new Schema({
     },
     paymentMethod: {
         type: String,
-        enum: ['cardPayment', 'upi', 'wallet', 'cod', 'netBanking'],
+      //  enum: [''],
         default: 'Online Payment'
     },
     createdOn: {
@@ -92,7 +105,7 @@ const orderSchema = new Schema({
         required: true
     },
     paymentDetails: {
-        transactionId: String,
+        paymentId: String,
         orderId: String
     },
     couponApplied: {
