@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= title %></title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background-color: #f9f9f9; }
+    .container { background-color: white; padding: 40px; border-radius: 10px; display: inline-block; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .btn { margin-top: 20px; padding: 10px 20px; background-color: #F27254; color: white; text-decoration: none; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Payment Failed</h1>
+    <p>Your payment was not completed.</p>
+    <a href="/cartCheckout" class="btn">Retry Payment</a>
+    <a href="/shop" class="btn">Cancel Order</a>
+  </div>
+</body>
+</html>

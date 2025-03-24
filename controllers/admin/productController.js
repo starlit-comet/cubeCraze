@@ -134,6 +134,14 @@ const changeStatus=async (req,res)=>{
     }
 }
 
+const removeProductImage = async(req,res)=>{
+    const {imgLink,productId} =req.body
+   console.log(imgLink,productId)
+
+   const product = await productSchema.findByIdAndUpdate(productId,{$pull:{productImages:imgLink}},{new:true})
+   console.log(product)
+}
+
 module.exports={addProduct,viewProducts,viewAddProductPage,viewEditProduct,editProduct,
-                    deleteProduct,changeStatus
+                    deleteProduct,changeStatus,removeProductImage
 }

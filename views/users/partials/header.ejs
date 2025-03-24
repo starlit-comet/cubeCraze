@@ -34,7 +34,10 @@
 							</li> 
 							<li>
 								<% if(locals.user){ %>
-									<i class="fi-rs-user"></i><a href="/profile">My Account</a> 
+									<i class="fi-rs-user"></i><a href="/profile">My Account
+										<i class="fi-rs-angle-down"></i>
+									</a> 
+									
 
 								<%} else {	%>
 								<i class="fi-rs-user"></i><a href="/login">Log In</a> / <a href="/signup"> Sign Up</a>

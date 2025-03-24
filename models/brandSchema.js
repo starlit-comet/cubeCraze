@@ -19,6 +19,10 @@ const brandsSchema= new Schema({
         type:Boolean,
         default:false
     },
+    brandOffer:{
+        type:Number,
+        default:0,
+    },
     createdAt:{
         type:Date,
         default:Date.now

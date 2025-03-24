@@ -184,10 +184,23 @@
                                 </table>
                             </div> <!-- table-responsive// -->
                             <a class="btn btn-primary" href="/trackOrder/<%= order.orderId %>">View Order Tracking</a>
-                            <a class="btn btn-primary" href="/orderList">View All Orders</a>
-                            <button id="cancelOrderBtn" class="btn btn-primary" data-order-id="<%= order.orderId %>" >
+                            <a class="btn btn-primary" href="/profile">View All Orders</a>
+
+                            <% if(order.status =='Cancelled'){ %>
+                            <button id="" class="btn disabled btn-primary"  >
+                                    Cancelled
+                                  </button>
+                                  
+                            <% }  else if(order.status =='Delivered'){ %>
+                                <button id="" class="btn disabled btn-primary"  >
+                                        Delivered
+                                      </button>
+                                      
+                                <% } else { %>
+                                <button id="cancelOrderBtn" class="btn btn-primary" data-order-id="<%= order.orderId %>" >
                                 Cancel Order
                               </button>
+                                <%}%>
                               <button id="printInvoiceBtn" class="btn btn-primary"  >
                                 Print Invoice
                               </button>  
@@ -217,13 +230,9 @@
     </div> <!-- content-main end// -->
         
         </main>
-      
-    
-
-
         <script>
             
-document.getElementById('printInvoiceBtn').addEventListener('click', () => {
+    document.getElementById('printInvoiceBtn').addEventListener('click', () => {
   const orderId = '<%= order.orderId  %>'; // replace this dynamically in template
   const downloadUrl = `/order/invoice/${orderId}`;
 
@@ -239,14 +248,16 @@ document.getElementById('cancelOrderBtn').addEventListener('click', function () 
       title: 'Are you sure?',
       text: "Do you really want to cancel this order?",
       icon: 'warning',
+      input:'text',
       showCancelButton: true,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
       confirmButtonText: 'Yes, cancel it!',
-      reverseButtons: true
+      reverseButtons: true,
+      allowOutsideClick:false
     }).then((result) => {
       if (result.isConfirmed) {
-        // Send async PATCH request
+        
         fetch(`/orders/cancel/${orderId}`, {
           method: 'PATCH',
           headers: {
@@ -261,12 +272,13 @@ document.getElementById('cancelOrderBtn').addEventListener('click', function () 
                 text: data.message,
                 icon: 'success'
               });
-
+             // document.getElementById('cancelOrderBtn').classList.add('disabled')
               // Optionally update status in DOM
             //  document.getElementById('orderStatus').innerText = 'Cancelled';
-              cancelBtn.disabled = true;
-              cancelBtn.innerText = 'Order Cancelled';
+             // cancelBtn.disabled = true;
+            //  cancelBtn.innerText = 'Order Cancelled';
              // cancelBtn.style.backgroundColor = 'gray';
+             window.location.reload()
             } else {
               Swal.fire({
                 title: 'Failed!',
@@ -279,7 +291,7 @@ document.getElementById('cancelOrderBtn').addEventListener('click', function () 
             console.error(error);
             Swal.fire({
               title: 'Error!',
-              text: 'An unexpected error occurred.',
+              text: `An unexpected error occurred,${error}`,
               icon: 'error'
             });
           });

@@ -18,27 +18,22 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-3">
-                            <form action="" id="categoryForm" method ='post'>
+                            <form id="categoryForm" >
                                 <div class="mb-4">
                                     <label for="product_name"  class="form-label">Category Name</label>
-                                    <input type="text" name="categoryName" placeholder="Type here" class="form-control" id="product_name" />
+                                    <input type="text"  id="categoryName" placeholder="Type here" class="form-control"  />
                                 </div>
                                 
-                                <!-- <div class="mb-4">
-                                    <label for="product_slug" class="form-label">offer</label>
-                                    <input type="number" name="offer" placeholder="Type here" class="form-control" id="product_slug" />
-                                </div> -->
-                                <!-- <div class="mb-4">
-                                    <label class="form-label">Parent</label>
-                                    <select class="form-select">
-                                        <option>Clothes</option>
-                                        <option>T-Shirts</option>
-                                    </select>
-                                </div> -->
+                                
+                               
                                 <div class="mb-4">
                                     <label class="form-label">Description</label>
-                                    <textarea placeholder="Type here" name="description" class="form-control"></textarea>
-                                </div>
+
+                                    <textarea placeholder="Type here" id="catDescription" class="form-control"></textarea>
+                                </div><div class="mb-4">
+                                    <label for="product_slug" class="form-label">Offer in Percentage (0-100)</label>
+                                    <input type="number" id="catOffer" placeholder="Type here" class="form-control" min="0" max="100" />
+                                </div> 
                                 <div class="d-grid">
                                     <button  type="submit" class="btn btn-primary">Create category</button>
                                 </div>
@@ -57,7 +52,7 @@
                                             <th>Sl.No</th>
                                             <th>Name</th>
                                             <th>Description</th>
-                                            
+                                            <th>Offer %</th>
                                             <th>Status</th>
                                             <th class="text-end">Action</th>
                                         </tr>
@@ -74,7 +69,7 @@
                                                 <td><%= index+1 %></td>
                                                 <td><b> <%= category.categoryName %> </b></td>
                                                 <td><%= category.description %></td>
-                                                
+                                                <td><%= category.categoryOffer%></td>
                                                 <% if(category.isListed){ %>
                                                     <td>
                                                         <span class="badge rounded-pill alert-success">Active</span>
@@ -89,8 +84,8 @@
                                                     <div class="dropdown">
                                                         <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-s font-m"> <i class="material-icons md-settings"></i> </a>
                                                         <div class="dropdown-menu">
-                                                            <a class="dropdown-item" onclick="showCategoryDetails('<%= category.categoryName%>','<%= category.description%>','<%= category.isListed%>')" href="#">View detail</a>
-                                                            <a class="dropdown-item" href="#" onclick="editCategoryDetails('<%= category.categoryName%>', '<%= category.description%>', '<%= category._id%>', '<%= category.isListed%>')">Edit info</a>
+                                                            <a class="dropdown-item" onclick="showCategoryDetails('<%= category.categoryName%>', `<%= category.description %> `,'<%= category.isListed%>')" href="#">View detail</a>
+                                                            <a class="dropdown-item" href="#" onclick="editCategoryDetails('<%= category.categoryName%>', `<%= category.description%>`,'<%category.categoryOffer%>', '<%= category._id%>', '<%= category.isListed%>')">Edit info</a>
                                                             <a class="dropdown-item text-danger" href="#">Delete</a>
                                                         </div>
                                                     </div> <!-- dropdown //end -->
@@ -121,12 +116,13 @@
                         }
 
 
-    function editCategoryDetails(name, description, categoryId, isListed) {
+    function editCategoryDetails(name, description, offer,categoryId, isListed) {
     Swal.fire({
         title: "Edit Category",
         html: `
-            <input id="categoryName" class="swal2-input" placeholder="Category Name" value="${name}">
+            <input id="categoryNameEdit" class="swal2-input" placeholder="Category Name" value="${name}">
             <textarea id="categoryDescription" class="swal2-textarea" placeholder="Description">${description}</textarea>
+            <input id="categoryOffer" class="swal2-input" placeholder="Category Offer" value="${offer}">
             <div style="display: flex; align-items: center; justify-content: center; margin-top: 10px;">
             <label for="categoryStatus" style="margin-right: 10px; font-weight: bold;">Status:</label>
             <input type="checkbox" id="categoryStatus" ${isListed === "true" ? "checked" : ""}>
@@ -149,16 +145,18 @@
             });
         },
         preConfirm: () => {
-            const updatedName = document.getElementById("categoryName").value.trim();
+            const updatedName = document.getElementById("categoryNameEdit").value.trim();
             const updatedDescription = document.getElementById("categoryDescription").value.trim();
             const updatedStatus = document.getElementById("categoryStatus").checked; // Boolean
+            const updatedOffer = document.getElementById('categoryOffer').value.trim();
 
+            console.log(updatedName,updatedOffer,updatedDescription)
             if (!updatedName) {
                 Swal.showValidationMessage("Category name cannot be empty");
                 return false;
             }
 
-            return { updatedName, updatedDescription, updatedStatus, categoryId };
+            return { updatedName, updatedDescription,updatedOffer, updatedStatus, categoryId };
         }
     }).then((result) => {
         if (result.isConfirmed) {
@@ -169,7 +167,7 @@
 }
 
 function updateCategory(data) {
-  //  console.log(data)
+   console.log(data)
     fetch(`/admin/updateCategory`, {
         method: "POST",
         headers: {
@@ -179,6 +177,7 @@ function updateCategory(data) {
             id:data.categoryId,
             categoryName: data.updatedName,
             description: data.updatedDescription,
+            offer:data.updatedOffer,
             isListed: data.updatedStatus // Send updated status
         })
     })
@@ -196,15 +195,21 @@ function updateCategory(data) {
     });
 }
 //new caategory submission
+//new caategory submission
 document.querySelector('#categoryForm').addEventListener('submit',async event=>{
     event.preventDefault()
 
-    let form = event.target
-    let formdata = new URLSearchParams( new FormData(form))
+   let formData ={
+    categoryName:document.getElementById('categoryName').value,
+    description:document.getElementById('catDescription').value,
+    offer:document.getElementById('catOffer').value
 
+
+   }
+    console.log('formdaay',formData)
     let response = await fetch('/admin/addCategory',{
         method:'post',
-        headers:{'Content-Type':'application/x-www-form-urlencoded'},
+     headers:{'Content-Type':'application/json'},
         body:JSON.stringify(formData)
     })
     let result = await response.json()
@@ -227,8 +232,6 @@ document.querySelector('#categoryForm').addEventListener('submit',async event=>{
         })
     }
 })
-
-
-                    document.getElementById("products12e").classList.add("active");
+document.getElementById("products12e").classList.add("active");
                     </script>
         <%- include('partials/footer.ejs') %>

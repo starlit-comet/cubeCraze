@@ -45,7 +45,7 @@
                 <div class="row gx-3">
                         <% brandsData.forEach(brand=>{ %>
                                 
-                                <div class="col-xl-2 col-lg-3 col-md-4 col-6" onclick="openBrandDetails( '<%= brand.brandName %>','<%= brand.brandDescription %>','<%= brand.brandImage %>','<%= brand.isBlocked %>' )">
+                                <div class="col-xl-2 col-lg-3 col-md-4 col-6" onclick="openBrandDetails( '<%= brand.brandName %>','<%= brand.brandDescription %>','<%=brand.brandOffer%>','<%= brand.brandImage %>','<%= brand.isBlocked %>' )">
                                     <figure class="card border-1 brand-card"  >
                                         <div class="card-header bg-white text-center">
                                             <img height="76%" src="<%= brand.brandImage %>" class="img-fluid" alt="<%= brand.brandName%> logo">
@@ -53,6 +53,7 @@
                                         <figcaption class="card-body text-center">
                                             <h6 class="card-title m-0"><%= brand.brandName%></h6>
                                             <p href="#"> <%= brand.brandDescription %> </p>
+                                            <p>offer : <%= brand.brandOffer %> %</p>
                                         </figcaption>
                                     </figure>
                                 </div> <!-- col.// -->
@@ -86,15 +87,30 @@
 
         //open details of brand
 
-       function openBrandDetails(name,description,image,status){
+       function openBrandDetails(name,description,offer=0,image,isBlocked){
        // console.log(brand)
         Swal.fire({
-            title: name,
-            text:description,
+          //  title: name,
+          //  text:description,
+          //  text:`${description}  Offer: ${offer}`,
             imageUrl:image,
             imageWidth:200,
             imageHeight:200,
             imageAlt:`${name} logo`,
+            showCancelButton:true,
+            confirmButtonText:'Save Changes',
+            html: `
+            <input type="text" id="brandNameedit" class="swal2-input" placeholder="Brand Name" value=${name}>
+            <input type='description' id='brandDescriptionEdit' value=${description} class = 'swal2-input' placeholder='Description of the Brand'>
+            <input type="number" id="brandOfferEdit" class="swal2-input" value=${offer} placeholder="Brand Offer" max='100' min='0'>
+            <div style="display: flex; align-items: center; justify-content: center; margin-top: 10px;">
+            <label for="brandStatus" style="margin-right: 10px; font-weight: bold;">Status:</label>
+            <input type="checkbox" id="brandStatus" ${isBlocked === "false" ? "checked" : ""}>
+            <span id="statusLabel">${isBlocked === "false" ? "✅ Active" : "❌ Inactive"}</span>
+            </div>
+            <input type="file" id="brandImage" class="swal2-file" accept="image/*">
+            <img id="imagePreview" src=${image} style="max-width: 100px; display: none; margin-top: 10px;">
+        `,
 
         })
 
@@ -109,6 +125,7 @@
         html: `
             <input type="text" id="brandName" class="swal2-input" placeholder="Brand Name">
             <input type='description' id='brandDescription' class = 'swal2-input' placeholder='Description of the Brand'>
+            <input type="number" id="brandOffer" class="swal2-input" placeholder="Brand Offer" max='100' min='0'>
             <input type="file" id="brandImage" class="swal2-file" accept="image/*">
             <img id="imagePreview" src="" style="max-width: 100px; display: none; margin-top: 10px;">
         `,
@@ -119,6 +136,7 @@
         allowEscapeKey: false,
         didOpen: () => {
             const popup = Swal.getPopup();
+            brandOfferInput = popup.querySelector('#brandOffer')
             brandNameInput = popup.querySelector('#brandName');
             brandImageInput = popup.querySelector('#brandImage');
             imagePreview = popup.querySelector('#imagePreview');
@@ -142,16 +160,19 @@
             const brandName = brandNameInput.value.trim();
             const brandImage = brandImageInput.files[0];
             const brandDescription = brandDescriptionInput.value.trim()
+            const brandOffer = brandOfferInput.value
             if (!brandName || !brandImage) {
                 Swal.showValidationMessage('Please enter brand name and upload an image');
                 return false;
             }
-            return { brandName, brandImage,brandDescription };
+            console.log(brandOffer)
+            return { brandName, brandImage,brandDescription,brandOffer };
         }
     }).then(async (result) => {
         if (result.isConfirmed) {
             // Send data using FormData
             const formData = new FormData();
+            formData.append('brandOffer',result.value.brandOffer);
             formData.append('brandName', result.value.brandName);
             formData.append('brandImage', result.value.brandImage);
             formData.append('brandDescription',result.value.brandDescription)

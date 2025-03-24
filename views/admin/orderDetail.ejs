@@ -47,9 +47,11 @@
                             <option>Delivered</option>
                         </select> -->
                         <h4>current Status: <%= order.status %></h4>
+
+                        <% if(order.status =='Pending') {%>
                         <select id="statusSelect_<%=order.orderId%>" class="form-select status-select">
-                            <option value="">--Change Status--</option>
-                            <option value="Pending">Pending</option>
+                            <!-- <option value="">--Change Status--</option> -->
+                            <option value="">Pending</option>
                             <option value="Processing">Processing</option>
                             <option value="Shipped">Shipped</option>
                             <option value="Delivered">Delivered</option>
@@ -58,6 +60,43 @@
                           
                           <!-- Button to trigger status update -->
                           <button onclick="changeOrderStatus('<%= order.orderId%>')" class="btn btn-primary">Update Status</button>
+                          <% } else if(order.status =='Processing') {%>
+                            <select id="statusSelect_<%=order.orderId%>" class="form-select status-select">
+                                <!-- <option value="">--Change Status--</option> -->
+                                <option value="">Processing</option>
+                                <option value="Shipped">Shipped</option>
+                                <option value="Delivered">Delivered</option>
+                                <option value="Cancelled">Cancelled</option>
+                              </select>
+                              
+                              <!-- Button to trigger status update -->
+                              <button onclick="changeOrderStatus('<%= order.orderId%>')" class="btn btn-primary">Update Status</button>
+                              <% }else if(order.status =='Shipped') {%>
+                                <select id="statusSelect_<%=order.orderId%>" class="form-select status-select">
+                                    <option value="" >Shipped</option>
+                                    <option value="Delivered">Delivered</option>
+                                    <option value="Cancelled">Cancelled</option>
+                                  </select>
+                                  
+                                  <!-- Button to trigger status update -->
+                                  <button onclick="changeOrderStatus('<%= order.orderId%>')" class="btn btn-primary">Update Status</button>
+                                  <% } else if(order.status =='Delivered') {%>
+                                    <select id="statusSelect_<%=order.orderId%>" class="form-select status-select">
+
+                                        <option value="">Delivered</option>
+                                      </select>
+                                      
+                                      <!-- Button to trigger status update -->
+                                      <button onclick="changeOrderStatus('<%= order.orderId%>')" class="btn btn-primary">Update Status</button>
+                                      <% } else if(order.status =='Cancelled') {%>
+                                        <select id="statusSelect_<%=order.orderId%>" class="form-select status-select">
+
+                                            <option value="">Cancelled</option>
+                                          </select>
+                                          
+                                          <!-- Button to trigger status update -->
+                                          <button onclick="changeOrderStatus('<%= order.orderId%>')" class="btn btn-primary">Update Status</button>
+                                          <% }%>
 
                         <!-- <a class="btn btn-primary" href="#">Save</a>
                         <a class="btn btn-secondary print ms-2" href="#"><i class="icon material-icons md-print"></i></a> -->
@@ -218,7 +257,7 @@
     const selectedStatus = document.getElementById(`statusSelect_${orderId}`).value;
 
     if (!selectedStatus) {
-      Swal.fire('Select a status first!', '', 'warning');
+      Swal.fire('Select another status!', '', 'warning');
       return;
     }
 

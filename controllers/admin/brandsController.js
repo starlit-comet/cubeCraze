@@ -15,7 +15,7 @@ res.render('admin/brands',{brandsData})
 
 const addBrand=async (req,res)=>{
     try {
-        const { brandName ,brandDescription } = req.body;
+        const { brandName ,brandDescription ,brandOffer} = req.body;
         const brandImage = req.file.path
        
         if (!brandName || !brandImage) {
@@ -27,7 +27,7 @@ const addBrand=async (req,res)=>{
             console.log(`the brand tried to add already exists `)
              return res.status(201).json({message:"BrandName Already Exists",isconfirmed:false})
         }
-             const newBrand = new brandsSchema({ brandName, brandImage,brandDescription });
+             const newBrand = new brandsSchema({ brandName, brandImage,brandDescription,brandOffer });
         await newBrand.save();
         console.log(`new Brand added`)
         res.status(201).json({ message: `New "${brandName}" Brand added successfully` ,isConfirmed:true });

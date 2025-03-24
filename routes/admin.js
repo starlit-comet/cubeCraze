@@ -45,6 +45,7 @@ router.get('/addProduct',adminAuth.isAdminLoggedOut,productController.viewAddPro
 router.post ('/addProduct',adminAuth.isAdminLoggedOut,upload.array("productImages",4),productController.addProduct)
 router.get('/editProduct/:productId',adminAuth.isAdminLoggedOut,productController.viewEditProduct)
 router.post('/editProduct',adminAuth.isAdminLoggedOut,upload.array('productImages',4),productController.editProduct)
+router.post('/removeProductImage',adminAuth.isAdminLoggedOut,productController.removeProductImage)
 router.patch('/changeStatus-Product/:id',adminAuth.isAdminLoggedOut,productController.changeStatus)
 
 router.get('/productSizes',adminAuth.isAdminLoggedOut,productSizeController.viewCubeSizes)

@@ -102,13 +102,13 @@
                      <!-- Image Upload -->
                      <div class="d-flex justify-content-between flex-wrap">
                         <div class="text"> </div>
-                        <% for (let i = 0; i < 4; i++) { %>
+                        <% for (let i = 0; i < productData.productImages.length; i++) { %>
                             <div class="col-lg-3">
                                 <div class="card col-lg-12">
                                     <div class="mb-3">
                                         <div class="card-header d-flex justify-content-between align-items-center">
                                             <h4>Image <%= i+1 %></h4>
-                                            <button type="button" class="btn btn-danger btn-sm remove-image" data-index="<%= i %>">Remove</button>
+                                            <button type="button" onclick="removeImage('<%=productData.productImages[i] %>','<%= productData._id%>')" class="btn btn-danger btn-sm remove-image" data-index="<%= i %>">Remove</button>
                                         </div>
                                         <div class="card-body">
                                             <div class="input-upload text-center">
@@ -254,6 +254,36 @@
         Swal.fire("Error!", "Failed to Edit product.", "error");
     }
 });
+
+async function removeImage(imgLink,productId){
+
+    try {
+        Swal.fire({
+        title:'Do you want to permanantly remove this image?',
+        icon:'warning',
+        text:'please confirm!',
+        showCancelButton:true,
+    }).then(async (result)=>{
+        if(!result.isConfirmed) return
+        console.log(imgLink,productId)
+
+        const response = await fetch('/admin/removeProductImage',{
+            method:'Post',
+            headers:{'content-type':'application/json'},
+            body:JSON.stringify({imgLink,productId})
+        })
+        const data = response.json()
+
+        if(data.ok){
+            Swal.fire()
+        }
+    })
+        
+    } catch (error) {
+        console.log(error)
+    }
+   
+}
 
 
                         </script>

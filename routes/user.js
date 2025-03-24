@@ -98,7 +98,10 @@ router.get('/trackOrder/:orderId',userAuth.isUserLoggedOut,orderController.order
 // Razorpay payments route
 router.post('/create-razorpay-order',userAuth.isUserLoggedOut,orderController.createOrderRazorpay)
 router.post('/verify-razorpay-payment',userAuth.isUserLoggedOut,orderController.verifyRazorpayPayment)
-
+router.get('/payment-failed', userAuth.isUserLoggedOut, (req, res) => {
+    res.render('users/paymentFailed', { title: 'Payment Failed' });
+  });
+  
 //print invoice
 router.get('/order/invoice/:orderId',orderController.createInvoice)
 //delete order

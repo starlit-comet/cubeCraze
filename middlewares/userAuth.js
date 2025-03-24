@@ -15,12 +15,12 @@ const isUserLoggedOut=(req,res,next)=>{
     if(!req.session._id){
 
         // For testing
-        req.session._id='67c810f8c0b9a2f078c05b61'
-        next()
+        // req.session._id='67c810f8c0b9a2f078c05b61'
+        // next()
        // res.locals.user = findUser('67c810f8c0b9a2f078c05b61')
         // -----------
 
-  //  res.redirect('/login')
+    res.redirect('/login')
     }
     else next()
 }
