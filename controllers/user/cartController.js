@@ -2,7 +2,7 @@ const userSchema = require('../../models/userSchema')
 const addressSchema = require('../../models/addressSchema')
 const productSchema = require ('../../models/productSchema')
 const orderSchema = require('../../models/orderSchema')
-
+const couponSchema = require('../../models/referalCouponSchema')
 
 const viewCart = async (req,res)=>{
 try{
@@ -61,7 +61,7 @@ try {
         { path: 'size' },
     ]).lean()
 
-    console.log(productData,'fffeq')
+    console.log(productData,'')
         if(!productData.category.isListed || productData.brand.isBlocked)    return res.status(400).json({message:`Product is Not Available (It's category or band may be blocked by Admin). This product will be removed from your cart`})
 
     if(productData . isBlocked ){ 
@@ -139,12 +139,23 @@ const cartCheck = async (req,res)=>{
         return res.status(200).json({success:true})
 }
 const checkout = async (req,res)=>{
-
-   grandTotal = req.session.grandTotal   
+    const {couponCode} = req.query || ''
+    grandTotal = req.session.grandTotal   
    shipping = req.session.shipping     
    totalAmount = req.session.totalAmount  
    totalQuantity = req.session.totalQuantity
     try{
+        let couponVal=0
+        if(couponCode){
+            let couponData = await couponSchema.findOne({code:couponCode})
+            console.log(couponData,'applied coupon')
+            if(couponData){
+                if(couponData.discountType=='fixed'){
+                    couponVal = couponData.discountValue
+                    grandTotal=grandTotal-couponVal
+                }
+            }
+        }
         
           const   userId = req.session._id
           const AllAddress = await userSchema.findOne({_id:userId,isBlocked:false,isOTPVerified:true}).select('addresses -_id')
@@ -174,6 +185,7 @@ const checkout = async (req,res)=>{
         
             if(product.isBlocked===false )     cart.push(product) 
         }
+        const coupons = await couponSchema.find({isActive:true}) || []
 
         // console.log(cartItems,'fff',cart)
         return res.render ('users/checkout' , {
@@ -182,6 +194,7 @@ const checkout = async (req,res)=>{
             shipping,
             totalAmount,
             totalQuantity,
+            coupons,couponVal
         }
         )
         }

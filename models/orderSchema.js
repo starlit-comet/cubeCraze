@@ -44,8 +44,8 @@ const orderSchema = new Schema({
         },
         status: {
             type: String,
-            enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Return Requested', 'Returned'],
-            default: 'Pending'
+            enum: ['Processing', 'Shipped', 'Delivered', 'Cancelled', 'Return Requested', 'Returned','Return Cancelled'],
+            default: 'Processing'
         },
         cancellationReason: String,
         cancelledAt: Date,
@@ -91,7 +91,7 @@ const orderSchema = new Schema({
     status: {
         type: String,
         required: true,
-        enum: ['Pending', 'Processing', 'Paid', 'Shipped', 'Delivered', 'Cancelled', 'Return Request', 'Returned'],
+        enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Return Requested', 'Returned'],
         default: 'Pending'
     },
     paymentMethod: {
@@ -111,6 +111,10 @@ const orderSchema = new Schema({
     couponApplied: {
         type: Boolean,
         default: false
+    },
+    couponDetail:{
+        type:Schema.Types.ObjectId,
+        ref:'Coupon'
     },
     cancellationReason: String,
     cancellationDate: Date,

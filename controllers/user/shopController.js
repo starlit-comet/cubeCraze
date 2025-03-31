@@ -18,26 +18,20 @@ const getBrandsIdByName = async (arrayOfNames)=>{
 const viewShop = async (req, res) => {
     try {
         // Extract query parameters
-        let categoryName = req.query.category ? Array.isArray(req.query.category) ? (req.query.category) : [req.query.category] : []
-        let brandName = req.query.brand ? Array.isArray(req.query.brand) ? (req.query.brand): [req.query.brand] : []
+       // console.log('queries',req.query.brand,req.query.category)
+        let categoryName = req.query.category ? req.query.category.split(','): []
+        let brandName = req.query.brand ? req.query.brand.split(',') : []
         let search = req.query.search ?? "";
         let page = parseInt(req.query.page, 10) || 1; // Ensure `page` is a number, default to 1
-        let limit = req.query.limit;
+        let limit = req.query.limit || 10;
         limit = limit === "all" ? 0 : parseInt(limit, 10) || 10; // Default limit is 10
         let sort = req.query.sort || 'Aa-Zz';
-        console.log(brandName,categoryName,search,' 3 values')
+       // console.log(brandName,categoryName,search,' 3 values')
         // Extract price filter
-        let minPrice = 0; // Default min price
-        let maxPrice = 7500; // Default max price
+        let minPrice = req.query.minPrice|| 0; // Default min price
+        let maxPrice = req.query.maxPrice || 7500; // Default max price
 
-        if (req.query.price) {
-            const priceMatch = req.query.price.match(/\d+/g); // Extract numbers from "₹1000 to ₹5789"
-            if (priceMatch && priceMatch.length === 2) {
-                minPrice = parseInt(priceMatch[0], 10);
-                maxPrice = parseInt(priceMatch[1], 10);
-            }
-        }
-
+      
         // Sorting logic mapping
         const sortOptions = {
             'Zz-Aa': { productName: -1 },
@@ -89,8 +83,7 @@ const viewShop = async (req, res) => {
            //     console.log(allProducts,'shoep controller')
         // Render shop page with data
         req.query.search = search
-
-        res.render("users/shop", {
+        res.render("users/shop", { 
             allProducts,
             allBrands,
             allCategories,
@@ -104,6 +97,7 @@ const viewShop = async (req, res) => {
             maxPrice,
             searchKeyWord:search,
         });
+       // console.log('sending data ',totalProducts,page,limit,sort,minPrice,maxPrice,search)
        // console.log(search)
     } catch (error) {
         console.error(error);

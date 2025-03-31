@@ -7,7 +7,10 @@ const shopController = require('../controllers/user/shopController')
 const addressController = require('../controllers/user/addressController')
 const cartController = require('../controllers/user/cartController')
 const orderController = require('../controllers/user/orderController')
+const referralController = require('../controllers/user/referralController')
+
 const userSchema = require('../models/userSchema')
+
 
 const upload = require('../helpers/multer')
 const userAuth = require('../middlewares/userAuth')
@@ -91,7 +94,7 @@ router.get('/cartCheck',userAuth.isUserLoggedOut,cartController.cartCheck)
 
 // router.get('/orderList',userAuth.isUserLoggedOut,cartController.viewOrderList)
 router.post('/createOrder',userAuth.isUserLoggedOut,orderController.createOrder)  // cod orders
-router.get('/orderList',userAuth.isUserLoggedOut,orderController.viewOrders)
+router.get('/orders',userAuth.isUserLoggedOut,orderController.viewOrders)
 router.get('/viewOrder/:orderId',userAuth.isUserLoggedOut,orderController.orderDetail)
 router.get('/trackOrder/:orderId',userAuth.isUserLoggedOut,orderController.orderTrack)
 
@@ -106,6 +109,10 @@ router.get('/payment-failed', userAuth.isUserLoggedOut, (req, res) => {
 router.get('/order/invoice/:orderId',orderController.createInvoice)
 //delete order
 router.patch('/orders/cancel/:orderId',orderController.cancelOrder)
+router.post('/orders/cancel-product/:orderId',orderController.cancelSingleProduct) //cancel a single product
 
+router.post('/referFriend',referralController.sentEmail)
+
+router.post('/request-product-return',orderController.requestProductReturn)
 // router.get('/sentOTP',userController.generateOTP)
 module.exports=router

@@ -10,12 +10,10 @@ const categoryController =require('../controllers/admin/categoryController.js')
 const productController = require('../controllers/admin/productController.js')
 const productSizeController = require('../controllers/admin/productSizeController.js')
 const orderController = require('../controllers/admin/orderController.js')
+const couponController = require('../controllers/admin/couponController.js')
 
 const upload = require('../helpers/multer.js')
 const multer = require('multer')
-
-
-
 
 
 
@@ -58,6 +56,12 @@ router.get('/orderDetail/:orderId',adminAuth.isAdminLoggedOut,orderController.or
 router.put('/change-order-status/:orderId',adminAuth.isAdminLoggedOut,orderController.changeOrderStatus)
 router.get('/order/invoice/:orderId',orderController.createInvoice)
 
+router.post('/approve-return',adminAuth.isAdminLoggedOut,orderController.approveReturnRequest)
+router.post('/cancel-return',adminAuth.isAdminLoggedOut,orderController.rejectReturnRequest)
+router.get('/Sales-Report',adminAuth.isAdminLoggedOut,orderController.generateReport)
+
+router.get('/coupons',adminAuth.isAdminLoggedOut,couponController.viewCouponPage)
+router.post('/addCoupon',adminAuth.isAdminLoggedOut,couponController.addNewCoupon)
 //     (req,res)=>{
 //     res.render('admin/login')
 // })

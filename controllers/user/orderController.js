@@ -237,7 +237,7 @@ const createOrder = async (req, res) => {
       discount: 0,
       address: { ...shippingAddress.toObject() },
       invoiceDate: new Date(),
-      status: 'Pending',
+      status: 'Processing',
       paymentMethod: paymentType,
       couponApplied: false,
       orderNotes: additionalInformation,
@@ -416,9 +416,12 @@ const verifyRazorpayPayment = async (req, res) => {
   }
 };
 
-
 const viewOrders = async (req,res)=>{
     const userId = req.session._id
+    const user = await  userSchema.findById(userId)
+    const orders = await orderSchema.find({userId}).sort({invoiceDate:-1})
+    // console.log('list:',orders)
+    res.render('users/ordersList',{user,orders})
 }
 
 const orderDetail = async (req,res)=>{
@@ -430,7 +433,7 @@ const orderDetail = async (req,res)=>{
     if(!order) return res.status(404).json({message:'order no3t found'})
     
     res.render('users/orderDetail',{order})
-    console.log('new order details',order)
+   // console.log('new order details',order)
 
 }
 catch(error){
@@ -472,6 +475,8 @@ const createInvoice = async (req, res) => {
   }
 const cancelOrder =async (req, res) => {
     const userId = req.session._id;
+    const {reason} =req.body 
+    console.log('reason for cancel',reason)
   
     try {
       const { orderId } = req.params;
@@ -486,13 +491,27 @@ const cancelOrder =async (req, res) => {
       if (order.status === 'Delivered') {
         return res.status(400).json({ message: 'Delivered orders cannot be cancelled' });
       }
+
+      if (order.status === 'Returned' || order.status === 'Return Requested') {
+        return res.status(400).json({ message: 'This order is requested for Return or had been returned' });
+      }
   
       if (order.status === 'Cancelled') {
         return res.status(400).json({ message: 'Order already cancelled' });
       }
-  
+      console.log('update this order,', order)
       // ✅ Update the order status
+      order.orderedItems
       order.status = 'Cancelled';
+      order.cancellationReason = reason;
+      order.cancellationDate = new Date(Date.now())
+      for(let nos=0;nos<order.orderedItems.length;nos++){
+        if(order.orderedItems[nos].status =="Shipped" || order.orderedItems[nos].status==='Processing'){
+          order.orderedItems[nos].status = 'Cancelled';
+          order.orderedItems[nos].cancellationReason = reason
+        } 
+        else return res.status(400).json({message:"One of the producs is not cancellable"})
+      }
 
       await order.save();
   
@@ -513,7 +532,7 @@ const cancelOrder =async (req, res) => {
       walletHelper.addCredit(userId,order.finalAmount,'ORDER_CANCEL_REFUND',order._id,)
       }
       res.status(200).json({ok:true, message: 'Order cancelled and products restocked successfully.' });
-  
+        console.log('updated order',order)
     } catch (error) {
       console.error('Error cancelling order:', error);
       res.status(500).json({ message: 'Server error while cancelling order.' });
@@ -527,9 +546,6 @@ const createOrderViaCod =async(req,res)=>{
      const { grandTotal ,shipping ,totalAmount,totalQuantity }= req.session
      const formData = req.body
      console.log('final after razorpay succedds',userId,formData,grandTotal ,shipping ,totalAmount,totalQuantity )
-     
-     //
-
      
     // Copy address fields into a plain object
     const copiedAddress = {
@@ -546,7 +562,6 @@ const createOrderViaCod =async(req,res)=>{
       addressType: shippingAddress.addressType
     };
     
-
   const orderedItems = cart.map(item => ({
       product: item.product._id,
       quantity: item.quantity,
@@ -572,11 +587,11 @@ const createOrderViaCod =async(req,res)=>{
       discount: 0, // You can modify this based on coupon logic
       address: copiedAddress,
       invoiceDate: new Date(),
-      status: 'Pending',
+      status: 'Processing',
       paymentMethod: paymentType,
       paymentDetails: {
-          transactionId: '', // Fill when payment is successful
-          orderId: '' // Can be linked to payment gateway orderId
+          transactionId: '', 
+          orderId: '' ,
       },
       couponApplied: false, // Update if coupon applied
       orderNotes:additionalInformation,
@@ -616,5 +631,87 @@ const createOrderViaCod =async(req,res)=>{
       return res.status(500).json({message:error})
     }
   }
+
+
+
+
+  const cancelSingleProduct = async (req,res)=>{
+    const userId = req.session._id
+    const {orderId} = req.params
+    const {reason,itemId,} = req.body
+    try {
+      const order = await orderSchema.findOne({orderId})
+      const restockProduct = await productSchema.findById(itemId)  //PRODUCT TO RESTOCK
+      if(!order) return res.status(404).json({message:'Order Not Found'})
+      const productIndex = order.orderedItems.findIndex(item=>item.product.toString()=== itemId)
+      if(!productIndex){
+        
+       if(productIndex!==0) return res.status(404).json({message:'Product Not Found in order'})
+      }
+      if(['Delivered', 'Cancelled', 'Return Requested', 'Returned'].some(val=>{ val ==  order.orderedItems[productIndex].status }) ){
+        return res.status(400).json({message:'cannot cancel or return this product'})
+      }
+      
+      //changing sttatus or order
+      
+        order.orderedItems[productIndex].status='Cancelled'
+        order.orderedItems[productIndex].cancellationReason=reason
+        order.finalAmount-=(order.orderedItems[productIndex].price*order.orderedItems[productIndex].quantity)
+        order.totalPrice-=(order.orderedItems[productIndex].price*order.orderedItems[productIndex].quantity)
+        
+        console.log('order after 1 prodcut cancel',order)
+        restockProduct.quantity+=order.orderedItems[productIndex].quantity
+
+        if(order.orderedItems.every(item=>item.status=='Cancelled')) {
+          order.finalAmount-=order.shippingCharge
+          order.status='Cancelled'
+          order.cancellationDate=new Date(Date.now())
+          order.cancellationReason = 'All products Cancelled'
+        }
+       await order.save()
+       await restockProduct.save()
+
+       if(order.paymentMethod !=='cod'){
+        walletHelper.addCredit(userId,(order.orderedItems[productIndex].price*order.orderedItems[productIndex].quantity),'PRODUCT_CANCEL_REFUND',order._id,order.orderedItems[productIndex].product,reason)
+        }
+        res.status(200).json({message:'Product Cancelled Succesfully'})
+
+      console.log(reason,itemId,'jkn',productIndex)
+      
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+const requestProductReturn = async (req,res)=>{
+  try {
+    const { orderId, itemId, reason,  } = req.body;
+
+    const order = await orderSchema.findOne({ orderId });
+    if (!order) return res.status(404).json({ message: "Order not found!" });
+
+    const item = order.orderedItems.find(item => item.product.toString() === itemId);
+    if (!item) return res.status(404).json({ message: "Item not found in order!" });
+
+    if (item.status !== "Delivered") {
+        return res.status(400).json({ message: "Only delivered items can be returned." });
+    }
+
+    item.status = "Return Requested";
+    item.returnReason = reason;
+    item.returnRequestedOn = new Date(Date.now());
+    
+    //console.log(order,'requested order')
+    await order.save();
+    res.json({ message: "Return request submitted successfully!" });
+} catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error while requesting return." });
+}
+
+}
+
+
 module.exports ={createOrder,viewOrders,orderDetail,orderTrack,createInvoice,cancelOrder,
-                  createOrderRazorpay,verifyRazorpayPayment,createOrderViaCod}
+                  createOrderRazorpay,verifyRazorpayPayment,createOrderViaCod,cancelSingleProduct,
+                  requestProductReturn,}

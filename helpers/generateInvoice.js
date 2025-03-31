@@ -52,8 +52,8 @@ function generateInvoice(order, user, res) {
     .text('Payment Details:', 400, 240)
     .fontSize(10)
     .text(`Payment Method: ${order.paymentMethod}`, 400, 255)
-    .text(`Transaction ID: ${order.paymentDetails.transactionId || 'N/A'}`, 400, 270)
-    .text(`Order ID: ${order.paymentDetails.orderId || 'N/A'}`, 400, 285);
+    .text(`Transaction ID: ${order?.paymentDetails?.paymentId || 'N/A'}`, 400, 270)
+    .text(`Order ID: ${order?.paymentDetails?.orderId || 'N/A'}`, 400, 285);
 
   // ---------- PRODUCT TABLE HEADER ----------
   const tableTop = 350;
@@ -82,7 +82,7 @@ function generateInvoice(order, user, res) {
     doc
       .fontSize(10)
       .text(i, itemCodeX, productY)
-      .text(item.productName, descX, productY)
+      .text(item.productDetails.name, descX, productY)
       .text(item.quantity, qtyX, productY)
       .text(`Rs. ${item.price} `, priceX, productY)
       .text(`Rs. ${productTotal} `, totalX, productY);

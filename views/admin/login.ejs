@@ -35,20 +35,20 @@
         document.querySelector('#loginForm').addEventListener('submit', async (event) => {
             event.preventDefault();
             let form = event.target;
-    let formData = new FormData(form);
+            let loginData = new URLSearchParams(new FormData(form)); // Converts FormData to URL-encoded format
+            console.log([...loginData])
+            try {
+                console.log("Sending data:", Object.fromEntries(loginData)); // Debugging
 
-    // Convert to URL-encoded format
-    let urlEncodedData = new URLSearchParams(formData);
+                let response = await fetch('/admin/login', {
+                    method: 'POST',
+                    headers:{
+                      'Content-Type': 'application/x-www-form-urlencoded' // Ensure proper content-type
 
-    console.log([...urlEncodedData]); // Debugging output: [["categoryName", "fqwe fwefwq"], ...]
+                    },
+                    body: loginData,
+                });
 
-    let response = await fetch('/admin/addCategory', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: urlEncodedData
-    });
                 if (!response.ok) {
                     throw new Error("Server returned an error");
                 }

@@ -18,7 +18,9 @@ const walletTransactionSchema = new mongoose.Schema({
             'RETURN_PRODUCT_REFUND',
             'ADMIN_CREDIT',
             'PURCHASE_DEDUCT',
-            'WITHDRAWAL'
+            'WITHDRAWAL',
+            'PRODUCT_CANCEL_REFUND',
+            'PRODUCT_RETURN_REFUND'
         ],
         required: true
     },

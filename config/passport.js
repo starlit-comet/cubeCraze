@@ -1,4 +1,5 @@
 const passport = require('passport');
+const referalGenerator = require('../helpers/generateUniquesVal')
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const mongoose = require('mongoose');
 const session = require('express-session')
@@ -19,6 +20,7 @@ passport.use(
             
           //  console.log("Google Profile ID:", profile);
             try {
+                const referalCode = await referalGenerator.generateUniqueCode()
                 let user = await User.findOne({ googleId: profile.id });
                 if(user && user.isBlocked==true) return done(null,false,{message:'User is Blocked',userBlocked:true})
                 if (!user) {
@@ -28,7 +30,8 @@ passport.use(
                         name: profile.displayName,
                         email: profile.emails[0].value,
                         avatar: profile.photos[0].value,
-                        isOTPVerified:true,otp:null
+                        isOTPVerified:true,otp:null,
+                        referalCode
                     });
                     await user.save();
                 }

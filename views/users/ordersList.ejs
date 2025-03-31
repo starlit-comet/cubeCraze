@@ -1,0 +1,280 @@
+<%- include('partials/headSection.ejs') %>
+    </head>
+
+    <body>
+
+        <%- include('partials/header.ejs') %>
+
+            <%- include('partials/mobileMenu.ejs') %>
+
+                <main class="main">
+
+                    <div class="page-header breadcrumb-wrap">
+                        <div class="container">
+                            <div class="breadcrumb">
+                                <a href="/home">Home</a>
+                                <span></span> <a href="">WishList</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <section class="content-main ml-15 mr-15 mt-10 mb-10">
+                        <div class="content-header">
+                            <div>
+                                <h2 class="content-title card-title">Order List</h2>
+                                <p>Showing Latest Orders.</p>
+                            </div>
+                        </div>
+                        <div class="card mb-4">
+                            <header class="card-header">
+                                <div class="row align-items-center">
+                                    <div class="col col-check flex-grow-0">
+                                        <div class="form-check ms-2"></div>
+                                    </div>
+                                    <div class="col-md-3 col-12 me-auto mb-md-0 mb-3">
+                                        <select disabled class="form-select">
+                                            <option selected="">All category</option>
+                                            <option>Electronics</option>
+                                            <option>Clothes</option>
+                                            <option>Automobile</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2 col-6">
+                                        <input type="date" value="02.05.2022" class="form-control">
+                                    </div>
+                                    <div class="col-md-2 col-6">
+                                        <select class="form-select">
+                                            <option selected="">Status</option>
+                                            <option>Active</option>
+                                            <option>Disabled</option>
+                                            <option>Show all</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </header> <!-- card-header end// -->
+                            <div class="card-body">
+                                <div class="row mt-10 mb-10">
+                                    <% orders.forEach(order=> { %>
+                                        <div class="col-1"></div>
+                                        <div class="col-10 mt-10 align-items-center mb-10">
+                                            <div class="order-card">
+                                                <!-- Header -->
+                                                <div class="order-header">
+                                                    <div>
+                                                        <strong>Order Date, Time</strong><br>
+                                                        <%= order.invoiceDate.toLocaleString() %>
+                                                    </div>
+                                                    <div
+                                                        onclick="window.location.href=`viewOrder/<%= order.orderId %>`">
+                                                        <strong>Order ID</strong><br>
+                                                        #<%= order.orderId %>
+                                                    </div>
+
+                                                    <div class="justify-content-end">
+                                                        <strong>Total Amount</strong><br>
+                                                        ₹ <%= order.finalAmount %>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Body -->
+                                                <div class="row">
+                                                    <div class="col-4">
+                                                        <% order.orderedItems.forEach(item=> { %>
+                                                            <div class="order-body">
+                                                                <img src="<%= item.productDetails.images[0] %>"
+                                                                    alt="<%= item.productDetails.name %>">
+                                                                <div class="order-details">
+                                                                    <p>
+                                                                        <%= item.productDetails.name %> <br>
+                                                                            Price: ₹ <%= item.price %> <br>
+                                                                                Quantity: <%= item.quantity %> <br>
+                                                                                    <strong>Status:</strong>
+                                                                                    <span
+                                                                                        class="status-<%= item.status.toLowerCase() %>">
+                                                                                        <%= item.status %>
+                                                                                    </span>
+                                                                    </p>
+
+                                                                </div>
+                                                            </div>
+                                                            <% }); %>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <div class="order-body">
+                                                            <div class="order-details">
+                                                                <div class="card-body border ">
+                                                                    <h5>Shipping Address</h5>
+                                                                    <address>
+                                                                        <%= order.address.fullname %>, &nbsp;<%=
+                                                                                order.address.house_flat %>,&nbsp; <%=
+                                                                                    order.address.street %><br>
+                                                                                    <%= order.address.village_city %>
+                                                                                        .&nbsp;<%=
+                                                                                            order.address.district %>
+                                                                                            ,<%= order.address.state %>
+                                                                                                ,&nbsp; PIN Code: <%=
+                                                                                                    order.address.pincode
+                                                                                                    %>,&nbsp;Phone: <%=
+                                                                                                        order.address.mobile
+                                                                                                        %>
+                                                                    </address>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <div class="mt-10 border pt-10 pb-10 pl-10 pr-10">
+                                                            <h5>Billing Charges</h5>
+                                                            <p class="font-xs">Total Quantity: <%=order.totalQuantity %>
+                                                                    Nos <br>
+                                                                    Shipping Charge: ₹ <%= order.shippingCharge %> <br>
+                                                                        Discount Applied: ₹ <%= order.discount %> <br>
+                                                                            Payment Method: <%=
+                                                                                order.paymentMethod.toUpperCase() %>
+                                                                                <br>
+                                                                                Total Amount :₹ <%= order.finalAmount %>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-2">
+                                                        <div class="mt-10 ">
+                                                            <a class="btn btn-fill mt-15"
+                                                                href="viewOrder/<%= order.orderId %>">Order Detail</a>
+                                                                <a class="btn btn-fill mt-15" href="/trackOrder/<%= order.orderId %>">Track Order</a>
+                                                            <a class="btn btn-fill mt-15"
+                                                                href="/order/invoice/<%= order.orderId %>">Print
+                                                                Invoice</a>
+                                                        </div>
+                                                        <!-- Footer -->
+                                                        <div class="order-footer">
+                                                            Order Status: <h6 class="status-<%= order.status%>">
+                                                                <%= order.status %>
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <dic class="col-1"></dic>
+                                        <% }); %>
+                                </div> <!-- row.// -->
+                            </div> <!-- card-body end// -->
+                        </div>
+                    </section>
+                    <style>
+                        .order-card {
+                            width: 100%;
+                            border: 1px solid #800000;
+                            border-radius: 8px;
+                            margin-bottom: 20px;
+                            font-family: Arial, sans-serif;
+                            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                            background-color: #fff;
+                        }
+
+                        .order-header {
+                            background-color: #800000;
+                            color: white;
+                            padding: 10px;
+                            display: flex;
+                            justify-content: space-between;
+                            border-top-left-radius: 8px;
+                            border-top-right-radius: 8px;
+                        }
+
+                        .order-header div {
+                            font-size: 14px;
+                        }
+
+                        .order-body {
+                            padding: 5px;
+                            display: flex;
+                            align-items: center;
+                        }
+
+                        .order-body img {
+                            width: 80px;
+                            height: 80px;
+                            margin-right: 15px;
+                            border-radius: 4px;
+                        }
+
+                        .order-details {
+                            flex: 1;
+                        }
+
+                        .order-details h3 {
+                            margin: 0;
+                            font-size: 16px;
+                            color: #333;
+                            font-weight: 600;
+                        }
+
+                        .order-details p {
+                            margin: 5px 0;
+                            font-size: 14px;
+                            color: #555;
+                        }
+
+                        .status-Cancelled {
+                            color: red;
+                            font-weight: bold;
+                        }
+
+                        .status-Pending {
+                            color: #f0ad4e;
+                            font-weight: bold;
+                        }
+
+                        .status-Returned {
+                            color: #e77728;
+                            font-weight: bold;
+                        }
+
+                        .status-Delivered {
+                            color: #28a745;
+                            font-weight: bold;
+                        }
+
+                        .order-footer {
+                            text-align: end;
+                            padding: 10px;
+                        }
+
+                        .order-footer a {
+                            color: #007bff;
+                            text-decoration: none;
+                            font-size: 14px;
+                        }
+
+                        .order-footer a:hover {
+                            text-decoration: underline;
+                        }
+                    </style>
+                </main>
+
+                <%- include('partials/footer.ejs') %>
+
+                    <!-- Preloader Start -->
+                    <!-- <div id="preloader-active">
+        <div class="preloader d-flex align-items-center justify-content-center">
+            <div class="preloader-inner position-relative">
+                <div class="text-center">
+                    <h5 class="mb-5">Now Loading</h5>
+                    <div class="loader">
+                        <div class="bar bar1"></div>
+                        <div class="bar bar2"></div>
+                        <div class="bar bar3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+
+                    <%- include('partials/scriptTags.ejs') %>
+
+
+    </body>
+
+    </html>

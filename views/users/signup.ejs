@@ -95,14 +95,20 @@
                 <div class="mb-3 input-group">
                     <input type="password" name='confirmPassword' class="form-control" id="confirm-password" placeholder="Confirm Password">
                     <span class="password-toggle" onclick="togglePassword('confirm-password')">👁️</span>
+                </div> <div class="mb-3">
+                    <input type="checkbox"  name="haveReferralCode" id="haveReferralCode" value="yes">
+                    <label for="haveReferralCode">Do You Have a Referral Code?</label>
+                    <input type="text" name='referralCode' id="referralCodeInput" class="form-control" placeholder="Type Referral Code Here" style="display: none;">
                 </div>
                 <button type="submit" class="btn btn-primary btn-custom">Create Account</button>
                 <p class="text-center mt-3">Already have an account? <a href="login">Log in</a></p>
-            </form>
-        </div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
+               
+                
+                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                <script>
+                    document.getElementById('haveReferralCode').addEventListener('change', function() {
+                        document.getElementById('referralCodeInput').style.display = this.checked ? 'block' : 'none';
+                    });
         function togglePassword(id) {
             let input = document.getElementById(id);
             if (input.type === "password") {
@@ -116,7 +122,16 @@
             event.preventDefault();
             let form = event.target
             let userData = new URLSearchParams(new FormData(form));
-
+            // let refCodeChecked = userData.get('haveReferralCode')
+            // let refCode = userData.get('referralCode')
+            // console.log(refCode,refCodeChecked,'passedvalues')
+            // if(refCode && refCodeChecked=='on'){
+            //    let req = await fetch('/checkReferral',{
+            //     method:'post',
+            //     body:{refCode,refCodeChecked}
+            //    })
+            //    let res= await req.json()
+            // }
             try {
                 let response = await fetch('/signup',{
                     method:'post',
@@ -153,7 +168,20 @@
                 
             }
         })
+        
+        
+        const referalData = new URL(window.location.href)
+        const referalcode = referalData.searchParams.get('referal')
+        if(referalcode){
+            document.getElementById('haveReferralCode').checked=true
+            document.getElementById('referralCodeInput').value = referalcode
+            document.getElementById('referralCodeInput').style.display='block'
+        
+        }
 
+        // document.getElementById('haveReferralCode').addEventListener('change', function() {
+        //    document.getElementById('referralCodeInput').style.display = this.checked ? 'block' : 'none';
+        // });
         
     </script>
 </body>

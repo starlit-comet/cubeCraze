@@ -123,13 +123,13 @@
                         </div>
                         <div class="cart-action text">
                             <a class="btn  mr-10 mb-sm-15" href="/cart" ><i class="fi-rs-shuffle mr-10"></i>Update Cart</a>
-                            <a class="btn " href="/shop"><i class="fi-rs-shopping-bag mr-10"></i>Continue Shopping</a>
+                            <a class="btn " href="/shop"><i class="fi-rs-shopping-bag mr-10"></i>ADD More Products</a>
                         </div>
                         
                         <div class="divider center_icon mt-50 mb-50"><i class="fi-rs-fingerprint"></i></div>
                         <div class="row mb-50">
                             <div class="col-lg-6 col-md-12">
-                                <div class="heading_s1 mb-3">
+                                <!-- <div class="heading_s1 mb-3">
                                     <h4>Calculate Shipping</h4>
                                 </div>
                                 <p class="mt-15 mb-30">Flat rate: <span class="font-xl text-brand fw-900">5%</span></p>
@@ -400,28 +400,11 @@
                                             <button class="btn  btn-sm"><i class="fi-rs-shuffle mr-10"></i>Update</button>
                                         </div>
                                     </div>
-                                </form>
-                                <div class="mb-30 mt-50">
-                                    <div class="heading_s1 mb-3">
-                                        <h4>Apply Coupon</h4>
-                                    </div>
-                                    <div class="total-amount">
-                                        <div class="left">
-                                            <div class="coupon">
-                                                <form action="#" target="_blank">
-                                                    <div class="form-row row justify-content-center">
-                                                        <div class="form-group col-lg-6">
-                                                            <input class="font-medium" name="Coupon" placeholder="Enter Your Coupon">
-                                                        </div>
-                                                        <div class="form-group col-lg-6">
-                                                            <button class="btn  btn-sm"><i class="fi-rs-label mr-10"></i>Apply</button>
-                                                        </div>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                </form> -->
+                               
+                                
+                              
+                                
                             </div>
                             <div class="col-lg-6 col-md-12">
                                 <div class="border p-md-4 p-30 border-radius cart-totals">
@@ -502,6 +485,17 @@
     } catch(error){
         console.log(error)
     }}
+
+    function toggleCustomInput() {
+        let select = document.getElementById("couponSelect");
+        let customInput = document.getElementById("customCoupon");
+        
+        if (select.value === "custom") {
+            customInput.classList.remove("d-none");
+        } else {
+            customInput.classList.add("d-none");
+        }
+    }
 </script>
     <%- include('partials/scriptTags.ejs') %>
 </body>

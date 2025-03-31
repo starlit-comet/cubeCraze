@@ -1,7 +1,7 @@
 <%- include('partials/headSection.ejs') %>
 </head>
 
-<body>
+<body >
     <%- include('partials/header.ejs') %>
 
     <%- include('partials/mobileMenu.ejs') %>
@@ -9,24 +9,23 @@
     <main class="main">
        
         <div class="page-header breadcrumb-wrap">
-            <div class="container">
+            <div class="container ">
                 <div class="breadcrumb">
                     <a href="/home" >Home</a>
                     <span></span> <a  >Profile</a>
                 </div>
             </div>
         </div>
-
-        <section class="pt-50 pb-50">
-            <div class="container">
+        <section class="pt-50 pb-50  container" >
+            <div >
                 <div class="row">
-                    <div class="col-lg-10 m-auto">
+                    <div class=" ">
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="dashboard-menu">
                                     <ul class="nav flex-column" role="tablist">
                                        
-                                            <li class="col-12"> 
+                                            <li class="col"> 
                                                 <div class="row mt-10 mb-10">
                                                     <div class="col-2">
                                                     </div>
@@ -44,9 +43,13 @@
                                         <li class="nav-item">
                                             <a class="nav-link" id="account-detail-tab" data-bs-toggle="tab" href="#account-detail" role="tab" aria-controls="account-detail" aria-selected="true"><i class="fi-rs-user mr-10"></i>Change Password</a>
                                         </li>
-                                        <li class="nav-item">
+                                        <!-- <li class="nav-item">
                                             <a class="nav-link" id="orders-tab" data-bs-toggle="tab" href="#orders" role="tab" aria-controls="orders" aria-selected="false"><i class="fi-rs-shopping-bag mr-10"></i>Orders</a>
+                                        </li> -->
+                                        <li class="nav-item">
+                                            <a class="nav-link"   href="/orders" aria-selected="false"><i class="fi-rs-favourite_border mr-10"></i>Orders List</a>
                                         </li>
+
                                         <li class="nav-item">
                                             <a class="nav-link" id="track-orders-tab" data-bs-toggle="tab" href="#track-orders" role="tab" aria-controls="track-orders" aria-selected="false"><i class="fi-rs-shopping-cart-check mr-10"></i>Track Your Order</a>
                                         </li>
@@ -54,7 +57,7 @@
                                             <a class="nav-link" id="address-tab" data-bs-toggle="tab" href="#address" role="tab" aria-controls="address" aria-selected="true"><i class="fi-rs-marker mr-10"></i>My Address</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" id="account-edit-tab" data-bs-toggle="tab" href="#account-edit" role="tab" aria-controls="account-edit" aria-selected="true"><i class="fi-rs-money mr-10"></i>Edit Account details</a>
+                                            <a class="nav-link" id="account-edit-tab" data-bs-toggle="tab" href="#account-edit" role="tab" aria-controls="account-edit" aria-selected="true">Edit Account details</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link"   href="/wishList" aria-selected="false"><i class="fi-rs-favourite_border mr-10"></i>My WishList</a>
@@ -63,7 +66,10 @@
                                             <a class="nav-link"  href="/cart"  ><i class="fi-rs-shopping-bag mr-10"></i>My Cart</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" id="wallet-tab" data-bs-toggle="tab" href="#wallet" role="tab" aria-controls="wallet" aria-selected="true"><i class="fi-rs-cash mr-10"></i>My Wallet</a>
+                                            <a class="nav-link" id="wallet-tab" data-bs-toggle="tab" href="#wallet" role="tab" aria-controls="wallet" aria-selected="true"><i class="fi-rs-money mr-10"></i>My Wallet</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="referral-tab" data-bs-toggle="tab" href="#referral" role="tab" aria-controls="referral" aria-selected="true"><i class="fi-rs-money mr-10"></i>Referral Program</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" href="/logout"><i class="fi-rs-sign-out mr-10"></i>Logout</a>
@@ -71,8 +77,9 @@
                                     </ul>
                                 </div>
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-9 ">
                                 <div class="tab-content dashboard-content">
+                                    
                                     <div class="tab-pane fade active show" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
                                         <div class="card">
                                             <div class="card-header">
@@ -105,23 +112,26 @@
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            <% userWallet?.transactions.forEach((item,index)=>{ %>
-
-                                                                <tr><td><%= index +1%></td>
-                                                                    <td><a  ><%= item.type%></a></td>
+                                                            <% for(let x= userWallet.transactions.length-1,y=1;x>-1;x--,y++){ %>
+                                                                <tr>
+                                                                    <td><%= y %></td>
+                                                                    <td><%= userWallet.transactions[x].type %></td>
                                                                     <td>
-                                                                        <%= new Date(item.createdAt).toLocaleString('en-IN', {
-                                                                              year: 'numeric',
-                                                                              month: 'short',
-                                                                              day: 'numeric',
-                                                                              hour: '2-digit',
-                                                                              minute: '2-digit'
-                                                                            }) %>
-                                                                      </td>                             
-                                                                      <td><%=item.amount %></td>
-                                                                    <td><%= item.reason %></td>
+                                                                        <%= new Date(userWallet.transactions[x].createdAt).toLocaleString('en-IN', {
+                                                                            year: 'numeric',
+                                                                            month: 'short',
+                                                                            day: 'numeric',
+                                                                            hour: '2-digit',
+                                                                            minute: '2-digit'
+                                                                          }) %>
+                                                                    </td>
+                                                                    <td>
+                                                                       <%= userWallet.transactions[x].amount%>
+                                                                    </td>
+                                                                    <td><%= userWallet.transactions[x].reason %></td>
                                                                 </tr>
-                                                                <% })   %>
+                                                                <% }%>
+                                                           
                                                             
                                                         </tbody>
                                                     </table>
@@ -131,6 +141,46 @@
                                            
                                         </div>
                                     </div>
+                                    <div class="tab-pane fade" id="referral" role="tabpanel" aria-labelledby="referral-tab">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5 class="mb-0">Referral Program</h5>
+                                            </div>
+                                            <div class="card-body contact-from-area">
+                                                <p>By referring new users to our site will give you and the new coustomer will get discount coupons worth ₹100 Each.</p>
+                                                <div class="row">
+                                                    <div class="col-lg-8">
+                                                        <!-- <form class=" mt-30 mb-50" id="referralForm"> -->
+                                                            <div class="input-style mb-20">
+                                                                <p>Refer your friend by entering their mail ID, we will send a link to their mail containing your Referral Code.</p>
+                                                                <label>Enter Your Friends Email ID</label>
+                                                                <input name="referEmail" id="referEmail" placeholder="Refer a Friend enter Email ID" type="text" class="square">
+                                                                <div class="row">
+
+                                                                    <button class="bth-fill btn mt-25 ml-10 col-4" onclick="sentEmailFn()">Refer Friend</button>
+                                                                    <button class="bth-fill btn mt-25 ml-10 col-4" onclick="copyReferLink('<%= userData.referalCode%>')">Copy Referal Link </button>
+
+
+                                                                </div>
+                                                            </div>
+                                                            <div class="input-style mb-20 row">
+
+                                                                <p class="col-12">Share this Code with your Friend and ask them to signup our page using this referal code.</p>
+                                                                <input type="text" class="col-6 ml-10" style="width: 50%;" value="<%= userData.referalCode %>" disabled>
+                                                                <button class="btn-fill btn ml-15 col-3" onclick="copyCode('<%= userData.referalCode %>')">Copy Code </button>
+                                                            </div>
+                                                        <!-- </form> -->
+                                                            <!-- <div class="input-style mb-20">
+                                                                <label>Billing email</label>
+                                                                <input name="billing-email" placeholder="Email you used during checkout" type="email" class="square">
+                                                            </div> -->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- hidden -->
                                     <div class="tab-pane fade " id="orders" role="tabpanel" aria-labelledby="orders-tab">
                                         <div class="card">
                                             <div class="card-header">
@@ -200,6 +250,8 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    
                                     <div class="tab-pane fade" id="track-orders" role="tabpanel" aria-labelledby="track-orders-tab">
                                         <div class="card">
                                             <div class="card-header">
@@ -367,14 +419,16 @@
                                         </div>
                                     </div>
                                     
-                                </div>
+                                    </div>
+                                    
+
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </section>
+       
         </main>
 
          <!-- Preloader Start -->
@@ -394,7 +448,6 @@
         </div>
 
         <%- include('partials/scriptTags.ejs') %>
-
         <script>
             
             async function deleteAddress(addressId) {
@@ -551,8 +604,6 @@ document.getElementById('editUserData').addEventListener('submit',async function
 
 })
 
-
-            
 // document.getElementById('printInvoiceBtn').addEventListener('click', () => {
 //   const orderId = '= order.orderId  '; // replace this dynamically in template
 //   const downloadUrl = `/order/invoice/${orderId}`;
@@ -739,7 +790,7 @@ document.getElementById('editUserData').addEventListener('submit',async function
                     })
                 }
             } catch (error) {
-                
+                console.log(error,'error in updating user details')
             }
         }
     }))
@@ -767,6 +818,82 @@ if(searchValue){
 
 
 }
+
+
+async function sentEmailFn(){
+    const referEmail = document.getElementById('referEmail').value
+    if(!referEmail) return
+    const obj={referEmail}
+    try {
+        Swal.fire({
+            title:'Sending Email...',
+            text:'Please Wait',
+            allowEscapeKey:false,
+            allowOutsideClick:false,
+            didOpen: ()=> Swal.showLoading()
+        })
+        let response = await fetch('/referFriend',{
+            method:'post',
+            headers:{'content-type':'application/json'},
+            body:JSON.stringify(obj)
+        })
+        let result = await response.json()
+        console.log(result)
+        if(result.ok){
+            Swal.fire({
+                title:'Email Sent Success..!!',
+                icon:'success',
+                text:'Kindly ask the coustomer to signup using the link provided in email'
+            })
+        }
+        else{
+            Swal.fire({
+                icon:'error',
+                text:result.message,
+                title:'Error Sending Email'
+            })
+        }
+        console.log()
+    } catch (error) {
+        console.log(error,'error iin refer email')
+        Swal.fire({
+            icon:'error',
+            title:'Unexpected Error Occured',
+            text:'Please try after sometime'
+        })
+    }
+}
+
+
+function copyCode(code) {
+    navigator.clipboard.writeText(code).then(() => {
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: 'Referral code copied!',
+            showConfirmButton: false,
+            timer: 2000
+        });
+    }).catch(err => {
+        console.error("Failed to copy: ", err);
+    });
+}
+function copyReferLink(code) {
+    navigator.clipboard.writeText(`http://localhost:3232/signup?referal=${code}`).then(() => {
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: 'Referral Link copied!',
+            showConfirmButton: false,
+            timer: 2000
+        });
+    }).catch(err => {
+        console.error("Failed to copy: ", err);
+    });
+}
+
 
 
         </script>

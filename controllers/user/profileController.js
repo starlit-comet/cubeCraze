@@ -20,9 +20,10 @@ try{
     }
     let userWallet=[]
     userWallet = await Wallet.findOne({userId})
+   // userWallet.transactions.sort
     
    // console.log(userData)
-    console.log(`userLoggedIn: ${userData.name}`)
+    console.log(`userLoggedIn: ${userData}`)
    // console.log('user',userData)
   // console.log(orders)
     return res.render('users/profile',{userData,userWallet,searchKeyWord:search,

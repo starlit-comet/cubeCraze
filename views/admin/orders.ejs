@@ -54,12 +54,20 @@
                                 </thead>
                                 <tbody>
                                     <% orders.forEach((item,index)=>{  %>
-                                    <tr>
+                                    <tr 
+                                    <% if(item.orderedItems.some(product=>product.status==='Return Requested' )) { %>
+                                        style="background-color: rgba(191, 34, 23, 0.338);"
+                                        <% }%>
+                                    >
                                         <td><%= index+1 %></td>
                                         <td><a href="">orderId</a></td>
                                         <td><b><a href="/admin/customer"><%= item.address.fullname %></a></b></td>
                                         <td>₹ <%= item.finalAmount %></td>
-                                        <td><span class=" "><%= item.status %></span></td>
+                                        <td><span class=" "><%= item.status %><br>
+                                            <% if(item.orderedItems.some(product=>product.status==='Return Requested' )) { %>
+                                                Return Request Found
+                                                <% }%>
+                                        </span></td>
                                         <td>  <% const options = {
                                             hour: 'numeric',
                                             hour12: true,     
@@ -85,168 +93,7 @@
                                         </td>
                                     </tr>
                                     <% }) %>
-                                    <!-- <tr>
-                                        <td>789</td>
-                                        <td><b>Guy Hawkins</b></td>
-                                        <td>$0.00</td>
-                                        <td><span class="badge rounded-pill alert-danger">Cancelled</span></td>
-                                        <td>25.05.2022</td>
-                                        <td class="text-end">
-                                            <a href="#" class="btn btn-md rounded font-sm">Detail</a>
-                                            <div class="dropdown">
-                                                <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
-                                                <div class="dropdown-menu">
-                                                    <a class="dropdown-item" href="#">View detail</a>
-                                                    <a class="dropdown-item" href="#">Edit info</a>
-                                                    <a class="dropdown-item text-danger" href="#">Delete</a>
-                                                </div>
-                                            </div>  
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>478</td>
-                                        <td><b>Leslie Alexander</b></td>
-                                        <td>$293.01</td>
-                                        <td><span class="badge rounded-pill alert-warning">Pending</span></td>
-                                        <td>18.05.2022</td>
-                                        <td class="text-end">
-                                            <a href="#" class="btn btn-md rounded font-sm">Detail</a>
-                                            <div class="dropdown">
-                                                <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
-                                                <div class="dropdown-menu">
-                                                    <a class="dropdown-item" href="#">View detail</a>
-                                                    <a class="dropdown-item" href="#">Edit info</a>
-                                                    <a class="dropdown-item text-danger" href="#">Delete</a>
-                                                </div>
-                                            </div>  
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>589</td>
-                                        <td><b>Albert Flores</b></td>
-                                        <td>$105.55</td>
-                                        <td><span class="badge rounded-pill alert-warning">Pending</span></td>
-                                        <td>07.02.2022</td>
-                                        <td class="text-end">
-                                            <a href="#" class="btn btn-md rounded font-sm">Detail</a>
-                                            <div class="dropdown">
-                                                <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
-                                                <div class="dropdown-menu">
-                                                    <a class="dropdown-item" href="#">View detail</a>
-                                                    <a class="dropdown-item" href="#">Edit info</a>
-                                                    <a class="dropdown-item text-danger" href="#">Delete</a>
-                                                </div>
-                                            </div>  
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>345</td>
-                                        <td><b>Eleanor Pena</b></td>
-                                        <td>$779.58</td>
-                                        <td><span class="badge rounded-pill alert-success">Received</span></td>
-                                        <td>18.03.2022</td>
-                                        <td class="text-end">
-                                            <a href="#" class="btn btn-md rounded font-sm">Detail</a>
-                                            <div class="dropdown">
-                                                <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
-                                                <div class="dropdown-menu">
-                                                    <a class="dropdown-item" href="#">View detail</a>
-                                                    <a class="dropdown-item" href="#">Edit info</a>
-                                                    <a class="dropdown-item text-danger" href="#">Delete</a>
-                                                </div>
-                                            </div>  
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>456</td>
-                                        <td><b>Dianne Russell</b></td>
-                                        <td>$576.28</td>
-                                        <td><span class="badge rounded-pill alert-success">Received</span></td>
-                                        <td>23.04.2022</td>
-                                        <td class="text-end">
-                                            <a href="#" class="btn btn-md rounded font-sm">Detail</a>
-                                            <div class="dropdown">
-                                                <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
-                                                <div class="dropdown-menu">
-                                                    <a class="dropdown-item" href="#">View detail</a>
-                                                    <a class="dropdown-item" href="#">Edit info</a>
-                                                    <a class="dropdown-item text-danger" href="#">Delete</a>
-                                                </div>
-                                            </div>  
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>768</td>
-                                        <td><b>Savannah Nguyen</b></td>
-                                        <td>$589.99</td>
-                                        <td><span class="badge rounded-pill alert-success">Received</span></td>
-                                        <td>18.05.2022</td>
-                                        <td class="text-end">
-                                            <a href="#" class="btn btn-md rounded font-sm">Detail</a>
-                                            <div class="dropdown">
-                                                <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
-                                                <div class="dropdown-menu">
-                                                    <a class="dropdown-item" href="#">View detail</a>
-                                                    <a class="dropdown-item" href="#">Edit info</a>
-                                                    <a class="dropdown-item text-danger" href="#">Delete</a>
-                                                </div>
-                                            </div>  
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>977</td>
-                                        <td><b>Kathryn Murphy</b></td>
-                                        <td>$169.43</td>
-                                        <td><span class="badge rounded-pill alert-success">Received</span></td>
-                                        <td>23.03.2022</td>
-                                        <td class="text-end">
-                                            <a href="#" class="btn btn-md rounded font-sm">Detail</a>
-                                            <div class="dropdown">
-                                                <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
-                                                <div class="dropdown-menu">
-                                                    <a class="dropdown-item" href="#">View detail</a>
-                                                    <a class="dropdown-item" href="#">Edit info</a>
-                                                    <a class="dropdown-item text-danger" href="#">Delete</a>
-                                                </div>
-                                            </div>  
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>687</td>
-                                        <td><b>Jacob Jones</b></td>
-                                        <td>$219.78</td>
-                                        <td><span class="badge rounded-pill alert-success">Received</span></td>
-                                        <td>07.05.2022</td>
-                                        <td class="text-end">
-                                            <a href="#" class="btn btn-md rounded font-sm">Detail</a>
-                                            <div class="dropdown">
-                                                <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
-                                                <div class="dropdown-menu">
-                                                    <a class="dropdown-item" href="#">View detail</a>
-                                                    <a class="dropdown-item" href="#">Edit info</a>
-                                                    <a class="dropdown-item text-danger" href="#">Delete</a>
-                                                </div>
-                                            </div>  
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>688</td>
-                                        <td><b>Jacob Jones</b></td>
-                                        <td>$219.78</td>
-                                        <td><span class="badge rounded-pill alert-success">Received</span></td>
-                                        <td>07.05.2022</td>
-                                        <td class="text-end">
-                                            <a href="#" class="btn btn-md rounded font-sm">Detail</a>
-                                            <div class="dropdown">
-                                                <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
-                                                <div class="dropdown-menu">
-                                                    <a class="dropdown-item" href="#">View detail</a>
-                                                    <a class="dropdown-item" href="#">Edit info</a>
-                                                    <a class="dropdown-item text-danger" href="#">Delete</a>
-                                                </div>
-                                            </div>  
-                                        </td>
-                                    </tr> -->
+                                    
                                 </tbody>
                             </table>
                         </div> <!-- table-responsive //end -->
@@ -256,40 +103,48 @@
             <div class="col-md-3">
                 <div class="card mb-4">
                     <div class="card-body">
-                        <h5 class="mb-3">Filter by</h5>
-                        <form>
+                        <h5 class="mb-3">Generate Report </h5>
+                        <form id="salesReportForm">
                             <div class="mb-4">
-                                <label for="order_id" class="form-label">Order ID</label>
-                                <input type="text" placeholder="Type here" class="form-control" id="order_id">
-                            </div>
-                            <div class="mb-4">
-                                <label for="order_customer" class="form-label">Customer</label>
-                                <input type="text" placeholder="Type here" class="form-control" id="order_customer">
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label">Order Status</label>
-                                <select class="form-select">
-                                    <option>Published</option>
-                                    <option>Draft</option>
+                                <label for="dateRange" class="form-label">Select Range</label>
+                                <select id="dateRange" class="form-control" onchange="updateDateRange()">
+                                    <option value="all" selected>All Time</option>
+                                    <option value="1day">Last 1 Day</option>
+                                    <option value="7days">Last Week</option>
+                                    <option value="1month">Last Month</option>
+                                    <option value="6months">Last 6 Months</option>
+                                    <option value="1year">Last Year</option>
+                                    <option value="custom">Custom Date Range</option>
+
                                 </select>
                             </div>
+                        
                             <div class="mb-4">
-                                <label for="order_total" class="form-label">Total</label>
-                                <input type="text" placeholder="Type here" class="form-control" id="order_total">
+                                <label for="order_created_date" class="form-label">From</label>
+                                <input type="date" class="form-control" id="order_created_date">
                             </div>
+                            
                             <div class="mb-4">
-                                <label for="order_created_date" class="form-label">Date Added</label>
-                                <input type="text" placeholder="Type here" class="form-control" id="order_created_date">
+                                <label for="order_modified_date" class="form-label">To</label>
+                                <input type="date" class="form-control" id="order_modified_date">
                             </div>
+                        
                             <div class="mb-4">
-                                <label for="order_modified_date" class="form-label">Date Modified</label>
-                                <input type="text" placeholder="Type here" class="form-control" id="order_modified_date">
+                                <label class="form-label">Select File Type</label>
+                                <div>
+                                    <input type="radio" id="file_excel" name="file_type" value="excel" checked>
+                                    <label for="file_excel">Excel</label>
+                                    
+                                    <input type="radio" id="file_pdf" name="file_type" value="pdf">
+                                    <label for="file_pdf">PDF</label>
+                                </div>
                             </div>
+                        
                             <div class="mb-4">
-                                <label for="order_customer_1" class="form-label">Customer</label>
-                                <input type="text" placeholder="Type here" class="form-control" id="order_customer_1">
+                                <button type="button" class="btn btn-primary" onclick="generateReport()">Generate Report</button>
                             </div>
                         </form>
+                        
                     </div>
                 </div> <!-- card end// -->
             </div>
@@ -312,6 +167,131 @@
     <script>
         document.getElementById("orders12e").classList.add("active");
     
-    </script>
+        document.addEventListener("DOMContentLoaded", () => {
+    updateDateRange(); // Set "All Time" behavior on load
+});
+function updateDateRange() {
+    const dateRange = document.getElementById("dateRange").value;
+    const fromDateInput = document.getElementById("order_created_date");
+    const toDateInput = document.getElementById("order_modified_date");
+
+    const today = new Date();
+    let fromDate = new Date();
+
+    switch (dateRange) {
+        case "1day":
+            fromDate.setDate(today.getDate() - 1);
+            break;
+        case "7days":
+            fromDate.setDate(today.getDate() - 7);
+            break;
+        case "1month":
+            fromDate.setMonth(today.getMonth() - 1);
+            break;
+        case "6months":
+            fromDate.setMonth(today.getMonth() - 6);
+            break;
+        case "1year":
+            fromDate.setFullYear(today.getFullYear() - 1);
+            break;
+        case "all":
+            fromDateInput.value = "";
+            toDateInput.value = "";
+            fromDateInput.disabled = true;
+            toDateInput.disabled = true;
+            return;
+        case "custom":
+            fromDateInput.disabled = false;
+            toDateInput.disabled = false;
+            fromDateInput.value = "";
+            toDateInput.value = "";
+            return;
+    }
+
+    fromDateInput.value = fromDate.toISOString().split("T")[0];
+    toDateInput.value = today.toISOString().split("T")[0];
+    fromDateInput.disabled = false;
+    toDateInput.disabled = false;
+}
+
+function validateDates() {
+    const fromDate = document.getElementById("order_created_date").value;
+    const toDate = document.getElementById("order_modified_date").value;
+    const today = new Date().toISOString().split("T")[0];
+
+    if (!fromDate || !toDate) {
+        Swal.fire({
+            icon: "warning",
+            title: "Invalid Date Range",
+            text: "Please select both From and To dates.",
+        });
+        return false;
+    }
+
+    if (new Date(fromDate) > new Date(toDate)) {
+        Swal.fire({
+            icon: "error",
+            title: "Invalid Date Selection",
+            text: "The From date cannot be later than the To date.",
+        });
+        return false;
+    }
+
+    if (toDate > today) {
+        Swal.fire({
+            icon: "error",
+            title: "Invalid To Date",
+            text: "The To date cannot be in the future.",
+        });
+        return false;
+    }
+
+    const minRange = new Date(fromDate);
+    minRange.setDate(minRange.getDate() + 1); // At least one day difference
+
+    if (new Date(toDate) < minRange) {
+        Swal.fire({
+            icon: "error",
+            title: "Minimum Range Required",
+            text: "The date range must be at least one day.",
+        });
+        return false;
+    }
+
+    return true;
+}
+
+function generateReport() {
+    const dateRange = document.getElementById("dateRange").value;
+    const fromDate = document.getElementById("order_created_date").value;
+    const toDate = document.getElementById("order_modified_date").value;
+    const fileType = document.querySelector('input[name="file_type"]:checked').value;
+
+    let queryParams = new URLSearchParams({ fileType });
+
+    // If not "All Time", validate and include date range
+    if (dateRange !== "all") {
+        if (!validateDates()) {
+            return;
+        }
+        queryParams.append("fromDate", fromDate);
+        queryParams.append("toDate", toDate);
+    }
+
+    // Construct the URL
+    const reportUrl = `/admin/Sales-Report?${queryParams.toString()}`;
+
+    Swal.fire({
+        icon: "success",
+        title: "Generating Report",
+        text: `Your ${fileType.toUpperCase()} report is being generated.`,
+        showConfirmButton: false,
+        timer: 2000
+    }).then(() => {
+        window.open(reportUrl, "_blank");
+    });
+}
+
+   </script>
         
         <%- include('partials/footer.ejs') %>

@@ -14,8 +14,7 @@
                     <a href="home" rel="nofollow">Home</a>
                     <span></span> <a href="/profile" rel="nofollow">Profile</a>
 
-                    <span></span> <a href="/cart" rel="nofollow">Cart</a>
-                    <span></span> CheckOut
+                    <span></span> Order Detail
                 </div>
             </div>
         </div>
@@ -26,7 +25,7 @@
         <section class="content-main col-10 center">
             <div class="content-header">
                 <div>
-                    <h2 class="content-title card-title">Order detail</h2>
+                    <h2 class="content-title card-title">Order Detail</h2>
                     
                     <p>Details for Order ID:<b class="text-danger"> <%= order.orderId %></b>
                     </p>
@@ -37,20 +36,20 @@
                     <div class="row align-items-center">
                         <div class="col-lg-6 col-md-6 mb-lg-0 mb-15">
                             <span>
-                                <i class="material-icons md-calendar_today"></i> Order Placed on : <b>
+                                <i class="material-icons md-calendar_today"></i> Order Placed on : <strong class="strong">
                                     <% const options = {
                                         hour: 'numeric',
                                         hour12: true,     
                                         minute: '2-digit',
-                                        weekday: 'short', 
+                                        weekday: 'long', 
                                         year: 'numeric',  
-                                        month: 'short',   
+                                        month: 'long',   
                                         day: 'numeric',  
                                       };
                                        %>
                                     <% const formattedDate = order.invoiceDate.toLocaleString('en-US', options); %>
                                       <%= formattedDate %>
-                                </b>
+                                    </strong>
                             </span> <br>
                             <small class="text-muted">Order ID: <%= order.orderId %></small>
                         </div>
@@ -125,11 +124,12 @@
                                 <table class="table">
                                     <thead>
                                         <tr>
-                                            <th width =5%> Sl.no</th>
-                                            <th width="50%">Product</th>
-                                            <th width="15%">Unit Price</th>
-                                            <th width="15%">Quantity</th>
-                                            <th width="150%" class="text-end">Total</th>
+                                            <th width ='5%'> Sl.no</th>
+                                            <th width="45%" colspan="1">Product</th>
+                                            <th width="20">Actions</th>
+                                            <th width="10%">Unit Price</th>
+                                            <th width="10%">Quantity</th>
+                                            <th width="10%" class="text-end">Total</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -138,26 +138,42 @@
                                             <td><%= index+1 %></td>
                                             <td>
                                                 <a class="itemside" href="#">
-                                                    
                                                     <div class="left">
                                                         <% item.productDetails.images.forEach((img)=>{ %>
                                                         <img src="<%= img %>" width="40" height="40" class="img-xs" alt="Item">
                                                         <% }) %>
-
                                                     </div>
                                                     <div class="info"> <%= item.productDetails.name %> </div>
                                                     <div class="data">Brand: <%= item.productDetails.brand %>  </div>
                                                     <div class="data">Category: <%= item.productDetails.category %>  </div>
-
-
+                                                    <div class="data">Status : <%=item.status %></div>
                                                 </a>
                                             </td>
+                                            <!-- Modify the Actions column in the table -->
+<td>
+    <div class="row pt-10 pl-10 pr-10 pb-10 mt-10 mb-10">
+        <button onclick="giveReview('<%= order.orderedItems.product %>')" class="btn btn-fill mt-10 pt-10 pl-10 pr-10 pb-10">Give Review</button>
+        
+        <% if(item.status === 'Delivered') { %>
+            <button onclick="requestReturn('<%= item.product %>', '<%= order.orderId %>')" class="btn btn-fill mt-10 pt-10 pl-10 pr-10 pb-10">Request Return</button>
+        <% } else if(['Cancelled', 'Returned','Return Cancelled'].includes(item.status)) { %>
+            <button class="btn btn-fill mt-10 pt-10 pl-10 pr-10 pb-10" disabled>Action Not Available</button>
+     <% } else if(item.status=='Return Requested') { %>
+        <button class="btn btn-fill mt-10 pt-10 pl-10 pr-10 pb-10" disabled>Requested for Return</button>
+
+        <% } else { %>
+            <button onclick="cancelSingleOrder('<%= item.product %>', '<%= order.orderId %>')" class="btn btn-fill mt-10 pt-10 pl-10 pr-10 pb-10">Cancel Product</button>
+        <% } %>
+        
+        <button onclick="addToCart('<%= order.orderedItems.product %>')" class="btn btn-fill mt-10 pt-10 pl-10 pr-10 pb-10">Buy Again</button>
+    </div>
+</td>
                                             <td> <%= item.price %> </td>
                                             <td> <%= item.quantity %> </td>
                                             <td class="text-end"> <%= item.price * item.quantity %> </td>
                                         </tr>
                                         <% }) %>
-                                            <td colspan="5">
+                                            <td colspan="6">
                                                 <article class="float-end">
                                                     <dl class="dlist">
                                                         <dt>Subtotal :  ₹ <%= order.totalPrice %></dt>
@@ -184,7 +200,7 @@
                                 </table>
                             </div> <!-- table-responsive// -->
                             <a class="btn btn-primary" href="/trackOrder/<%= order.orderId %>">View Order Tracking</a>
-                            <a class="btn btn-primary" href="/profile">View All Orders</a>
+                            <a class="btn btn-primary" href="/orders">View All Orders</a>
 
                             <% if(order.status =='Cancelled'){ %>
                             <button id="" class="btn disabled btn-primary"  >
@@ -192,8 +208,8 @@
                                   </button>
                                   
                             <% }  else if(order.status =='Delivered'){ %>
-                                <button id="" class="btn disabled btn-primary"  >
-                                        Delivered
+                                <button onclick="requestForReturn(`<%= order%>`)" class="btn btn-primary"  >
+                                        Request for Return
                                       </button>
                                       
                                 <% } else { %>
@@ -201,7 +217,7 @@
                                 Cancel Order
                               </button>
                                 <%}%>
-                              <button id="printInvoiceBtn" class="btn btn-primary"  >
+                              <button id="printInvoiceBtn" class="m-0 btn btn-primary"  >
                                 Print Invoice
                               </button>  
                         <div class="col-lg-1"></div>
@@ -232,7 +248,7 @@
         </main>
         <script>
             
-    document.getElementById('printInvoiceBtn').addEventListener('click', () => {
+document.getElementById('printInvoiceBtn').addEventListener('click', () => {
   const orderId = '<%= order.orderId  %>'; // replace this dynamically in template
   const downloadUrl = `/order/invoice/${orderId}`;
 
@@ -240,29 +256,91 @@
   window.open(downloadUrl, '_blank');
 });
 
-document.getElementById('cancelOrderBtn').addEventListener('click', function () {
+document.getElementById('cancelOrderBtn').addEventListener('click',async function () {
     const orderId = this.getAttribute('data-order-id');
     const cancelBtn = this;
 
-    Swal.fire({
-      title: 'Are you sure?',
-      text: "Do you really want to cancel this order?",
-      icon: 'warning',
-      input:'text',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, cancel it!',
-      reverseButtons: true,
-      allowOutsideClick:false
-    }).then((result) => {
+     Swal.fire({
+                title: "Select Return Reason",
+                html: `
+                    <select id="returnReason" class="swal2-select" style="width: 70%; border:solid grey 1px; padding: 10px; margin-top: 10px;">
+                        <option value="" disabled selected>Choose a reason</option>
+                        <option value="damaged">Product is damaged</option>
+                        <option value="wrongItem">Received wrong item</option>
+                        <option value="notSatisfied">Not satisfied with the product</option>
+                        <option value="other">Other (Specify)</option>
+                    </select>
+                    <input type="text" id="customReason" class="swal2-input" style="margin-top: 10px; display: none;" placeholder="Enter your reason">
+                `,
+                showCancelButton: true,
+                cancelButtonText: "No",
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, cancel it!',
+                reverseButtons: true,
+                allowOutsideClick:false,  
+                preConfirm: () => {
+                    const selectedReason = document.getElementById("returnReason").value;
+                    const customReason = document.getElementById("customReason").value.trim();
+
+                    if (!selectedReason) {
+                        return Swal.showValidationMessage("Please select a reason.");
+                    }
+
+                    if (selectedReason === "other" && !customReason) {
+                        return Swal.showValidationMessage("Please enter a custom reason.");
+                    }
+
+                    return selectedReason === "other" ? customReason : selectedReason;
+                },
+                didOpen: () => {
+                    const selectBox = document.getElementById("returnReason");
+                    const customInput = document.getElementById("customReason");
+
+                    selectBox.addEventListener("change", () => {
+                        if (selectBox.value === "other") {
+                            customInput.style.display = "block";
+                        } else {
+                            customInput.style.display = "none";
+                        }
+                    });
+                }
+            })
+            // .then((result) => {
+            //     if (result.isConfirmed) {
+            //         return  result.value           }
+            // });
+
+    // Swal.fire({
+    //   title: 'Are you sure?',
+    //   text: "Do you really want to cancel this order?",
+    //   icon: 'warning',
+    //   html: `
+    //                 <select id="returnReason" class="swal2-select"  style="width: 70%; border:solid grey 1px; padding: 10px; margin-top: 10px;">
+    //                     <option value="" disabled selected>Choose a reason</option>
+    //                     <option value="damaged">Product is damaged</option>
+    //                     <option value="wrongItem">Received wrong item</option>
+    //                     <option value="notSatisfied">Not satisfied with the product</option>
+    //                     <option value="other">Other (Specify)</option>
+    //                 </select>
+    //                 <input type="text" id="customReason" class="swal2-input" style="margin-top: 10px; display: none;" placeholder="Enter your reason">
+    //             `,
+    //                   showCancelButton: true,
+    //   confirmButtonColor: '#d33',
+    //   cancelButtonColor: '#3085d6',
+    //   confirmButtonText: 'Yes, cancel it!',
+    //   reverseButtons: true,
+    //   allowOutsideClick:false
+    // }).
+    
+    .then((result) => {
       if (result.isConfirmed) {
         
         fetch(`/orders/cancel/${orderId}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json'
-          }
+          },body:JSON.stringify({reason:result.value})
         })
           .then(response => response.json())
           .then(data => {
@@ -298,7 +376,176 @@ document.getElementById('cancelOrderBtn').addEventListener('click', function () 
       }
     });
   });
-        </script>
+    
+  async function giveReview(productId){
+    Swal.fire({
+        icon:'error',
+        title: "Review Feature is not functional" 
+    })
+  }
+
+
+  // Function to cancel a single product
+  async function cancelSingleOrder(itemId, orderId) {
+    try {
+        Swal.fire({
+            title: "Do you really want to cancel this product?",
+            icon: 'info',
+            text: 'Provide a reason for cancelling this product!',
+            html: `
+                <select id="returnReason" class="swal2-select" style="width: 70%; border:solid grey 1px; padding: 10px; margin-top: 10px;">
+                    <option value="" disabled selected>Choose a reason</option>
+                    <option value="damaged">Changed My Mind</option>
+                    <option value="wrongItem">Choosed wrong item</option>
+                    <option value="other">Other (Specify)</option>
+                </select>
+                <input type="text" id="customReason" class="swal2-input" style="margin-top: 10px; display: none;" placeholder="Enter your reason">
+            `,
+            showCancelButton: true,
+            confirmButtonText: "Yes, Cancel this item",
+            cancelButtonText: "No",
+            preConfirm: () => {
+                const selectedReason = document.getElementById("returnReason").value;
+                const customReason = document.getElementById("customReason").value.trim();
+
+                if (!selectedReason) {
+                    return Swal.showValidationMessage("Please select a reason.");
+                }
+
+                if (selectedReason === "other" && !customReason) {
+                    return Swal.showValidationMessage("Please enter a custom reason.");
+                }
+
+                return selectedReason === "other" ? customReason : selectedReason;
+            },
+            didOpen: () => {
+                const selectBox = document.getElementById("returnReason");
+                const customInput = document.getElementById("customReason");
+
+                selectBox.addEventListener("change", () => {
+                    customInput.style.display = selectBox.value === "other" ? "block" : "none";
+                });
+            }
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                const reason = result.value;
+                console.log(itemId, reason);
+
+                try {
+                    const response = await fetch(`/orders/cancel-product/${orderId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            itemId,
+                            reason,
+                        })
+                    });
+
+                    const resultData = await response.json();
+
+                    if (response.ok) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: 'Product cancellation request submitted successfully.'
+                        }).then(() => {
+                            window.location.reload(); 
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: resultData.message || 'Failed to cancel the product.'
+                        });
+                    }
+                } catch (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: 'An error occurred while processing your request. Please try again.'
+                    });
+                    console.error('Error cancelling product:', error);
+                }
+            }
+        });
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Unexpected Error!',
+            text: 'Something went wrong. Please try again later.'
+        });
+        console.error('Unexpected error:', error);
+    }
+}
+
+
+async function requestReturn(itemId, orderId) {
+    try {
+        const { value: reason } = await Swal.fire({
+            title: "Return Request",
+            input: "text",
+            inputLabel: "Please provide a reason for return",
+            inputPlaceholder: "Enter return reason",
+            showCancelButton: true,
+            confirmButtonText: "Submit",
+            cancelButtonText: "Cancel",
+            inputValidator: (value) => {
+                if (!value) {
+                    return "Return reason is required!";
+                }
+            }
+        });
+
+        if (!reason) return; // User canceled the prompt
+        console.log(orderId,itemId,reason,'request product return')
+        const response = await fetch(`/request-product-return`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                orderId: orderId,
+                itemId: itemId,
+                reason: reason,
+                //returnRequestDate: new Date().toISOString()
+            })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            Swal.fire("Success", "Return request submitted successfully!", "success").then(() => {
+                window.location.reload();
+            });
+        } else {
+            Swal.fire("Error", result.message || "Failed to submit return request", "error");
+        }
+    } catch (error) {
+        console.error('Error requesting return:', error);
+        Swal.fire("Error", "An error occurred while submitting return request. Please try again.", "error");
+    }
+}
+
+
+       async function requestForReturn(order) {
+        console.log(order)
+        Swal.fire({
+            title:'Request for Return of products',
+            icon:'warning',
+            text:'choose the products you want to return and provide reason',
+            allowOutsideClick:false,
+            allowEscapeKey:false,
+            showCancelButton:true,
+            confirmButtonText:'Request for Return',
+            html:`<div class='row'>
+                <div>hello</div>
+                </div>`,
+        })
+
+       }
+       </script>
         
     <%- include('partials/scriptTags.ejs') %>
 </body>

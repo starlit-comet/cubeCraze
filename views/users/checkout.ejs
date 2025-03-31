@@ -24,7 +24,7 @@
             <div class="container">
                
                 <div class="row">
-                    <div class="col-md-7 ">
+                    <div class="col-md-5 ">
                         <div class="mb-25">
                             <h3>Billing Details</h3>
                             <h6>Choose your Address or Add a new one</h6>
@@ -77,7 +77,13 @@
                                     <div class="chek-form">
                                         <div class="custome-checkbox">
                                             <input class="form-check-input"  type="checkbox" name="selectedAddress" id="differentaddress">
-                                            <label class="form-check-label label_info" data-bs-toggle="collapse" data-target="#collapseAddress" href="#collapseAddress" aria-controls="collapseAddress" for="differentaddress"><span>Ship to a different address?</span></label>
+                                            <label class="form-check-label label_info" data-bs-toggle="collapse" data-target="#collapseAddress" href="#collapseAddress" aria-controls="collapseAddress" for="differentaddress"><span>
+                                              <% if ( addressData.length==0) { %>
+                                              Add new Address?
+                                              <% } else { %>
+                                              Ship to a different address?
+                                              <% } %>
+                                            </span></label>
                                         </div>
                                     </div>
                                 </div>
@@ -90,11 +96,11 @@
                             <div class="mb-20">
                                 <h5>Additional information</h5>
                             </div>
-                            <div class="form-group mb-30">
-                                <textarea rows="5" id="additionalInformation" placeholder="Order notes"></textarea>
+                            <div class=" mb-30">
+                                <textarea rows="1" style="width: 50%; min-height: 10%;" id="additionalInformation" placeholder="Order notes"></textarea>
                             </div>
                 </div>
-                    <div class="col-md-5">
+                    <div class="col-md-7">
                         <div class="order_review">
                             <div class="mb-10">
                                 <h4>Your Orders</h4>
@@ -127,7 +133,18 @@
 
                                         <tr>
                                             <td > <b>Final Price</b></td>
-                                            <td>Shipping Charge: <%= shipping%></td>
+                                            <td><div class="row">
+                                              <div class="col-">
+
+                                                Shipping Charge: <%= shipping%>
+                                              </div>
+                                              <% if(couponVal){ %>
+                                                <div class="col-12">
+                                                  <h6>Coupon Applied: <%=couponVal %></h6>
+                                                </div>
+                                                <%}%>
+                                            </div>
+                                          </td>
                                             <td> ₹ <%= grandTotal %></td>
 
                                         </tr>
@@ -136,6 +153,20 @@
                                 </table>
                             </div>
                             <div class="bt-1 border-color-1 mt-30 mb-30"></div>
+                            <div class="mb-4">
+                              <label for="couponSelect" class="form-label h6 ">Select Coupon</label>
+                              <select id="couponSelect" class="form-control">
+                                  <option value="" selected disabled>Select a coupon</option>
+                                  <% coupons.forEach(item=>{  %>
+                                  <option value="<%= item.code %>"><%=item.name%>-<%=item.code %></option>
+                                  <% }) %>
+                              </select>
+                          </div>
+                          <button id="applyCoupon" class="btn btn-primary">Apply Coupon</button>
+                          <button id="removeCoupon" class="btn btn-primary">Remove Coupon</button>
+                          
+                          <p id="discountInfo" style="margin-top:10px; font-weight:bold;"></p>
+                          
                             <div class="payment_method">
                                 <div class="mb-25">
                                     <h5>Choose Payment Type</h5>
@@ -845,6 +876,25 @@ $('#addNewAddressBtn').on('click', function() {
                 return null;
               }
             }
+
+
+            document.getElementById('removeCoupon').addEventListener('click', function () {
+    window.location.href = `/cartCheckout`;
+});
+
+document.getElementById('applyCoupon').addEventListener('click', function () {
+    let selectedCoupon = document.getElementById('couponSelect').value;
+
+    if (!selectedCoupon) {
+    Swal.fire('Please select a coupon','','info')
+            return;
+    }
+
+    // Redirect to checkout with the selected coupon code as a query parameter
+    window.location.href = `/cartCheckout?couponCode=${encodeURIComponent(selectedCoupon)}`;
+});
+
+
           </script>
           
   

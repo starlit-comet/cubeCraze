@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cancel Single Product</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+    <button onclick="cancelSingleProduct()">Cancel Single Product</button>
+
+    <script>
+        function cancelSingleProduct() {
+            Swal.fire({
+                title: "Select Return Reason",
+                html: `
+                    <select id="returnReason" class="swal2-select" style="width: 100%; padding: 10px; margin-top: 10px;">
+                        <option value="" disabled selected>Choose a reason</option>
+                        <option value="damaged">Product is damaged</option>
+                        <option value="wrongItem">Received wrong item</option>
+                        <option value="notSatisfied">Not satisfied with the product</option>
+                        <option value="other">Other (Specify)</option>
+                    </select>
+                    <input type="text" id="customReason" class="swal2-input" style="margin-top: 10px; display: none;" placeholder="Enter your reason">
+                `,
+                showCancelButton: true,
+                confirmButtonText: "Submit",
+                cancelButtonText: "Cancel",
+                preConfirm: () => {
+                    const selectedReason = document.getElementById("returnReason").value;
+                    const customReason = document.getElementById("customReason").value.trim();
+
+                    if (!selectedReason) {
+                        return Swal.showValidationMessage("Please select a reason.");
+                    }
+
+                    if (selectedReason === "other" && !customReason) {
+                        return Swal.showValidationMessage("Please enter a custom reason.");
+                    }
+
+                    return selectedReason === "other" ? customReason : selectedReason;
+                },
+                didOpen: () => {
+                    const selectBox = document.getElementById("returnReason");
+                    const customInput = document.getElementById("customReason");
+
+                    selectBox.addEventListener("change", () => {
+                        if (selectBox.value === "other") {
+                            customInput.style.display = "block";
+                        } else {
+                            customInput.style.display = "none";
+                        }
+                    });
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire("Success!", `Your return reason: ${result.value}`, "success");
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>

@@ -1,8 +1,344 @@
 <%- include('partials/headSection.ejs') %>
 </head>
 <body>
-    <%- include('partials/header.ejs') %>
-    <%- include('partials/mobileMenu.ejs') %>
+    <header class="header-area header-style-1 header-height-2">
+        <div class="header-top header-top-ptb-1 d-none d-lg-block">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-xl-3 col-lg-4">
+                        <div class="header-info">
+                            <ul>
+                                <li><i class="fi-rs-smartphone"></i> <a href="#">(+01) - 2345 - 6789</a></li>
+                                <li><i class="fi-rs-marker"></i><a  href="page-contact.html">Our location</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-xl-6 col-lg-4">
+                        <div class="text-center">
+                            <div id="news-flash" class="d-inline-block">
+                                <ul>
+                                    <!-- <li>Get great devices up to 50% off <a href="shop-grid-right.html">View details</a></li>
+                                    <li>Supper Value Deals - Save more with coupons</li> -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-4">
+                        <div class="header-info header-info-right">
+                            <ul>
+                                 <li>
+                                <a class="language-dropdown-active" href="#"> <i class="fi-rs-world"></i> English (IN) </a>
+                             
+                                </li> 
+                                <li>
+                                    <% if(locals.user){ %>
+                                        <i class="fi-rs-user"></i><a href="/profile">My Account
+                                            <i class="fi-rs-angle-down"></i>
+                                        </a> 
+                                        
+    
+                                    <%} else {	%>
+                                    <i class="fi-rs-user"></i><a href="/login">Log In</a> / <a href="/signup"> Sign Up</a>
+                                    <% } %>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="header-middle header-middle-ptb-1 d-none d-lg-block">
+            <div class="container">
+                <div class="header-wrap">
+                    <div class="logo logo-width-1">
+                        <a href=""><img src="/asset-front/imgs/theme/logo.png" style="min-width: 60px; max-width: 60px;"  alt="logo"></a>
+                    </div>
+                    <div class="header-right">
+                        <div class="search-style-2">
+                           
+                            <!-- <form id="shop-filter-form"  action="/shop" method="GET"> -->
+                                <!-- <form id="shop-filter-form" > -->
+
+                                <div class="row">
+    
+                                    <div class="search-container col-9">
+                                        <input type="text" name="search" id="search-input" placeholder="Search for items..." >
+                                        <button type="button" class="" id="clear-search" style="display: none;">✖</button>
+                                        <div id="suggestions" class="suggestions-box"></div>
+                                    </div>
+                                    <div class="col-3">
+
+                                        <button class="btn btn-fill" onclick="searchForProducts()">search</button>
+                                    </div>
+                                </div>
+                                <!-- <button type="submit">Search</button> -->
+                            <!-- </form> -->
+                        </div>
+                        <div class="header-action-right">
+                            <div class="header-action-2">
+                                <div class="header-action-icon-2">
+                                    <a href="/wishList">
+                                        <img class="svgInject" alt="Evara" src="/asset-front/imgs/theme/icons/icon-heart.svg">
+                                        <!-- <span class="pro-count blue">
+                                            4
+                                        </span> -->
+                                    </a>
+                                </div>
+                                
+                                <div class="header-action-icon-2">
+                                    <a class="mini-cart-icon" href="/cart">
+                                        <img alt="Evara" src="/asset-front/imgs/theme/icons/icon-cart.svg">
+                                        <% if(cart.length>0) { %>
+                                                <span class="pro-count blue"><%= cart.length %></span>
+                                                <%}%>
+                                    </a>
+                                    <% if(cart.length>0) { %>
+                                    <div class="cart-dropdown-wrap cart-dropdown-hm2">
+                                        <ul>
+                                            <% cart.forEach(item=>{ %>
+                                            <li><div class="row">
+    
+                                                <div class="shopping-cart-img col-4">
+                                                    <a href="/viewProduct/<%=item._id%>"><img alt="Evara" src="<%= item.productImages[0] %>" ></a>
+                                                </div>
+                                                <div class="shopping-cart-title col-7">
+                                                    <h4><a href="/viewProduct/<%=item._id%>"><%= item.productName %></a></h4>
+                                                    <h4><span><%= item.cartQuantity %> × </span> <%= item.promotionalPrice %></h4>
+                                                </div>
+                                                <div class="shopping-cart-delete col-1">
+                                                    <a onclick="removeFromCart('<%=item._id %>')"><i class="fi-rs-cross-small"></i></a>
+                                                </div>
+                                            </div>
+                                            </li>
+                                            <% }) %>
+                                          
+                                        </ul>
+                                        <div class="shopping-cart-footer">
+                                            <div class="shopping-cart-total">
+                                                <h4>Total <span>₹ <%= grandTotal %></span></h4>
+                                            </div>
+                                            <div class="shopping-cart-button">
+                                                <a href="shop-cart.html" class="outline">View cart</a>
+                                                <a href="/cartCheckout">Checkout</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="header-bottom header-bottom-bg-color sticky-bar">
+            <div class="container">
+                <div class="header-wrap header-space-between position-relative">
+                    <div class="logo logo-width-1 d-block d-lg-none">
+                        <a href=""><img src="" alt="logo"></a>
+                    </div>
+                    <div class="header-nav d-none d-lg-flex">
+                        <!-- <div class="main-categori-wrap d-none d-lg-block">
+                            <a class="categori-button-active" href="#">
+                                <span class="fi-rs-apps"></span> Browse Categories
+                            </a>
+                            <div class="categori-dropdown-wrap categori-dropdown-active-large">
+                                <ul>
+                                    <li class="has-children">
+                                        <a href="shop-grid-right.html"><i class="evara-font-dress"></i>Women's Clothing</a>
+                                        <div class="dropdown-menu">
+                                            <ul class="mega-menu d-lg-flex">
+                                                <li class="mega-menu-col col-lg-7">
+                                                    <ul class="d-lg-flex">
+                                                        <li class="mega-menu-col col-lg-6">
+                                                            <ul>
+                                                                <li><span class="submenu-title">Hot & Trending</span></li>
+                                                                <li><a class="dropdown-item nav-link nav_item" href="#">Dresses</a></li>
+                                                                <li><a class="dropdown-item nav-link nav_item" href="#">Blouses & Shirts</a></li>
+                                                                <li><a class="dropdown-item nav-link nav_item" href="#">Hoodies & Sweatshirts</a></li>
+                                                                <li><a class="dropdown-item nav-link nav_item" href="#">Women's Sets</a></li>
+                                                            </ul>
+                                                        </li>
+                                                        <li class="mega-menu-col col-lg-6">
+                                                            <ul>
+                                                                <li><span class="submenu-title">Bottoms</span></li>
+                                                                <li><a class="dropdown-item nav-link nav_item" href="#">Leggings</a></li>
+                                                                <li><a class="dropdown-item nav-link nav_item" href="#">Skirts</a></li>
+                                                                <li><a class="dropdown-item nav-link nav_item" href="#">Shorts</a></li>
+                                                            </ul>
+                                                        </li>
+                                                    </ul>
+                                                </li>
+                                                <li class="mega-menu-col col-lg-5">
+                                                    <div class="header-banner2">
+                                                        <img src="/asset-front/imgs/banner/menu-banner-2.jpg" alt="menu_banner1">
+                                                        <div class="banne_info">
+                                                            <h6>10% Off</h6>
+                                                            <h4>New Arrival</h4>
+                                                            <a href="#">Shop now</a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="header-banner2">
+                                                        <img src="/asset-front/imgs/banner/menu-banner-3.jpg" alt="menu_banner2">
+                                                        <div class="banne_info">
+                                                            <h6>15% Off</h6>
+                                                            <h4>Hot Deals</h4>
+                                                            <a href="#">Shop now</a>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>
+                                    <li class="has-children">
+                                        <a href="shop-grid-right.html"><i class="evara-font-tshirt"></i>Men's Clothing</a>
+                                        <div class="dropdown-menu">
+                                            <ul class="mega-menu d-lg-flex">
+                                                <li class="mega-menu-col col-lg-7">
+                                                    <ul class="d-lg-flex">
+                                                        <li class="mega-menu-col col-lg-6">
+                                                            <ul>
+                                                                <li><span class="submenu-title">Jackets & Coats</span></li>
+                                                                <li><a class="dropdown-item nav-link nav_item" href="#">Down Jackets</a></li>
+                                                                <li><a class="dropdown-item nav-link nav_item" href="#">Jackets</a></li>
+                                                                <li><a class="dropdown-item nav-link nav_item" href="#">Parkas</a></li>
+                                                            </ul>
+                                                        </li>
+                                                        <li class="mega-menu-col col-lg-6">
+                                                            <ul>
+                                                                <li><span class="submenu-title">Suits & Blazers</span></li>
+                                                                <li><a class="dropdown-item nav-link nav_item" href="#">Blazers</a></li>
+                                                                <li><a class="dropdown-item nav-link nav_item" href="#">Suit Jackets</a></li>
+                                                                <li><a class="dropdown-item nav-link nav_item" href="#">Suit Pants</a></li>
+                                                            </ul>
+                                                        </li>
+                                                    </ul>
+                                                </li>
+                                                <li class="mega-menu-col col-lg-5">
+                                                    <div class="header-banner2">
+                                                        <img src="/asset-front/imgs/banner/menu-banner-4.jpg" alt="menu_banner1">
+                                                        <div class="banne_info">
+                                                            <h6>10% Off</h6>
+                                                            <h4>New Arrival</h4>
+                                                            <a href="#">Shop now</a>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>
+                                    <li class="has-children">
+                                        <a href="shop-grid-right.html"><i class="evara-font-smartphone"></i> Cellphones</a>
+                                        <div class="dropdown-menu">
+                                            <ul class="mega-menu d-lg-flex">
+                                                <li class="mega-menu-col col-lg-7">
+                                                    <ul class="d-lg-flex">
+                                                        <li class="mega-menu-col col-lg-6">
+                                                            <ul>
+                                                                <li><span class="submenu-title">Hot & Trending</span></li>
+                                                                <li><a class="dropdown-item nav-link nav_item" href="#">Cellphones</a></li>
+                                                                <li><a class="dropdown-item nav-link nav_item" href="#">iPhones</a></li>
+                                                        </li>
+                                                        <li class="mega-menu-col col-lg-6">
+                                                            <ul>
+                                                                <li><span class="submenu-title">Accessories</span></li>
+                                                                <li><a class="dropdown-item nav-link nav_item" href="#">Screen Protectors</a></li>
+                                                                <li><a class="dropdown-item nav-link nav_item" href="#">Wire Chargers</a></li>
+                                                        </li>
+                                                    </ul>
+                                                </li>
+                                                <li class="mega-menu-col col-lg-5">
+                                                    <div class="header-banner2">
+                                                        <img src="/asset-front/imgs/banner/menu-banner-5.jpg" alt="menu_banner1">
+                                                        <div class="banne_info">
+                                                            <h6>10% Off</h6>
+                                                            <h4>New Arrival</h4>
+                                                            <a href="#">Shop now</a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="header-banner2">
+                                                        <img src="/asset-front/imgs/banner/menu-banner-6.jpg" alt="menu_banner2">
+                                                        <div class="banne_info">
+                                                            <h6>15% Off</h6>
+                                                            <h4>Hot Deals</h4>
+                                                            <a href="#">Shop now</a>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>
+                                    <li><a href="shop-grid-right.html"><i class="evara-font-desktop"></i>Computer & Office</a></li>
+                                    <li><a href="shop-grid-right.html"><i class="evara-font-cpu"></i>Consumer Electronics</a></li>
+                                    <li>
+                                        <ul class="more_slide_open" style="display: none;">
+                                            <li><a href="shop-grid-right.html"><i class="evara-font-desktop"></i>Beauty, Health</a></li>
+                                            <li><a href="shop-grid-right.html"><i class="evara-font-cpu"></i>Bags and Shoes</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                                <div class="more_categories">Show more...</div>
+                            </div>
+                        </div> -->
+                        <div class="main-menu main-menu-padding-1 main-menu-lh-2 d-none d-lg-block">
+                            <nav>
+                                <ul>
+                                    <li><a class="active" href="/home">Home </a>
+                                        <ul class="sub-menu">
+                                           
+                                        </ul>
+                                    </li>
+                                    
+                                    <li><a href="/shop">Shop </a>
+                                      
+                                    </li>
+                                    <li>
+                                        <a href="/about">About</a>
+                                    </li>
+                                    <li>
+                                        <a href="/profile">Profile</a>
+                                    </li>
+                                  
+                                    
+                                    <li>
+                                        <a href="page-contact.html">Contact</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="hotline d-none d-lg-block">
+                        <p><i class="fi-rs-headset"></i><span>Hotline</span> 1900 - 888 </p>
+                    </div>
+                    <!-- <p class="mobile-promotion">Happy <span class="text-brand">Mother's Day</span>. Big Sale Up to 40%</p> -->
+                    <div class="header-action-right d-block d-lg-none">
+                        <div class="header-action-2">
+                            <div class="header-action-icon-2">
+                                <a href="shop-wishlist.html">
+                                    <img alt="Evara" src="/asset-front/imgs/theme/icons/icon-heart.svg">
+                                    <span class="pro-count white">4</span>
+                                </a>
+                            </div>
+                            <div class="header-action-icon-2">
+                                <a class="mini-cart-icon" href="shop-cart.html">
+                                    <img alt="Evara" src="/asset-front/imgs/theme/icons/icon-cart.svg">
+                                    <span class="pro-count white">2</span>
+                                </a>
+                            </div>
+                            <div class="header-action-icon-2 d-block d-lg-none">
+                                <div class="burger-icon burger-icon-white">
+                                    <span class="burger-icon-top"></span>
+                                    <span class="burger-icon-mid"></span>
+                                    <span class="burger-icon-bottom"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+        <%- include('partials/mobileMenu.ejs') %>
     
     <main class="main">
         <div class="page-header breadcrumb-wrap">
@@ -19,7 +355,8 @@
                     <div class="col-lg-9">
                         <div class="shop-product-fillter">
                             <div class="totall-product">
-                                <p> We found <strong class="text-brand"> <%= allProducts.length %> </strong> items for you!</p>
+                                <p>  <% if(totalProducts==0){ %>
+                                   <strong class="text-brand">Sorry!</strong> &nbsp; <%}%> We found <strong class="text-brand"> <%= totalProducts %> </strong> items for you!</p> 
                             </div>
                             <div class="sort-by-product-area">
                                 <div class="sort-by-cover mr-10">
@@ -115,142 +452,259 @@
                                 </div>
                             </div>
                             <% }) %>
-                            <!-- <div class="col-lg-4 col-md-4 col-12 col-sm-6">
-                                <div class="product-cart-wrap mb-30">
-                                    <div class="product-img-action-wrap">
-                                        <div class="product-img product-img-zoom">
-                                            <a href="shop-product-right.html">
-                                                <img class="default-img" src="assets/imgs/shop/product-3-1.jpg" alt="">
-                                                <img class="hover-img" src="assets/imgs/shop/product-3-2.jpg" alt="">
-                                            </a>
-                                        </div>
-                                        <div class="product-action-1">
-                                            <a aria-label="Quick view" class="action-btn hover-up" data-bs-toggle="modal" data-bs-target="#quickViewModal">
-                                            <i class="fi-rs-search"></i></a>
-                                            <a aria-label="Add To Wishlist" class="action-btn hover-up" href="shop-wishlist.html"><i class="fi-rs-heart"></i></a>
-                                            <a aria-label="Compare" class="action-btn hover-up" href="shop-compare.html"><i class="fi-rs-shuffle"></i></a>
-                                        </div>
-                                        <div class="product-badges product-badges-position product-badges-mrg">
-                                            <span class="new">New</span>
-                                        </div>
-                                    </div>
-                                    <div class="product-content-wrap">
-                                        <div class="product-category">
-                                            <a href="shop-grid-right.html">Music</a>
-                                        </div>
-                                        <h2><a href="shop-product-right.html">Cartoon Astronaut T-Shirts</a></h2>
-                                        <div class="rating-result" title="90%">
-                                            <span>
-                                                <span>50%</span>
-                                            </span>
-                                        </div>
-                                        <div class="product-price">
-                                            <span>$138.85 </span>
-                                            <span class="old-price">$255.8</span>
-                                        </div>
-                                        <div class="product-action-1 show">
-                                            <a aria-label="Add To Cart" class="action-btn hover-up" href="shop-cart.html"><i class="fi-rs-shopping-bag-add"></i></a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div> -->
+                          
                             
                         </div>
+                        <!-- <div class="row">
+                            <div class="col-4">
+                                
+                            </div>
+                        </div> -->
                         <!--pagination-->
                         <div class="pagination-area mt-15 mb-sm-5 mb-lg-0">
                             <nav aria-label="Page navigation example">
-                                <ul class="pagination justify-content-center">
-                                    <li class="page-item active"><a class="page-link" href="#">01</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">02</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">03</a></li>
-                                    <li class="page-item"><a class="page-link dot" href="#">...</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">16</a></li>
-                                    <li class="page-item"><a class="page-link" href="#"><i class="fi-rs-angle-double-small-right"></i></a></li>
+                                <!-- <li><a href="#" class="sort-option" data-sort="Zz-Aa">Zz - Aa</a></li> -->
+                                
+                                <div class="row">
+                                   <div class="col-4">
+                                    <% if(totalProducts>0){ %>
+                                      <p>Currenly Showing page<strong class="text-brand"> <%=currentPage%></strong> of total <strong class="text-brand"><%=totalPages%> </strong> pages</p><br>
+                                        <% }%>
+                                    </div> 
+                                   <div class="col-8">
+                                    <ul class="pagination justify-content-end">
+
+                                    <% if (currentPage>1){ %>
+                                        <li class="page-item"><a class="page-link" data-page="<%= currentPage-1 %>" href="#">
+                                            <i class="fi-rs-angle-double-small-left"></i></a></li>
+                                    <%}%>
+                                    <% for(let x = 1 ; x<=totalPages ; x++){ %>
+                                    <% if(x==currentPage ) { %>
+                                        <li class="page-item active"><a class="page-link" data-page="<%= x%>" href="#"><%= x %></a></li>
+                                    <% }else{ %>
+                                        <li class="page-item"><a class="page-link" data-page="<%= x %>" href="#"><%= x  %></a></li>
+                                    <% }} %>
+                                   
+                                    <% if (currentPage<totalPages){ %>
+                                    <li class="page-item"><a class="page-link" data-page="<%= currentPage+1 %>" href="#">
+                                        <i class="fi-rs-angle-double-small-right"></i></a></li>
+                                    <%}%>
                                 </ul>
+                                   </div>
+                                </div>
+                                
                             </nav>
                         </div>
                     </div>
-                    <%- include('partials/leftSidebar.ejs') %>
+                    <div class="col-lg-3 primary-sidebar sticky-sidebar">
+                        
+                             <div class="sidebar-widget price_range range mb-30">
+                                 <div class="widget-header position-relative mb-20 pb-10">
+                                     <h5 class="widget-title mb-10">Filter BY</h5>
+                                     <div class="bt-1 border-color-1"></div>
+                                 </div>
+                                 
+                                 <!-- Price Filter -->
+                                 <div class="price-filter">
+                                     <div class="price-filter-inner">
+                                         <h6>Choose Price Range</h6><br>
+                                         <div id="slider-range"></div>
+                                         <div class="price_slider_amount">
+                                             <div class="label-input">
+                                                 <span>Range:</span>
+                                                 <input type="text" id="amount" name="price"  />
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+                                 <div class="list-group">
+                                     <div class="list-group-item mb-10 mt-10">
+                                         <label class="fw-900">Filter By Brands</label>
+                                         <div class="custome-checkbox">
+                                             <% allBrands.forEach((brand,index)=>{  %>
+                                             <input class="form-check-input" type="checkbox" name="brand" id="<%= brand.brandName %>"  value="<%= brand.brandName %>">
+                                             <label class="form-check-label" for="<%= brand.brandName %>"><span><%= brand.brandName %></span></label>
+                                             <br>
+                                             <% }) %>
+                                              </div>
+                                         <label class="fw-900 mt-15">Categories </label>
+                                         <div class="custome-checkbox">
+                                             <% allCategories.forEach((cat,index)=>{ %>
+                     
+                                                 <input class="form-check-input" type="checkbox"  name="category" id="<%=cat.categoryName %>" value="<%=cat.categoryName %>">
+                                                 <label class="form-check-label" for="<%=cat.categoryName %>"><span><%=cat.categoryName %></span></label>
+                                                 <br>
+                                                 <% }) %>
+                                              </div>
+                                     </div>
+                                 </div>
+                         
+                               
+                                  <div class="row">
+                                     <div class="col-6">
+                     
+                                         <button onclick="searchfilterWorking()" class="btn btn-sm btn-default">
+                                             <i class="fi-rs-filter mr-5"></i> Filter
+                                         </button>
+                                     </div>
+                                     <div class="col-6">
+                     
+                                         <a href='/shop' class="btn btn-sm btn-default">
+                                             <i class="fi-rs-clear mr-5"></i> Clear All Filters
+                                         </a>
+                                     </div>
+                                     </div>
+                             </div>
+                         </form>
 
+                     </div>
                 </div>
             </div>
         </section>
     </main>
-    
-    <%- include('partials/footer.ejs') %>
 
-
-    <!-- Preloader Start -->
-    <!-- <div id="preloader-active">
-        <div class="preloader d-flex align-items-center justify-content-center">
-            <div class="preloader-inner position-relative">
-                <div class="text-center">
-                    <h5 class="mb-5">Now Loading</h5>
-                    <div class="loader">
-                        <div class="bar bar1"></div>
-                        <div class="bar bar2"></div>
-                        <div class="bar bar3"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> -->
-    
     <%- include('partials/scriptTags.ejs') %>
 
 
     <script>
+        const queryString = window.location.search
+        //console.log('urlpp',queryString)
+        const params = new URLSearchParams(queryString);
+        const price = params.get('price')
+        const selectedBrands = params.get('brand') ? params.get('brand').split(',') : []
+        const selectedCategories =params.get('category') ? params.get('category').split(',') : []
+        //console.log('return values ',selectedBrands,selectedCategories)
+        const searchVal = params.get('search')
+        if(searchVal){
+        document.getElementById('search-input').value = searchVal
+        }
+        //console.log('resut',price,selectedBrands,selectedCategories)
+        // making check box active for the slected tags
+        for(let x of selectedBrands ){
+          if ( document.getElementById(x)){
+            const inputTag = document.getElementById(x)
+            inputTag.checked = true
+           // console.log('function123',x,inputTag)
+          }
+           
+        }
+        for(let x of selectedCategories ){
+          if ( document.getElementById(x)){
+            const inputTag = document.getElementById(x)
+            inputTag.checked = true
+           // console.log('function123',x,inputTag)
+          }
+           
+        }
+    
         document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.getElementById("search-input");
     const clearButton = document.getElementById("clear-search");
-    const suggestionsBox = document.getElementById("suggestions");
-    let debounceTimer;
+//const suggestionsBox = document.getElementById("suggestions");
+    //let debounceTimer;
+ });
 
-    // Show "Clear" button when typing
-    searchInput.addEventListener("input", function () {
-        clearButton.style.display = this.value ? "block" : "none";
-
-        // Debounce search suggestions
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(fetchSuggestions, 300);
+ $(document).ready(function() {
+        let minPrice =  <%=minPrice%>  || 500 ;
+        let maxPrice = <%=maxPrice%> || 7500 ;
+        //console.log(minPrice,maxPrice)
+       
+         $("#slider-range").slider({
+            range: true,
+            min: 500, // Minimum price range
+            max: 7500, // Maximum price range
+            values: [minPrice, maxPrice], // Set default values dynamically
+            slide: function(event, ui) {
+                $("#amount").val("₹" + ui.values[0] + " to ₹" + ui.values[1]);
+            }
+        });
+        // Set initial values in input field
+        $("#amount").val("₹" + $("#slider-range").slider("values", 0) +
+        " - ₹" + $("#slider-range").slider("values", 1));
+    
     });
 
-    // Clear search input
-    clearButton.addEventListener("click", function () {
-        searchInput.value = "";
-        clearButton.style.display = "none";
-        suggestionsBox.innerHTML = "";
-    });
 
-    // Fetch suggestions from server
-    function fetchSuggestions() {
-        const query = searchInput.value.trim();
-        if (!query) {
-            suggestionsBox.innerHTML = "";
-            return;
-        }
+ async function searchForProducts() {
+    const searchVal = document.getElementById('search-input').value;
+    // console.log(searchVal, 'search value');
+    // console.log(typeof(minPrice),minPrice, 'min price');
+    // console.log(typeof(maxPrice),maxPrice, 'max price');
 
-        fetch(`/api/suggestions?query=${query}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.length) {
-                    suggestionsBox.innerHTML = data.map(item => 
-                        `<div class="suggestion-item">${item}</div>`).join("");
-                } else {
-                    suggestionsBox.innerHTML = "";
-                }
-            })
-            .catch(error => console.error("Error fetching suggestions:", error));
+    // Construct the query string
+    let queryParamsURL = new URL(window.location.href);
+    let queryParams = queryParamsURL.searchParams
+    console.log(queryParamsURL.searchParams.toString(),'already values')
+    if (searchVal) {
+        queryParams.set("search", searchVal);
+    } else {
+        queryParams.delete("search"); // Remove if empty
+    } 
+     
+    // // Generate the final URL
+    // let queryString = queryParams.toString();
+    // let finalUrl = `/shop?${queryString}`;
+    // console.log(finalUrl,'final')
+    // Redirect to the search page
+    window.location.href = queryParamsURL.toString();
+}
+
+async function searchfilterWorking(){
+    const priceRange = document.getElementById('amount').value; // Get the price range
+    
+let minPrice = "";
+let maxPrice = "";
+
+if (priceRange.includes('to')) {
+    [minPrice, maxPrice] = priceRange.split('to').map(price => price.replace(/[^\d]/g,'').trim());
+}
+
+let queryParamsURL = new URL(window.location.href);
+    let queryParams = queryParamsURL.searchParams
+   
+
+      // Update minPrice parameter
+      if (minPrice && minPrice !== '500') {
+        queryParams.set("minPrice", minPrice);
+    } else if (minPrice === '500' || minPrice === '') {
+        queryParams.delete("minPrice");
     }
 
-    // Click on suggestion to autofill search
-    suggestionsBox.addEventListener("click", function (event) {
-        if (event.target.classList.contains("suggestion-item")) {
-            searchInput.value = event.target.textContent;
-            suggestionsBox.innerHTML = "";
-        }
-    });
-});
+    // Update maxPrice parameter
+    if (maxPrice && maxPrice !== '7500') {
+        queryParams.set("maxPrice", maxPrice);
+    } else if (maxPrice === '7500' || maxPrice === '') {
+        queryParams.delete("maxPrice");
+    }
+
+    //add all selected brands to the search query
+
+    let checkedBrands = Array.from(document.querySelectorAll('input[name="brand"]:checked')).map(input=>input.value)
+    console.log('seelected brands',checkedBrands)
+
+    if (checkedBrands.length > 0) {
+        queryParams.set("brand", checkedBrands.join(',')); // Add brands as comma-separated values
+    } else {
+        queryParams.delete("brand"); // Remove brands filter if nothing is selected
+    }
+    //add  selected categories or remove all if nothig selected
+    let checkedCategories = Array.from(document.querySelectorAll('input[name="category"]:checked')).map(input=>input.value)
+    console.log('seelected categories',checkedCategories)
+
+    if(checkedCategories.length>0){
+        queryParams.set('category',checkedCategories.join(','))
+    }
+    else{
+        queryParams.delete('category')
+    }
+    queryParams.delete('page')
+
+
+    window.location.href = queryParamsURL.toString();
+
+
+}
+
 
 
         document.addEventListener("DOMContentLoaded", function () {
@@ -265,6 +719,8 @@
         });
     });
 
+   
+
     // Sort selection event
     document.querySelectorAll(".sort-option").forEach(item => {
         item.addEventListener("click", function (e) {
@@ -277,67 +733,34 @@
     function updateURL(param, value) {
         const url = new URL(window.location.href);
         url.searchParams.set(param, value);
+        url.searchParams.delete('page')
         window.location.href = url.toString(); // Reload page with new parameters
     }
 
     // Prevent form from submitting empty search
-    form.addEventListener("submit", function (e) {
-        if (!searchInput.value.trim()) {
-            e.preventDefault();
-        }
-    });
+    // form.addEventListener("submit", function (e) {
+    //     if (!searchInput.value.trim()) {
+    //         e.preventDefault();
+    //     }
+    // });
 });
 
-// async function addToCart(productId){
-//         const request = await Swal.fire({
-//             icon:'question',
-//             title:'Add this product to cart ?',
-//             text:'Adding this product to cart will remove the product from your wishlist, Please confirm !?',
-//             showCancelButton:true,
-//             confirmButtonText: 'Yes',
-//             cancelButtonText: 'Cancel'
-//         })
-//         if(request.isConfirmed){
-//             try {
-//                 const response = await fetch ('/addToCart',{
-//                     method:'POST',
-//                     headers: {'content-type':'application/json'},
-//                     body: JSON.stringify({ productId })
-//                 })
-//                 const data = await response.json()
-//                 console.log(data)
-//                 if(data.status=='Added'){
-//                     Swal.fire({
-//                         icon:'success',
-//                         title:'Success!!',
-//                         text:data.message,
-                    
-//                     })
-//                 }
-//                 else if (data.status==='updated'){
-//                     Swal.fire({
-//                         icon:'info',
-//                         title:'Info!!',
-//                         text:data.message,
-//                     })
-//                 }
-//                 else{
-//                     Swal.fire({
-//                         icon:'error',
-//                         title:'oops!',
-//                         text:data.message,
-//                     })
-//                 }
-//             } catch (error) {
-//                 console.log(error)
-//                 Swal.fire({
-//                     icon:'error',
-//                     title:'Error!!',
-//                     text:'Something went Wrong. Please try again later.'
-//                 })
-//             }
-//         }
-//     }
+ // page selection event
+ document.querySelectorAll(".page-link").forEach(item => {
+        item.addEventListener("click", function (e) {
+            e.preventDefault();
+           // updateURL("page", this.getAttribute("data-sort"));
+           console.log(typeof(this.getAttribute('data-page')),'data type of page')
+           const url = new URL(window.location.href)
+          // if(this.getAttribute!='1'){
+           url.searchParams.set('page',this.getAttribute('data-page'))
+       // }else{
+        //    url.searchParams.delete('page')
+       // }
+        window.location.href=url
+        });
+    });
+
 
     </script> 
 </body>

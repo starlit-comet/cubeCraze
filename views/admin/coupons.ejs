@@ -1,0 +1,331 @@
+<%-include ('partials/headSection.ejs') %>
+
+    <div class="screen-overlay"></div>
+   <%- include('partials/sidebar.ejs') %>
+    <main class="main-wrap">
+        <%- include('partials/header.ejs') %>
+        <section class="content-main">
+            <div class="content-header">
+                <div>
+                    <h2 class="content-title card-title">Coupon Management </h2>
+                    <p>Add, edit or delete a coupon</p>
+                </div>
+                <div>
+                    <input type="text" placeholder="Search coupons"  class="form-control bg-white">
+
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <form id="couponForm" class="border p-10">
+                                <h6 class="text-center mb-10 text-primary"> Add new Coupon </h6>
+                                <div class="row" >
+                                <div class="col-4 mb-4">
+                                    <label for="couponName" class="form-label">Coupon Name</label>
+                                    <input type="text" id="couponName" placeholder="Enter coupon name" class="form-control" required />
+                                </div>
+                            
+                                <div class="col-4 mb-4">
+                                    <label for="discountType" class="form-label">Discount Type</label><br />
+                                    <input type="radio" name="discountType" value="percentage" required /> Percentage<br>
+                                    <input type="radio" name="discountType" value="fixed" required /> Fixed Amount
+                                </div>
+                            
+                                <div class="col-4 mb-4">
+                                    <label for="discountValue" class="form-label">Discount Value (%age or amount)</label>
+                                    <input type="number" id="discountValue" placeholder="Enter discount amount or %" class="form-control" required min="1" />
+                                </div></div>
+                            <div class="row">
+
+                                <div class="col-3 mb-4">
+                                    <label for="minPurchase" class="form-label">Minimum Purchase Amount</label>
+                                    <input type="number" id="minPurchase" placeholder="Enter minimum order value" class="form-control" min="0" value="0" />
+                                </div>
+                                
+                                <div class="col-3 mb-4">
+                                    <label for="maxDiscount" class="form-label">Max Discoun (For % Discount)</label>
+                                    <input type="number" id="maxDiscount" placeholder="Optional max discount for percentage type" class="form-control" />
+                                </div>
+                            
+
+                                <div class="col-3 mb-4">
+                                    <label for="startsAt" class="form-label">Start Date</label>
+                                    <input type="date" id="startsAt" class="form-control" />
+                                </div>
+                                
+                                <div class="col-3 mb-4">
+                                    <label for="expiresAt" class="form-label">Expiry Date</label>
+                                    <input type="date" id="expiresAt" class="form-control" required />
+                                </div>
+                            </div>
+                            
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary">Create Coupon</button>
+                                </div>
+                            </form>
+                            
+                        </div>
+                        <div class="col-md-12 mt-15">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <!-- <th class="text-center">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="" />
+                                                </div>
+                                            </th> -->
+                                            <th>Sl.No</th>
+                                            <th>Name & Code</th>
+                                            <th>Type</th>
+                                            <th>Discount Value</th>
+                                            <th>Purchase Limit</th>
+                                            <th>Start & End Date</th>
+                                            <!-- <th>Usage Count</th> -->
+                                            <th>Status</th>
+                                            <th class="text-end">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <% coupons.forEach((item,index)=> { %>
+                                        <tr
+                                        <% if(index%2==0){ %>
+                                         style="background-color: rgba(128, 128, 128, 0.303);" 
+                                         <%}%>
+                                         >
+                                            <td>
+                                                <%= index+1 %>
+                                            </td>
+                                            <td><div class="row" >
+                                                <% if(item.name){ %>
+                                                <div class="col-12">
+                                                    <%= item.name %>
+                                                </div>
+                                                <%}%>
+                                                <div class="col-12">
+                                                    <%= item.code %>
+                                                </div>
+                                            </div></td>
+                                            <td>
+                                                <%= item.discountType %>
+                                            </td>
+                                            <td>
+                                            <% if(item.discountType==='fixed'){ %>
+                                                ₹<%= item.discountValue %>
+                                                <% } else { %>
+                                                <%= item.discountValue %> %
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <div class="row">
+                                                    <% if(item.minPurchase){ %>
+                                                        <div class="col-12">
+                                                            Min Purchase: ₹<%= item.minPurchase %>
+                                                        </div>
+                                                        <% } %>
+                                                       <% if(item.maxDiscount){ %>
+                                                            <div class="col-12">
+                                                                Max Discount:₹<%= item.maxDiscount %>
+                                                            </div>
+                                                            <% } %>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="row">
+                                                    <% if(item.startsAt){ %>
+                                                        <div class="col-12">
+                                                            Starts At :
+                                                            <%= new Date(item.startsAt).toLocaleString('en-IN', {
+                                                                year: 'numeric',
+                                                                month: 'short',
+                                                                day: 'numeric',
+                                                                
+                                                              }) %>
+                                                        </div>
+                                                        <% } %>
+                                                            <div class="col-12">
+                                                                Ends At: <%= new Date(item.expiresAt).toLocaleString('en-IN', {
+                                                                    year: 'numeric',
+                                                                    month: 'short',
+                                                                    day: 'numeric',
+                                                                   
+                                                                  }) %>
+                                                            </div>
+                                                </div>
+                                            </td>
+                                            
+                                            <td>
+                                                <% if(item.isActive){ %>
+                                                    <p class="text-success ">Active</p>
+                                                <% } else { %>
+                                                    <p class="text-danger ">Disabled</p>
+                                                    <%} %>
+
+                                            </td>
+                                            
+                                                <td class="text-end">
+                                                    <div class="dropdown">
+                                                        <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
+                                                        <div class="dropdown-menu ">
+                                                            <a class="dropdown-item" href="#">Change Status</a>
+                                                            <a class="dropdown-item" href="#">Edit Coupon</a>
+                                                            <a class="dropdown-item text-danger" href="#">Delete</a>
+                                                        </div>
+                                                    </div> <!-- dropdown //end -->
+                                                
+                                            </td>
+                                        </tr>
+                                        
+                                    <%})%>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div> <!-- .col// -->
+                    </div> <!-- .row // -->
+                </div> <!-- card body .// -->
+            </div> <!-- card .// -->
+        </section> <!-- content-main end// -->
+                    <script>
+                        function showCategoryDetails(name,description,status){
+                             let isActive=status === 'true' ? '✅ Active' : '❌ Inactive';
+
+                            let statusColor = status === 'true' ? 'green' : 'red';
+                            Swal.fire({
+                                title:name,
+                                text:description,
+                                html:`<p style="margin-top: 10px;">${description}</p>
+                                      <p style="color: ${statusColor}; font-weight: bold;">Status: ${isActive}</p>`,
+                            })
+                        }
+
+
+    function editCategoryDetails(name, description, offer,categoryId, isListed) {
+    Swal.fire({
+        title: "Edit Category",
+        html: `
+            <input id="categoryNameEdit" class="swal2-input" placeholder="Category Name" value="${name}">
+            <textarea id="categoryDescription" class="swal2-textarea" placeholder="Description">${description}</textarea>
+            <input id="categoryOffer" class="swal2-input" placeholder="Category Offer" value="${offer}">
+            <div style="display: flex; align-items: center; justify-content: center; margin-top: 10px;">
+            <label for="categoryStatus" style="margin-right: 10px; font-weight: bold;">Status:</label>
+            <input type="checkbox" id="categoryStatus" ${isListed === "true" ? "checked" : ""}>
+            <span id="statusLabel">${isListed === "true" ? "✅ Active" : "❌ Inactive"}</span>
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: "Save",
+        cancelButtonText: "Cancel",
+        didOpen: () => {
+            const toggle = document.getElementById("categoryStatus");
+            const statusLabel = document.getElementById("statusLabel");
+
+            toggle.addEventListener("change", function () {
+                if (this.checked) {
+                    statusLabel.innerHTML = "✅ Active";
+                } else {
+                    statusLabel.innerHTML = "❌ Inactive";
+                }
+            });
+        },
+        preConfirm: () => {
+            const updatedName = document.getElementById("categoryNameEdit").value.trim();
+            const updatedDescription = document.getElementById("categoryDescription").value.trim();
+            const updatedStatus = document.getElementById("categoryStatus").checked; // Boolean
+            const updatedOffer = document.getElementById('categoryOffer').value.trim();
+
+            console.log(updatedName,updatedOffer,updatedDescription)
+            if (!updatedName) {
+                Swal.showValidationMessage("Category name cannot be empty");
+                return false;
+            }
+
+            return { updatedName, updatedDescription,updatedOffer, updatedStatus, categoryId };
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+           // console.log(result.value)
+            updateCategory(result.value);
+        }
+    });
+}
+
+function updateCategory(data) {
+   console.log(data)
+    fetch(`/admin/updateCategory`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            id:data.categoryId,
+            categoryName: data.updatedName,
+            description: data.updatedDescription,
+            offer:data.updatedOffer,
+            isListed: data.updatedStatus // Send updated status
+        })
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            Swal.fire("Updated!", "Category updated successfully.", "success")
+            .then(() => location.reload()); // Reload page to reflect changes
+        } else {
+            Swal.fire("Error!", "Failed to update category.", "error");
+        }
+    })
+    .catch(error => {
+        Swal.fire("Error!", "Something went wrong.", "error");
+    });
+}
+//new caategory submission
+//new caategory submission
+document.querySelector('#couponForm').addEventListener('submit', async event => {
+    event.preventDefault();
+
+    // Get form values
+    const formData = {
+        name: document.getElementById('couponName').value,
+        discountType: document.querySelector('input[name="discountType"]:checked').value,
+        discountValue: parseFloat(document.getElementById('discountValue').value),
+        minPurchase: parseFloat(document.getElementById('minPurchase').value),
+        maxDiscount: document.getElementById('maxDiscount').value ? parseFloat(document.getElementById('maxDiscount').value) : null,
+        startsAt: document.getElementById('startsAt').value ? new Date(document.getElementById('startsAt').value) : null,
+        expiresAt: new Date(document.getElementById('expiresAt').value),
+    };
+
+    console.log('Submitting form data:', formData);
+
+    // Send data to backend
+    let response = await fetch('/admin/addCoupon', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+    });
+
+    let result = await response.json();
+
+    // Show alert based on response
+    if (!result.success) {
+        Swal.fire({
+            title: 'Error!',
+            icon: 'error',
+            text: result.message,
+            showConfirmButton: true,
+        });
+    } else {
+        Swal.fire({
+            title: 'Success!',
+            icon: 'success',
+            text: result.message,
+            showConfirmButton: true,
+            timer: 2500,
+        }).then(() => {
+            window.location.reload();
+        });
+    }
+});
+
+document.getElementById("coupons12e").classList.add("active");
+                    </script>
+        <%- include('partials/footer.ejs') %>

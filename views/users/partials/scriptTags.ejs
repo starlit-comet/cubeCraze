@@ -28,25 +28,7 @@
  <script>
    
 
-    $(document).ready(function() {
-        let minPrice =  <%=minPrice%> ;
-        let maxPrice = <%=maxPrice%> ;
-        //console.log(minPrice,maxPrice)
-       
-         $("#slider-range").slider({
-            range: true,
-            min: 500, // Minimum price range
-            max: 7500, // Maximum price range
-            values: [minPrice, maxPrice], // Set default values dynamically
-            slide: function(event, ui) {
-                $("#amount").val("₹" + ui.values[0] + " to ₹" + ui.values[1]);
-            }
-        });
-        // Set initial values in input field
-        $("#amount").val("₹" + $("#slider-range").slider("values", 0) +
-        " - ₹" + $("#slider-range").slider("values", 1));
-    
-    });
+  
 
     //add to wishlist
 async function addtoWishList(_id){

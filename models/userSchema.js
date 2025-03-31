@@ -58,6 +58,7 @@ const userSchema = new mongoose.Schema ({
     },
     referalCode:{
         type:String,
+        unique:true
 
     },
     isOTPVerified:{
@@ -74,6 +75,11 @@ const userSchema = new mongoose.Schema ({
         // type:Date,
         // required:true,
     },
+    // deleteIfNotVerified:{
+    //     type:Date,
+    //     default: ()=> new Date(Date.now()),
+    //     index:{ expires:120} 
+    // },
     wishList:[{
         type: Schema.Types.ObjectId,
         ref:'Product',
@@ -85,6 +91,10 @@ const userSchema = new mongoose.Schema ({
         type:Schema.Types.ObjectId,
         ref:'Address'
     }],
+   coupon:[{
+    type:Schema.Types.ObjectId,
+    ref:'Coupon'
+   }],
 
 
 })
