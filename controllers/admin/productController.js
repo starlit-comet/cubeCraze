@@ -48,6 +48,10 @@ const addProduct = async (req,res)=>{
 const viewEditProduct = async (req,res)=>{
     try {
         const productId  = req.params.productId;
+        const productExists = await productSchema.exists({_id:productId})
+        console.log(productExists,'product find sttauts')
+        if(!productExists) return res.redirect('/admin/page-not-found')
+
         const productData = await productSchema.findById(productId).populate([
             { path: 'brand' },
             { path: 'category' },
@@ -115,6 +119,9 @@ const viewAddProductPage=  async (req,res)=>{
 const deleteProduct = async (req,res)=> {
     try {
         const productId = req.params.id
+        const productExists = await productSchema.exists({_id:productId})
+     //   console.log(productExists,'product find sttauts')
+        if(!productExists) return res.redirect('/admin/page-not-found')
         await productSchema.findByIdAndUpdate(productId,{isBlocked:true})
         console.log('product Deleted (blocked)')
         res.status(200).json({success:true})
@@ -126,6 +133,10 @@ const changeStatus=async (req,res)=>{
     try {
         const productId = req.params.id
         const {changeStatusTo} = req.body
+        const productExists = await productSchema.exists({_id:productId})
+        //console.log(productExists,'product find sttauts')
+        if(!productExists) return res.redirect('/admin/page-not-found')
+
         await productSchema.findByIdAndUpdate(productId,{isBlocked:changeStatusTo})
         res.status(200).json({success:true})
         console.log(`Product Status changed`)

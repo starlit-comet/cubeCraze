@@ -80,6 +80,13 @@ const viewEditAddress = async (req,res)=>{
     const userId = req.session._id
     const addressId = req.params._id
     //console.log(userId,addressId)
+    if (!mongoose.Types.ObjectId.isValid(addressId)) {
+        console.log("Invalid ObjectId:", addressId);
+        return res.status(400).redirect('/pagenotfound');
+    }
+    const addressExist = await addressSchema.exists({_id:addressId})
+    console.log('addressexist',addressExist)
+    if(!addressExist) return res.status(404).redirect('/pagenotfound')
     const address = await addressSchema.findById(addressId)
     console.log(address )
     res.render('users/editAddress',{address,searchKeyWord:'',minPrice:0,maxPrice:0})

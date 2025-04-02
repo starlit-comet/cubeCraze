@@ -25,6 +25,9 @@ const viewOrders = async(req,res)=>{
 const orderDetail = async (req,res)=>{
     try {
         const {orderId} = req.params
+        const orderExists = await orderSchema.exists({orderId})
+        // console.log(productExists,'product find sttauts')
+        if(!orderExists) return res.redirect('/admin/page-not-found')
         const order = await orderSchema.findOne({orderId})
         .populate('userId')
         .populate({
@@ -47,6 +50,8 @@ const changeOrderStatus = async (req, res) => {
   const { status } = req.body;
 
   try {
+      const orderExists = await orderSchema.exists({orderId})
+      if(!orderExists) return res.status(404).redirect('/admin/page-not-found')
       const order = await orderSchema.findOne({ orderId });
 
       if (!order) {
@@ -107,7 +112,8 @@ const changeOrderStatus = async (req, res) => {
 const  createInvoice = async(req,res)=>{
         try {
           const { orderId } = req.params;
-          
+          const orderExists = await orderSchema.exists({orderId})
+          if(!orderExists) return res.status(404).redirect('/admin/page-not-found')
           // Fetch the order
           const order = await orderSchema.findOne({ orderId }).lean();
           if (!order) {

@@ -114,6 +114,10 @@ const sendOtp = async (req, res) => {
     }
 };
 
+const viewErrorPage = async (req,res)=>{
+    res.render('admin/errorPage')
+}
+
 // Admin Logout
 const logout = (req, res) => {
     req.session.destroy();
@@ -127,5 +131,5 @@ module.exports = {
     formValidate,
     loadDashboard,
     forgetPassword,
-    sendOtp
+    sendOtp,viewErrorPage
 };

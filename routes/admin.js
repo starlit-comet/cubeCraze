@@ -41,20 +41,20 @@ router.post('/updateCategory',adminAuth.isAdminLoggedOut,categoryController.edit
 router.get('/products',adminAuth.isAdminLoggedOut,productController.viewProducts)
 router.get('/addProduct',adminAuth.isAdminLoggedOut,productController.viewAddProductPage)
 router.post ('/addProduct',adminAuth.isAdminLoggedOut,upload.array("productImages",4),productController.addProduct)
-router.get('/editProduct/:productId',adminAuth.isAdminLoggedOut,productController.viewEditProduct)
+router.get('/editProduct/:productId',adminAuth.isAdminLoggedOut,productController.viewEditProduct) //added query error handler
 router.post('/editProduct',adminAuth.isAdminLoggedOut,upload.array('productImages',4),productController.editProduct)
 router.post('/removeProductImage',adminAuth.isAdminLoggedOut,productController.removeProductImage)
-router.patch('/changeStatus-Product/:id',adminAuth.isAdminLoggedOut,productController.changeStatus)
+router.patch('/changeStatus-Product/:id',adminAuth.isAdminLoggedOut,productController.changeStatus) //added query error handling
 
 router.get('/productSizes',adminAuth.isAdminLoggedOut,productSizeController.viewCubeSizes)
 router.post('/addSize',adminAuth.isAdminLoggedOut,productSizeController.addSize)
-router.delete('/deleteProduct/:id',adminAuth.isAdminLoggedOut,productController.deleteProduct)
+router.delete('/deleteProduct/:id',adminAuth.isAdminLoggedOut,productController.deleteProduct) // added query error handling
 
 
 router.get('/orders',adminAuth.isAdminLoggedOut,orderController.viewOrders)
-router.get('/orderDetail/:orderId',adminAuth.isAdminLoggedOut,orderController.orderDetail)
-router.put('/change-order-status/:orderId',adminAuth.isAdminLoggedOut,orderController.changeOrderStatus)
-router.get('/order/invoice/:orderId',orderController.createInvoice)
+router.get('/orderDetail/:orderId',adminAuth.isAdminLoggedOut,orderController.orderDetail) //error done
+router.put('/change-order-status/:orderId',adminAuth.isAdminLoggedOut,orderController.changeOrderStatus) //error done
+router.get('/order/invoice/:orderId',orderController.createInvoice) //error done
 
 router.post('/approve-return',adminAuth.isAdminLoggedOut,orderController.approveReturnRequest)
 router.post('/cancel-return',adminAuth.isAdminLoggedOut,orderController.rejectReturnRequest)
@@ -62,6 +62,8 @@ router.get('/Sales-Report',adminAuth.isAdminLoggedOut,orderController.generateRe
 
 router.get('/coupons',adminAuth.isAdminLoggedOut,couponController.viewCouponPage)
 router.post('/addCoupon',adminAuth.isAdminLoggedOut,couponController.addNewCoupon)
+
+router.get('/page-not-found',adminAuth.isAdminLoggedOut,adminController.viewErrorPage)
 //     (req,res)=>{
 //     res.render('admin/login')
 // })

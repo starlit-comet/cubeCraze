@@ -245,6 +245,8 @@ const createOrder = async (req, res) => {
     });
 
     if (paymentType === 'cod') {
+      if(grandTotal >1000) return res.status(400).json({message:'Cash On Delivery(COD) is only availabe for payments below 1000, Kindly use RazorPay to make this Order.'})
+
       await newOrder.save();
     } else if (paymentType === 'razorpay') {
       newOrder.paymentDetails = {
@@ -428,6 +430,11 @@ const orderDetail = async (req,res)=>{
    try{ const userId = req.session._id
     const orderId = req.params.orderId
     
+    
+    const orderExist = await orderSchema.exists({orderId})
+    if(!orderExist) return res.status(404).redirect('/pagenotfound')
+
+
     const order = await orderSchema.findOne({orderId})
    
     if(!order) return res.status(404).json({message:'order no3t found'})
@@ -444,6 +451,9 @@ const orderTrack = async (req,res)=>{
     try {
         const userId = req.session.id
         const orderId = req.params.orderId
+        const orderExists =await  orderSchema.exists({orderId})
+        console.log('ordertracking does nt exist',orderExists)
+        if(!orderExists) return res.status(404).redirect('/pagenotfound')
         const order = await orderSchema.findOne({orderId})
        // console.log('reached',order,orderId)
         return res.render('users/trackOrder',{order})
@@ -455,7 +465,7 @@ const orderTrack = async (req,res)=>{
 const createInvoice = async (req, res) => {
     try {
       const { orderId } = req.params;
-      const userId = req.session._id; // Secure access, if session available
+      const userId = req.session._id; 
   
       // Fetch the order
       const order = await orderSchema.findOne({ orderId, userId }).lean();
@@ -531,8 +541,8 @@ const cancelOrder =async (req, res) => {
       if(order.paymentMethod !=='cod'){
       walletHelper.addCredit(userId,order.finalAmount,'ORDER_CANCEL_REFUND',order._id,)
       }
-      res.status(200).json({ok:true, message: 'Order cancelled and products restocked successfully.' });
-        console.log('updated order',order)
+      res.status(200).json({ok:true, message: 'Order cancelled!' });
+        console.log('Order Cancelled and products restocked')
     } catch (error) {
       console.error('Error cancelling order:', error);
       res.status(500).json({ message: 'Server error while cancelling order.' });
@@ -546,6 +556,7 @@ const createOrderViaCod =async(req,res)=>{
      const { grandTotal ,shipping ,totalAmount,totalQuantity }= req.session
      const formData = req.body
      console.log('final after razorpay succedds',userId,formData,grandTotal ,shipping ,totalAmount,totalQuantity )
+     if(grandTotal >1000) return res.status(400).json({message:'Cash On Delivery(COD) is availabe for payments below 1000, Kindly use RazorPay to make Payment.'})
      
     // Copy address fields into a plain object
     const copiedAddress = {

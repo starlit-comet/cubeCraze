@@ -1,3 +1,4 @@
+const mongoose = require('mongoose')
 const userSchema = require('../../models/userSchema')
 const productSchema = require("../../models/productSchema")
 const sizeSchema = require('../../models/sizeSchema')
@@ -9,8 +10,14 @@ const viewProduct = async (req,res)=>{
   try
   { //const productId = '67c0cb99a2f30570cddcd306'
     let search = req.query.search ?? "";
+    const productId = req.params.productId
+     if (!mongoose.Types.ObjectId.isValid(productId)) {
+            console.log("Invalid ObjectId:", productId);
+            return res.status(400).redirect('/pagenotfound');
+        }
+        const productExist = await productSchema.exists({_id:productId})
+        if(!productExist) return res.status(404).redirect('/pagenotfound')
 
-     const productId = req.params.productId
      const allCategories = await categorySchema.find({isListed:true})
      const allBrands = await brandSchema.find({isBlocked:false})
      const allSizes = await sizeSchema.find()
@@ -162,5 +169,30 @@ const decreaseQuantity = async (req,res)=>{
     }
 }
 
+const sendCartAndWishlistData = async (req,res)=>{
+    try {
+        const userId = req.session._id
+        const user = await userSchema.findById(userId)
+        if(!user) return res.status(400).json({message:'user not found 123'})
+        const wishList =await Promise.allSettled( user.wishList.map( item=>{
+        console.log(item)
+                const data =  productSchema.findById(item)
+                return data
+        }))
 
-module.exports={viewProduct,viewWishList,removeFromWishList,addtoWishList,increaseQuantity,decreaseQuantity}
+        const cart = await Promise.allSettled( user.cart.map(item=>{
+            const data = productSchema.findById(item.productId)
+                return data
+            
+        }) )
+     //   console.log('datasss',wishList,cart)
+        res.status(200).json({wishList,cart})
+    } catch (error) {
+        console.log('error in sending data of wishlist and cart',error)
+    }
+
+}
+
+
+module.exports={viewProduct,viewWishList,removeFromWishList,addtoWishList,
+    increaseQuantity,decreaseQuantity,sendCartAndWishlistData}

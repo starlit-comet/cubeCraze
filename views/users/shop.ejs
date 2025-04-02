@@ -8,8 +8,8 @@
                     <div class="col-xl-3 col-lg-4">
                         <div class="header-info">
                             <ul>
-                                <li><i class="fi-rs-smartphone"></i> <a href="#">(+01) - 2345 - 6789</a></li>
-                                <li><i class="fi-rs-marker"></i><a  href="page-contact.html">Our location</a></li>
+                                <li><i class="fi-rs-smartphone"></i> <a href="#">(+91) 90-1234-5678</a></li>
+                                <li><i class="fi-rs-marker"></i><a  href="#">Our location</a></li>
                             </ul>
                         </div>
                     </div>
@@ -62,13 +62,17 @@
                                 <div class="row">
     
                                     <div class="search-container col-9">
-                                        <input type="text" name="search" id="search-input" placeholder="Search for items..." >
-                                        <button type="button" class="" id="clear-search" style="display: none;">✖</button>
-                                        <div id="suggestions" class="suggestions-box"></div>
-                                    </div>
-                                    <div class="col-3">
 
-                                        <button class="btn btn-fill" onclick="searchForProducts()">search</button>
+                                            <input type="text"  name="search" id="search-input" placeholder="Search for items..." >
+                                            <div id="suggestions" class="suggestions-box"></div>
+                                        </div>
+                                        <div class="col-1" style="display: none;" id="searchClearBtn">
+                                        <button onclick="clearSearchValue()" class="btn btn-fill pr-15 pl-15" id="clear-search">✖</button>
+
+                                    </div>
+                                    <div class="col-2">
+
+                                        <button class="btn btn-fill pr-15 pl-15" onclick="searchForProducts()">search</button>
                                     </div>
                                 </div>
                                 <!-- <button type="submit">Search</button> -->
@@ -79,18 +83,16 @@
                                 <div class="header-action-icon-2">
                                     <a href="/wishList">
                                         <img class="svgInject" alt="Evara" src="/asset-front/imgs/theme/icons/icon-heart.svg">
-                                        <!-- <span class="pro-count blue">
-                                            4
-                                        </span> -->
+                                        <span class="pro-count blue" id="wishListLong">
+                                            0
+                                        </span>
                                     </a>
                                 </div>
                                 
                                 <div class="header-action-icon-2">
                                     <a class="mini-cart-icon" href="/cart">
                                         <img alt="Evara" src="/asset-front/imgs/theme/icons/icon-cart.svg">
-                                        <% if(cart.length>0) { %>
-                                                <span class="pro-count blue"><%= cart.length %></span>
-                                                <%}%>
+                                                <span class="pro-count blue" id="cartCountLong" >0</span>
                                     </a>
                                     <% if(cart.length>0) { %>
                                     <div class="cart-dropdown-wrap cart-dropdown-hm2">
@@ -118,7 +120,7 @@
                                                 <h4>Total <span>₹ <%= grandTotal %></span></h4>
                                             </div>
                                             <div class="shopping-cart-button">
-                                                <a href="shop-cart.html" class="outline">View cart</a>
+                                                <a href="/cart" class="outline">View cart</a>
                                                 <a href="/cartCheckout">Checkout</a>
                                             </div>
                                         </div>
@@ -301,7 +303,7 @@
                                   
                                     
                                     <li>
-                                        <a href="page-contact.html">Contact</a>
+                                        <a href="/contact">Contact</a>
                                     </li>
                                 </ul>
                             </nav>
@@ -314,15 +316,15 @@
                     <div class="header-action-right d-block d-lg-none">
                         <div class="header-action-2">
                             <div class="header-action-icon-2">
-                                <a href="shop-wishlist.html">
+                                <a href="/wishList">
                                     <img alt="Evara" src="/asset-front/imgs/theme/icons/icon-heart.svg">
-                                    <span class="pro-count white">4</span>
+                                    <span class="pro-count white" id="wishList1">0</span>
                                 </a>
                             </div>
                             <div class="header-action-icon-2">
-                                <a class="mini-cart-icon" href="shop-cart.html">
+                                <a class="mini-cart-icon" href="/cart">
                                     <img alt="Evara" src="/asset-front/imgs/theme/icons/icon-cart.svg">
-                                    <span class="pro-count white">2</span>
+                                    <span class="pro-count white" id="cartCount1">0</span>
                                 </a>
                             </div>
                             <div class="header-action-icon-2 d-block d-lg-none">
@@ -423,7 +425,7 @@
                                             <a aria-label="Quick view" class="action-btn hover-up" data-bs-toggle="modal" data-bs-target="#quickViewModal">
                                             <i class="fi-rs-search"></i></a>
                                             <a aria-label="Add To Wishlist" class="action-btn hover-up" onclick="addtoWishList('<%= item._id %>')"><i class="fi-rs-heart"></i></a>
-                                            <a aria-label="Compare" class="action-btn hover-up" href="shop-compare.html"><i class="fi-rs-shuffle"></i></a>
+                                            <a aria-label="Compare" class="action-btn hover-up" href="#"><i class="fi-rs-shuffle"></i></a>
                                         </div>
                                         <div class="product-badges product-badges-position product-badges-mrg">
                                             <span class="hot">Hot</span>
@@ -433,7 +435,7 @@
                                         <div class="product-category">
                                             <a href="">Puzzles</a>
                                         </div>
-                                        <h2><a href="shop-product-right.html"><%= item.productName %></a></h2>
+                                        <h2><a href="/viewProduct/<%= item._id %>"><%= item.productName %></a></h2>
                                         <div class="rating-result" title="90%">
                                             <span>
                                                 <span>90%</span>
@@ -577,6 +579,7 @@
         const searchVal = params.get('search')
         if(searchVal){
         document.getElementById('search-input').value = searchVal
+        document.getElementById('searchClearBtn').style.display = 'block'
         }
         //console.log('resut',price,selectedBrands,selectedCategories)
         // making check box active for the slected tags
@@ -627,6 +630,7 @@
 
  async function searchForProducts() {
     const searchVal = document.getElementById('search-input').value;
+    if(!searchVal) return
     // console.log(searchVal, 'search value');
     // console.log(typeof(minPrice),minPrice, 'min price');
     // console.log(typeof(maxPrice),maxPrice, 'max price');
@@ -646,6 +650,17 @@
     // let finalUrl = `/shop?${queryString}`;
     // console.log(finalUrl,'final')
     // Redirect to the search page
+    window.location.href = queryParamsURL.toString();
+}
+
+async function clearSearchValue() {
+    const searchVal = document.getElementById('search-input').value;
+    
+    let queryParamsURL = new URL(window.location.href);
+    let queryParams = queryParamsURL.searchParams
+    console.log(queryParamsURL.searchParams.toString(),'already values')
+    
+        queryParams.delete("search"); // Remove if empty
     window.location.href = queryParamsURL.toString();
 }
 

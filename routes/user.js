@@ -65,7 +65,7 @@ router.post('/resend-otp',userController.sendOTPtoEmail)
 
 router.get('/add-new-Address',userAuth.isUserLoggedOut,addressController.viewAddressPage)
 router.post('/addAddress',userAuth.isUserLoggedOut,addressController.addAddress)
-router.get('/editAddress/:_id',userAuth.isUserLoggedOut,addressController.viewEditAddress)
+router.get('/editAddress/:_id',userAuth.isUserLoggedOut,addressController.viewEditAddress)//error done
 router.post('/editAddress',userAuth.isUserLoggedOut,addressController.editAddress)
 router.delete('/deleteAddress',userAuth.isUserLoggedOut,addressController.deleteAddress)
 
@@ -74,7 +74,7 @@ router.post('/updateAccount',userAuth.isUserLoggedOut,userController.updateAccou
 router.post('/addProfilePicture',upload.single('profileImage'),userController.addUserImage)
 router.post('/editUserDetails',userAuth.isUserLoggedOut,userController.editUserDetails)
 
-router.get('/viewProduct/:productId',productController.viewProduct)
+router.get('/viewProduct/:productId',productController.viewProduct) //error done
 
 router.get('/shop',shopController.viewShop)
 router.get('/home',shopController.loadHome)
@@ -95,8 +95,8 @@ router.get('/cartCheck',userAuth.isUserLoggedOut,cartController.cartCheck)
 // router.get('/orderList',userAuth.isUserLoggedOut,cartController.viewOrderList)
 router.post('/createOrder',userAuth.isUserLoggedOut,orderController.createOrder)  // cod orders
 router.get('/orders',userAuth.isUserLoggedOut,orderController.viewOrders)
-router.get('/viewOrder/:orderId',userAuth.isUserLoggedOut,orderController.orderDetail)
-router.get('/trackOrder/:orderId',userAuth.isUserLoggedOut,orderController.orderTrack)
+router.get('/viewOrder/:orderId',userAuth.isUserLoggedOut,orderController.orderDetail)  //error done
+router.get('/trackOrder/:orderId',userAuth.isUserLoggedOut,orderController.orderTrack)  //error done
 
 // Razorpay payments route
 router.post('/create-razorpay-order',userAuth.isUserLoggedOut,orderController.createOrderRazorpay)
@@ -106,7 +106,7 @@ router.get('/payment-failed', userAuth.isUserLoggedOut, (req, res) => {
   });
   
 //print invoice
-router.get('/order/invoice/:orderId',orderController.createInvoice)
+router.get('/order/invoice/:orderId',orderController.createInvoice) 
 //delete order
 router.patch('/orders/cancel/:orderId',orderController.cancelOrder)
 router.post('/orders/cancel-product/:orderId',orderController.cancelSingleProduct) //cancel a single product
@@ -114,5 +114,7 @@ router.post('/orders/cancel-product/:orderId',orderController.cancelSingleProduc
 router.post('/referFriend',referralController.sentEmail)
 
 router.post('/request-product-return',orderController.requestProductReturn)
+
+router.get('/cartAndWishlistData',productController.sendCartAndWishlistData)
 // router.get('/sentOTP',userController.generateOTP)
 module.exports=router

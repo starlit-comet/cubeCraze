@@ -23,6 +23,7 @@ const viewShop = async (req, res) => {
         let brandName = req.query.brand ? req.query.brand.split(',') : []
         let search = req.query.search ?? "";
         let page = parseInt(req.query.page, 10) || 1; // Ensure `page` is a number, default to 1
+        if(page<1) page =1
         let limit = req.query.limit || 10;
         limit = limit === "all" ? 0 : parseInt(limit, 10) || 10; // Default limit is 10
         let sort = req.query.sort || 'Aa-Zz';

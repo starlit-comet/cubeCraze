@@ -1,368 +1,365 @@
- <!-- Vendor JS-->
+<!-- Vendor JS-->
 
- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
- <script src="/asset-front/js/vendor/modernizr-3.6.0.min.js"></script>
- <script src="/asset-front/js/vendor/jquery-3.6.0.min.js"></script>
- <script src="/asset-front/js/vendor/jquery-migrate-3.3.0.min.js"></script>
- <script src="/asset-front/js/vendor/bootstrap.bundle.min.js"></script>
- <script src="/asset-front/js/plugins/slick.js"></script>
- <script src="/asset-front/js/plugins/jquery.syotimer.min.js"></script>
- <script src="/asset-front/js/plugins/wow.js"></script>
- <script src="/asset-front/js/plugins/jquery-ui.js"></script>
- <script src="/asset-front/js/plugins/perfect-scrollbar.js"></script>
- <script src="/asset-front/js/plugins/magnific-popup.js"></script>
- <script src="/asset-front/js/plugins/select2.min.js"></script>
- <script src="/asset-front/js/plugins/waypoints.js"></script>
- <script src="/asset-front/js/plugins/counterup.js"></script>
- <script src="/asset-front/js/plugins/jquery.countdown.min.js"></script>
- <script src="/asset-front/js/plugins/images-loaded.js"></script>
- <script src="/asset-front/js/plugins/isotope.js"></script>
- <script src="/asset-front/js/plugins/scrollup.js"></script>
- <script src="/asset-front/js/plugins/jquery.vticker-min.js"></script>
- <script src="/asset-front/js/plugins/jquery.theia.sticky.js"></script>
- <script src="/asset-front/js/plugins/jquery.elevatezoom.js"></script>
- <!-- Template  JS -->
- <script src="/asset-front/js/main.js?v=3.4"></script>
- <script src="/asset-front/js/shop.js?v=3.4"></script>
- <script>
-   
-
-  
-
-    //add to wishlist
-async function addtoWishList(_id){
-       const request= await Swal.fire({
-            icon:'warning',
-            title:'Are You sure to add this product to Wishlist?',
-            text:'please Confirm',
-            showCancelButton:true,
-            confirmButtonText: 'Yes!!',
-            cancelButtonText: 'Cancel'
-        })
-        if(request.isConfirmed){
-            
-            try {
-                const response = await fetch ('/addtoWishList',{
-                    method:'POST',
-                    headers:{'content-type':'application/json'},
-                    body:JSON.stringify({productId:_id}),
-                })
-                console.log(response)
-                const data = await response.json();  // ✅ Read the response
-            if (response.ok) {
-                Swal.fire({
-                    icon:'success',
-                    title: 'Product Added to wishlist',
-                    showCancelButton:true,
-                    text:data.message,
-                    showConfirmButton:false,
-                    cancelButtonText:'Done'
-                }).then(()=>{
-                    //window.location.reload()
-                });
-                //document.getElementById(`wishlist-item-${_id}`)?.remove();  // ✅ Remove from UI
-            } else {
-                Swal.fire('Error', data.message || 'Something went wrong', 'error');
-            }
-                
-            } catch (error) {
-                console.error('Error:', error);
-            Swal.fire('Error', 'Failed to add product. Please try again later.', 'error');
-       
-            }
+<script src="/asset-front/js/vendor/modernizr-3.6.0.min.js"></script>
+<script src="/asset-front/js/vendor/jquery-3.6.0.min.js"></script>
+<script src="/asset-front/js/vendor/jquery-migrate-3.3.0.min.js"></script>
+<script src="/asset-front/js/vendor/bootstrap.bundle.min.js"></script>
+<script src="/asset-front/js/plugins/slick.js"></script>
+<script src="/asset-front/js/plugins/jquery.syotimer.min.js"></script>
+<script src="/asset-front/js/plugins/wow.js"></script>
+<script src="/asset-front/js/plugins/jquery-ui.js"></script>
+<script src="/asset-front/js/plugins/perfect-scrollbar.js"></script>
+<script src="/asset-front/js/plugins/magnific-popup.js"></script>
+<script src="/asset-front/js/plugins/select2.min.js"></script>
+<script src="/asset-front/js/plugins/waypoints.js"></script>
+<script src="/asset-front/js/plugins/counterup.js"></script>
+<script src="/asset-front/js/plugins/jquery.countdown.min.js"></script>
+<script src="/asset-front/js/plugins/images-loaded.js"></script>
+<script src="/asset-front/js/plugins/isotope.js"></script>
+<script src="/asset-front/js/plugins/scrollup.js"></script>
+<script src="/asset-front/js/plugins/jquery.vticker-min.js"></script>
+<script src="/asset-front/js/plugins/jquery.theia.sticky.js"></script>
+<script src="/asset-front/js/plugins/jquery.elevatezoom.js"></script>
+<!-- Template  JS -->
+<script src="/asset-front/js/main.js?v=3.4"></script>
+<script src="/asset-front/js/shop.js?v=3.4"></script>
+<script>
+  //add to wishlist
+  async function addtoWishList(_id) {
+    const request = await Swal.fire({
+      icon: "warning",
+      title: "Are You sure to add this product to Wishlist?",
+      text: "please Confirm",
+      showCancelButton: true,
+      confirmButtonText: "Yes!!",
+      cancelButtonText: "Cancel",
+    });
+    if (request.isConfirmed) {
+      try {
+        const response = await fetch("/addtoWishList", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ productId: _id }),
+        });
+        console.log(response);
+        const data = await response.json(); // ✅ Read the response
+        if (response.ok) {
+          Swal.fire({
+            icon: "success",
+            title: "Product Added to wishlist",
+            showCancelButton: true,
+            text: data.message,
+            showConfirmButton: false,
+            cancelButtonText: "Done",
+          }).then(() => {
+            //window.location.reload()
+          });
+          //document.getElementById(`wishlist-item-${_id}`)?.remove();  // ✅ Remove from UI
+        } else {
+          Swal.fire("Error", data.message || "Something went wrong", "error");
         }
+      } catch (error) {
+        console.error("Error:", error);
+        Swal.fire(
+          "Error",
+          "Failed to add product. Please try again later.",
+          "error"
+        );
+      }
     }
+  }
 
-async function addToCart(productId){
-        const request = await Swal.fire({
-            icon:'question',
-            title:'Add this product to cart ?',
-            text:'Adding this product to cart will remove the product from your wishlist, Please confirm !?',
-            showCancelButton:true,
-            html:`
+  async function addToCart(productId) {
+    const request = await Swal.fire({
+      icon: "question",
+      title: "Add this product to cart ?",
+      text: "Adding this product to cart will remove the product from your wishlist, Please confirm !?",
+      showCancelButton: true,
+      html: `
             <h5> Enter Quantity of Product needed(max 10)<h5>
                             <input type="number" min="0" max="10" step="1" id="swal-input1" value='1' type='Number' class="swal2-input">
             `,
-            // input:'range',
-            // inputLabel :'Set Quantity Required',
-            // inputAttributes:{
-            //     min:'1',max:'10',step:"1",
-            // },
-            confirmButtonText: 'Yes',
-            cancelButtonText: 'Cancel'
-        })
-        if(request.isConfirmed){
-            try {
-                const quantity = document.getElementById('swal-input1').value
-                const response = await fetch ('/addToCart',{
-                    method:'POST',
-                    headers: {'content-type':'application/json'},
-                    body: JSON.stringify({ productId,quantityToAdd:quantity })
-                })
-                const data = await response.json()
-                console.log(data)
-                if(data.status=='Added'){
-                    Swal.fire({
-                        icon:'success',
-                        title:'Success!!',
-                        text:data.message,
-                    }).then(()=>{
-                        window.location.reload()
+      // input:'range',
+      // inputLabel :'Set Quantity Required',
+      // inputAttributes:{
+      //     min:'1',max:'10',step:"1",
+      // },
+      confirmButtonText: "Yes",
+      cancelButtonText: "Cancel",
+    });
+    if (request.isConfirmed) {
+      try {
+        const quantity = document.getElementById("swal-input1").value;
+        const response = await fetch("/addToCart", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ productId, quantityToAdd: quantity }),
+        });
+        const data = await response.json();
+        console.log(data);
+        if (data.status == "Added") {
+          Swal.fire({
+            icon: "success",
+            title: "Success!!",
+            text: data.message,
+          }).then(() => {
+            window.location.reload();
+          });
+        } else if (data.status === "updated") {
+          Swal.fire({
+            icon: "info",
+            title: "Info!!",
+            text: data.message,
+          }).then(() => {
+            window.location.reload();
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "oops!",
+            text: data.message,
+          }).then(() => {
+            window.location.reload();
+          });
+        }
+      } catch (error) {
+        console.log(error);
+        Swal.fire({
+          icon: "error",
+          title: "Error!!",
+          text: "Something went Wrong. Please try again later.",
+        });
+      }
+    }
+  }
 
-                    })
-                }
-                else if (data.status==='updated'){
-                    Swal.fire({
-                        icon:'info',
-                        title:'Info!!',
-                        text:data.message,
-                    }).then(()=>{
-                        window.location.reload()
-                    })
-                }
-                else{
-                    Swal.fire({
-                        icon:'error',
-                        title:'oops!',
-                        text:data.message,
-                    }).then(()=>{
-                        window.location.reload()
-
-                    })
-                }
-            } catch (error) {
-                console.log(error)
-                Swal.fire({
-                    icon:'error',
-                    title:'Error!!',
-                    text:'Something went Wrong. Please try again later.'
-                }) } }  }
-
-async function removeFromCart(productId){
-   // console.log(productId)
+  async function removeFromCart(productId) {
+    // console.log(productId)
     const request = await Swal.fire({
-            icon:'question',
-            title:'Remove this product from cart ?',
-            text:' Please confirm !?',
-            showCancelButton:true,
-            confirmButtonText: 'Yes, Remove!',
-            cancelButtonText: 'Cancel'
-        })
-        if(request.isConfirmed){
+      icon: "question",
+      title: "Remove this product from cart ?",
+      text: " Please confirm !?",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Remove!",
+      cancelButtonText: "Cancel",
+    });
+    if (request.isConfirmed) {
+      try {
+        const response = await fetch("/removeFromCart", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ productId }),
+        });
+        const data = await response.json();
+        console.log(data);
+        if (data.success) {
+          const successAlert = await Swal.fire({
+            // icon:'success',
+            title: "Success!!",
+            //  text:data.message,
+            input: "checkbox",
+            inputValue: 1,
+            inputPlaceholder: `Keep the Product in WishList ?`,
+            confirmButtonText: "OK!",
+            customClass: {
+              input: "custom-checkbox",
+            },
+            didOpen: () => {
+              const checkbox = Swal.getInput();
+              checkbox.style.width = "16px"; // smaller size
+              checkbox.style.height = "16px"; // smaller size
+              checkbox.style.accentColor = "#4f46e5"; // optional: color customization
+              checkbox.style.cursor = "pointer"; // better UX
+            },
+          });
+
+          if (successAlert.isConfirmed && successAlert.value) {
             try {
-                const response = await fetch ('/removeFromCart',{
-                    method:'POST',
-                    headers: {'content-type':'application/json'},
-                    body: JSON.stringify({ productId})
-                })
-                const data = await response.json()
-                console.log(data)
-                if(data.success){
-                 const successAlert = await   Swal.fire({
-                       // icon:'success',
-                        title:'Success!!',
-                      //  text:data.message,
-                        input:'checkbox',
-                        inputValue:1,
-                        inputPlaceholder:`Keep the Product in WishList ?`,
-                        confirmButtonText:'OK!',
-                        customClass: {
-                             input: 'custom-checkbox'
-                         },
-                         didOpen: () => {
-                             const checkbox = Swal.getInput();
-                             checkbox.style.width = '16px';   // smaller size
-                             checkbox.style.height = '16px';  // smaller size
-                             checkbox.style.accentColor = '#4f46e5'; // optional: color customization
-                             checkbox.style.cursor = 'pointer'; // better UX
-                         }   
-                     
-                                         })
+              const wishListResponse = await fetch("/addtoWishList", {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({ productId }),
+              });
 
-                    if(successAlert.isConfirmed && successAlert.value){
-                        try {
-                            const wishListResponse = await fetch('/addtoWishList',{
-                                method:'POST',
-                                headers: {'content-type':'application/json'},
-                                body:JSON.stringify({productId})
-                            })
+              const wishListData = await wishListResponse.json();
 
-                            const wishListData  = await wishListResponse.json()
-
-                            if(wishListData.success){
-                                Swal.fire({
-                                    icon:'success',
-                                    title:'Added to wishList',
-                                    text : wishListData.message,
-                                    showConfirmButton:true
-                                })
-                                .then(()=>{
-                                    window.location.reload()
-
-                                })
-                            }
-                            else{
-                                Swal.fire({
-                                    icon:'error',
-                                    title:'Oops!!',
-                                    text:wishListData.message,
-                                    showConfirmButton:true
-                                }).then(()=>{
-                                    window.location.reload()
-
-                                })
-                            }
-
-                        } catch (error) {
-                            console.log(error)
-                            Swal.fire({
-                                icon:'error',
-                                title:'Error!!',
-                                text:'Internal Server Error. Please try again'
-                            })
-                            
-                        }
-                    }
-                    else{
-                        window.location.reload()
-
-                    }
-                }
-                
-                else{
-                    Swal.fire({
-                        icon:'error',
-                        title:'oops!',
-                        text:data.message,
-                    })
-                }
-            } catch (error) {
-                console.log(error)
+              if (wishListData.success) {
                 Swal.fire({
-                    icon:'error',
-                    title:'Error!!',
-                    text:'Something went Wrong. Please try again later.'
-                }) } }  }    
+                  icon: "success",
+                  title: "Added to wishList",
+                  text: wishListData.message,
+                  showConfirmButton: true,
+                }).then(() => {
+                  window.location.reload();
+                });
+              } else {
+                Swal.fire({
+                  icon: "error",
+                  title: "Oops!!",
+                  text: wishListData.message,
+                  showConfirmButton: true,
+                }).then(() => {
+                  window.location.reload();
+                });
+              }
+            } catch (error) {
+              console.log(error);
+              Swal.fire({
+                icon: "error",
+                title: "Error!!",
+                text: "Internal Server Error. Please try again",
+              });
+            }
+          } else {
+            window.location.reload();
+          }
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "oops!",
+            text: data.message,
+          });
+        }
+      } catch (error) {
+        console.log(error);
+        Swal.fire({
+          icon: "error",
+          title: "Error!!",
+          text: "Something went Wrong. Please try again later.",
+        });
+      }
+    }
+  }
 
-async function increaseQuantity(productId,index){
+  async function increaseQuantity(productId, index) {
     try {
-        const response = await fetch('/increaseQuantity',{
-            method:'POST',
-            headers:{"content-type":'application/json'},
-            body:JSON.stringify({productId})
-        })
-        let data = await  response.json()
-        if(data.success){
+      const response = await fetch("/increaseQuantity", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ productId }),
+      });
+      let data = await response.json();
+      if (data.success) {
         const Toast = Swal.mixin({
-            toast:true,
-            position:'top-end',
-            timer:1500,
-            timerProgressBar:true,
-            
-        })
-            Toast.fire({
-                icon:'success',
-                title:'Quantity Increased',
-                text:data.message
-            })
-            setTimeout(()=>{
-                window.location.reload()
-            },1400)            
-        }
-        else if( data.reload){
-            const Toast = Swal.mixin({
-            toast:true,
-            position:'top-end',
-            timer:1500,
-            timerProgressBar:true,
-            
-        })
-            Toast.fire({
-                icon:'error',
-                title:'Error!',
-                text:data.message
-            })
-            setTimeout(()=>{
-                window.location.reload()
-            },1400) 
-
-        }
-        else{
-            const Toast = Swal.mixin({
-            toast:true,
-            position:'top-end',
-            timer:1500,
-            timerProgressBar:true,
-            
-        })
-            Toast.fire({
-                icon:'error',
-                title:'Error!',
-                text:data.message
-            })
-        }
+          toast: true,
+          position: "top-end",
+          timer: 1500,
+          timerProgressBar: true,
+        });
+        Toast.fire({
+          icon: "success",
+          title: "Quantity Increased",
+          text: data.message,
+        });
+        setTimeout(() => {
+          window.location.reload();
+        }, 1400);
+      } else if (data.reload) {
+        const Toast = Swal.mixin({
+          toast: true,
+          position: "top-end",
+          timer: 1500,
+          timerProgressBar: true,
+        });
+        Toast.fire({
+          icon: "error",
+          title: "Error!",
+          text: data.message,
+        });
+        setTimeout(() => {
+          window.location.reload();
+        }, 1400);
+      } else {
+        const Toast = Swal.mixin({
+          toast: true,
+          position: "top-end",
+          timer: 1500,
+          timerProgressBar: true,
+        });
+        Toast.fire({
+          icon: "error",
+          title: "Error!",
+          text: data.message,
+        });
+      }
     } catch (error) {
-        console.log(error)
+      console.log(error);
+    }
+  }
+
+  async function decreaseQuantity(productId, index) {
+    try {
+      const response = await fetch("/decreaseQuantity", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ productId }),
+      });
+      let data = await response.json();
+      if (data.success) {
+        const Toast = Swal.mixin({
+          toast: true,
+          position: "top-end",
+          timer: 1500,
+          timerProgressBar: true,
+          showConfirmButton: false,
+        });
+        Toast.fire({
+          icon: "success",
+          title: "Quantity Decreased",
+          text: data.message,
+        });
+        setTimeout(() => {
+          window.location.reload();
+        }, 1400);
+
+        // const quantityInput = document.getElementById(`value_${index}`)
+        // if(quantityInput){
+        //     quantityInput.textContent= data.value
+        // }
+        // console.log(quantityInput)
+        // console.log(data.value,'hiiihf')
+      } else {
+        const Toast = Swal.mixin({
+          toast: true,
+          position: "top-end",
+          timer: 1500,
+          timerProgressBar: true,
+          showConfirmButton: false,
+        });
+        Toast.fire({
+          icon: "error",
+          title: "Error!",
+          text: data.message,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  //function to set wishlisst and cart count
+
+  window.onload = function () {
+      setTimeout(fetchCartData, 1500);
+    };
+    
+async function fetchCartData() {
+    //console.log('function triggered')
+    try {
+        const response = await fetch('/cartAndWishlistData');
+        const data = await response.json();
+        const wishlist = data.wishList.map(item=>item.value)
+        const cart = data.cart.map(item=>item.value)
+
+        console.log(wishlist,cart)
+        document.getElementById('wishList1').innerText=wishlist.length || 0
+        document.getElementById('cartCount1').innerText=cart.length || 0
+        document.getElementById('wishListLong').innerText=wishlist.length || 0
+        document.getElementById('cartCountLong').innerText=cart.length || 0
+    } catch (error) {
+        console.log('Error in fetching cart and wishlist data:', error);
     }
 }
-
-async function decreaseQuantity(productId,index){
-    try {
-        const response = await fetch('/decreaseQuantity',{
-            method:'POST',
-            headers:{"content-type":'application/json'},
-            body:JSON.stringify({productId})
-        })
-        let data = await  response.json()
-        if(data.success){
-        const Toast = Swal.mixin({
-            toast:true,
-            position:'top-end',
-            timer:1500,
-            timerProgressBar:true,
-            showConfirmButton:false
-            
-        })
-            Toast.fire({
-                icon:'success',
-                title:'Quantity Decreased',
-                text:data.message
-            })
-            setTimeout(()=>{
-                window.location.reload()
-            },1400)
-
-                // const quantityInput = document.getElementById(`value_${index}`)
-                // if(quantityInput){
-                //     quantityInput.textContent= data.value
-                // }
-                // console.log(quantityInput)
-                // console.log(data.value,'hiiihf')
-            
-        }
-        else{
-            const Toast = Swal.mixin({
-            toast:true,
-            position:'top-end',
-            timer:1500,
-            timerProgressBar:true,
-            showConfirmButton:false,
-            
-        })
-            Toast.fire({
-                icon:'error',
-                title:'Error!',
-                text:data.message
-            })
-        }
-    } catch (error) {
-        console.log(error)
-    }
-}
-
-
-
-
 </script>
-
