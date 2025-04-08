@@ -96,6 +96,9 @@ const changeOrderStatus = async (req, res) => {
                   item.status = status;
               }
           }
+          if(order.paymentMethod==='cod'){
+          await walletHelper.updateAdminWallet(order.userId,'CREDIT',order.finalAmount,'Order Payment',order.orderId,'cod_payment_after_delivery')
+          }
       } else {
           return res.status(400).json({ message: "Invalid status update" });
       }
@@ -167,6 +170,8 @@ const approveReturnRequest = async(req,res)=>{
     // Update order item status
     item.status = "Returned";
     item.returnedOn = new Date();
+
+    await walletHelper.updateAdminWallet(order.userId,'DEBIT',item.price*item.quantity,'Refund',order.orderId,'product_return_refund')
 
     await order.save();
     res.json({ message: "Return approved and processed successfully!" });

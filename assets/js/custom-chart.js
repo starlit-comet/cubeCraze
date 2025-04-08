@@ -10,7 +10,7 @@
             
             // The data for our dataset
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                labels: ['Jan', 'Feeeb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
                 datasets: [{
                         label: 'Sales',
                         tension: 0.3,
@@ -31,8 +31,8 @@
                         label: 'Products',
                         tension: 0.3,
                         fill: true,
-                        backgroundColor: 'rgba(380, 200, 230, 0.2)',
-                        borderColor: 'rgb(380, 200, 230)',
+                        backgroundColor: 'rgba(180, 200, 230, 0.2)',
+                        borderColor: 'rgb(180, 200, 230)',
                         data: [30, 10, 27, 19, 33, 15, 19, 20, 24, 15, 37, 6]
                     }
 

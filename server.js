@@ -17,6 +17,11 @@ const passport = require("passport");
 const OAuth2Strategy = require("passport-oauth2");
 const nocache = require("nocache");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const userRoute = require("./routes/user");
+const adminRoute = require("./routes/admin");
+const authRoutes = require("./routes/auth");
+const interRoutes = require("./middlewares/admin-user-redirect");
+const connectDb = require("./mongoDb/connectDb");
 require("./config/passport");
 //const User=require('./models/userSchema')
 
@@ -55,11 +60,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 //const expressLayouts=require('express-ejs-layouts')
-const userRoute = require("./routes/user");
-const adminRoute = require("./routes/admin");
-const authRoutes = require("./routes/auth");
-const interRoutes = require("./middlewares/admin-user-redirect");
-const connectDb = require("./mongoDb/connectDb");
+
 app.use(bodyParser.json()); //-remove
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");

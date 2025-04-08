@@ -45,16 +45,6 @@ const formValidate = async (req, res) => {
     }
 };
 
-// Load Admin Dashboard
-const loadDashboard = async (req, res) => {
-    try {
-        res.render('admin/dashboard');
-    } catch (error) {
-        console.error("Error loading dashboard:", error);
-        res.status(500).send("Server error");
-    }
-};
-
 // Forgot Password Page
 const forgetPassword = async (req, res) => {
     try {
@@ -129,7 +119,6 @@ module.exports = {
     loadLogin,
     logout,
     formValidate,
-    loadDashboard,
     forgetPassword,
     sendOtp,viewErrorPage
 };

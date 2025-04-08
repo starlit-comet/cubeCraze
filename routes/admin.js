@@ -11,69 +11,68 @@ const productController = require('../controllers/admin/productController.js')
 const productSizeController = require('../controllers/admin/productSizeController.js')
 const orderController = require('../controllers/admin/orderController.js')
 const couponController = require('../controllers/admin/couponController.js')
-
+const salesReportHelper = require('../helpers/salesReport.js')
+const walletController = require('../controllers/admin/walletController.js')
+const dashboardContoller = require('../controllers/admin/dashBoardController.js')
 const upload = require('../helpers/multer.js')
 const multer = require('multer')
 
-
+router.use((req,res,next)=>{
+    console.log(`${req.method} ${req.originalUrl} url linked`)
+    next()
+})
+router.get('/logout',adminController.logout)
+router.get('/forgetPassword',adminController.forgetPassword) 
 
 router.get('/login',adminAuth.isAdminLoggedin,adminController.loadLogin)
 router.post('/login',adminAuth.isAdminLoggedin,adminController.formValidate)
-router.get('/dashboard',adminAuth.isAdminLoggedOut,adminController.loadDashboard)
-router.get('/forgetPassword',adminController.forgetPassword) 
+
+router.use(adminAuth.isAdminLoggedOut)// routes below this apply this condition
+router.get('/dashboard',dashboardContoller.viewDashboard)
 //router.post('/findAdmin',adminController.sentOtp)   
-router.get('/logout',adminController.logout)
 
 
-router.get('/customers',adminAuth.isAdminLoggedOut,customerController.viewCustomers)
-router.get('/blockCustomer',adminAuth.isAdminLoggedOut,customerController.blockCustomer)
-router.get('/unblockcustomer',adminAuth.isAdminLoggedOut,customerController.unblockCustomer)
-router.post('/searchCustomers',adminAuth.isAdminLoggedOut,customerController.searchCustomer)
+router.get('/customers',customerController.viewCustomers)
+router.get('/blockCustomer',customerController.blockCustomer)
+router.get('/unblockcustomer',customerController.unblockCustomer)
+router.post('/searchCustomers',customerController.searchCustomer)
 
-router.get('/brands',adminAuth.isAdminLoggedOut,brandsController.viewBrands)
-router.post('/addBrand',adminAuth.isAdminLoggedOut,upload.single('brandImage'),brandsController.addBrand)
-
-
-router.get('/categories',adminAuth.isAdminLoggedOut,categoryController.loadCategories)
-router.post('/addCategory',adminAuth.isAdminLoggedOut,categoryController.addCategory)
-router.post('/updateCategory',adminAuth.isAdminLoggedOut,categoryController.editCategory)
-
-router.get('/products',adminAuth.isAdminLoggedOut,productController.viewProducts)
-router.get('/addProduct',adminAuth.isAdminLoggedOut,productController.viewAddProductPage)
-router.post ('/addProduct',adminAuth.isAdminLoggedOut,upload.array("productImages",4),productController.addProduct)
-router.get('/editProduct/:productId',adminAuth.isAdminLoggedOut,productController.viewEditProduct) //added query error handler
-router.post('/editProduct',adminAuth.isAdminLoggedOut,upload.array('productImages',4),productController.editProduct)
-router.post('/removeProductImage',adminAuth.isAdminLoggedOut,productController.removeProductImage)
-router.patch('/changeStatus-Product/:id',adminAuth.isAdminLoggedOut,productController.changeStatus) //added query error handling
-
-router.get('/productSizes',adminAuth.isAdminLoggedOut,productSizeController.viewCubeSizes)
-router.post('/addSize',adminAuth.isAdminLoggedOut,productSizeController.addSize)
-router.delete('/deleteProduct/:id',adminAuth.isAdminLoggedOut,productController.deleteProduct) // added query error handling
+router.get('/brands',brandsController.viewBrands)
+router.post('/addBrand',upload.single('brandImage'),brandsController.addBrand)
 
 
-router.get('/orders',adminAuth.isAdminLoggedOut,orderController.viewOrders)
-router.get('/orderDetail/:orderId',adminAuth.isAdminLoggedOut,orderController.orderDetail) //error done
-router.put('/change-order-status/:orderId',adminAuth.isAdminLoggedOut,orderController.changeOrderStatus) //error done
+router.get('/categories',categoryController.loadCategories)
+router.post('/addCategory',categoryController.addCategory)
+router.post('/updateCategory',categoryController.editCategory)
+
+router.get('/products',productController.viewProducts)
+router.get('/addProduct',productController.viewAddProductPage)
+router.post ('/addProduct',upload.array("productImages",4),productController.addProduct)
+router.get('/editProduct/:productId',productController.viewEditProduct) //added query error handler
+router.post('/editProduct',upload.array('productImages',4),productController.editProduct)
+router.post('/removeProductImage',productController.removeProductImage)
+router.patch('/changeStatus-Product/:id',productController.changeStatus) //added query error handling
+
+router.get('/productSizes',productSizeController.viewCubeSizes)
+router.post('/addSize',productSizeController.addSize)
+router.delete('/deleteProduct/:id',productController.deleteProduct) // added query error handling
+
+
+router.get('/orders',orderController.viewOrders)
+router.get('/orderDetail/:orderId',orderController.orderDetail) //error done
+router.put('/change-order-status/:orderId',orderController.changeOrderStatus) //error done
 router.get('/order/invoice/:orderId',orderController.createInvoice) //error done
 
-router.post('/approve-return',adminAuth.isAdminLoggedOut,orderController.approveReturnRequest)
-router.post('/cancel-return',adminAuth.isAdminLoggedOut,orderController.rejectReturnRequest)
-router.get('/Sales-Report',adminAuth.isAdminLoggedOut,orderController.generateReport)
+router.post('/approve-return',orderController.approveReturnRequest)
+router.post('/cancel-return',orderController.rejectReturnRequest)
+router.get('/Sales-Report',orderController.generateReport)
 
-router.get('/coupons',adminAuth.isAdminLoggedOut,couponController.viewCouponPage)
-router.post('/addCoupon',adminAuth.isAdminLoggedOut,couponController.addNewCoupon)
-
-router.get('/page-not-found',adminAuth.isAdminLoggedOut,adminController.viewErrorPage)
-//     (req,res)=>{
-//     res.render('admin/login')
-// })
-
-// router.get('/dashboard',(req,res)=>{
-//     res.render('admin/dashboard')
-// })
+router.get('/coupons',couponController.viewCouponPage)
+router.post('/addCoupon',couponController.addNewCoupon)
+router.get('/wallet',walletController.viewWallet)
+router.get('/page-not-found',adminController.viewErrorPage)
 
 
-
-
+router.get('/salesReport',salesReportHelper.productsSold)
 
 module.exports=router

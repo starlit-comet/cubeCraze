@@ -250,3 +250,94 @@ if (statusCode === 401) {
 Retry Logic for 503 Service Unavailable.
 Custom Styling in SweetAlert2 (colors, buttons, etc.).
 If you want, I can help you create a custom SweetAlert2 theme, or centralize API calls with automatic error handling! Want to build that out?
+
+
+
+
+admin.js
+
+=================
+
+
+const express=require('express')
+const router = express.Router()
+
+const adminAuth = require('../middlewares/adminAuth.js')
+
+const adminController = require('../controllers/admin/adminController.js')
+const customerController = require('../controllers/admin/customerController.js')
+const brandsController = require('../controllers/admin/brandsController.js')
+const categoryController =require('../controllers/admin/categoryController.js')
+const productController = require('../controllers/admin/productController.js')
+const productSizeController = require('../controllers/admin/productSizeController.js')
+const orderController = require('../controllers/admin/orderController.js')
+const couponController = require('../controllers/admin/couponController.js')
+const salesReportHelper = require('../helpers/salesReport.js')
+const walletController = require('../controllers/admin/walletController.js')
+const upload = require('../helpers/multer.js')
+const multer = require('multer')
+
+
+router.get('/logout',adminController.logout)
+router.get('/forgetPassword',adminController.forgetPassword) 
+
+router.get('/login',adminAuth.isAdminLoggedin,adminController.loadLogin)
+router.post('/login',adminAuth.isAdminLoggedin,adminController.formValidate)
+
+router.use(adminAuth.isAdminLoggedOut)
+router.get('/dashboard',adminAuth.isAdminLoggedOut,adminController.loadDashboard)
+//router.post('/findAdmin',adminController.sentOtp)   
+
+
+router.get('/customers',adminAuth.isAdminLoggedOut,customerController.viewCustomers)
+router.get('/blockCustomer',adminAuth.isAdminLoggedOut,customerController.blockCustomer)
+router.get('/unblockcustomer',adminAuth.isAdminLoggedOut,customerController.unblockCustomer)
+router.post('/searchCustomers',adminAuth.isAdminLoggedOut,customerController.searchCustomer)
+
+router.get('/brands',adminAuth.isAdminLoggedOut,brandsController.viewBrands)
+router.post('/addBrand',adminAuth.isAdminLoggedOut,upload.single('brandImage'),brandsController.addBrand)
+
+
+router.get('/categories',adminAuth.isAdminLoggedOut,categoryController.loadCategories)
+router.post('/addCategory',adminAuth.isAdminLoggedOut,categoryController.addCategory)
+router.post('/updateCategory',adminAuth.isAdminLoggedOut,categoryController.editCategory)
+
+router.get('/products',adminAuth.isAdminLoggedOut,productController.viewProducts)
+router.get('/addProduct',adminAuth.isAdminLoggedOut,productController.viewAddProductPage)
+router.post ('/addProduct',adminAuth.isAdminLoggedOut,upload.array("productImages",4),productController.addProduct)
+router.get('/editProduct/:productId',adminAuth.isAdminLoggedOut,productController.viewEditProduct) //added query error handler
+router.post('/editProduct',adminAuth.isAdminLoggedOut,upload.array('productImages',4),productController.editProduct)
+router.post('/removeProductImage',adminAuth.isAdminLoggedOut,productController.removeProductImage)
+router.patch('/changeStatus-Product/:id',adminAuth.isAdminLoggedOut,productController.changeStatus) //added query error handling
+
+router.get('/productSizes',adminAuth.isAdminLoggedOut,productSizeController.viewCubeSizes)
+router.post('/addSize',adminAuth.isAdminLoggedOut,productSizeController.addSize)
+router.delete('/deleteProduct/:id',adminAuth.isAdminLoggedOut,productController.deleteProduct) // added query error handling
+
+
+router.get('/orders',adminAuth.isAdminLoggedOut,orderController.viewOrders)
+router.get('/orderDetail/:orderId',adminAuth.isAdminLoggedOut,orderController.orderDetail) //error done
+router.put('/change-order-status/:orderId',adminAuth.isAdminLoggedOut,orderController.changeOrderStatus) //error done
+router.get('/order/invoice/:orderId',adminAuth.isAdminLoggedOut,orderController.createInvoice) //error done
+
+router.post('/approve-return',adminAuth.isAdminLoggedOut,orderController.approveReturnRequest)
+router.post('/cancel-return',adminAuth.isAdminLoggedOut,orderController.rejectReturnRequest)
+router.get('/Sales-Report',adminAuth.isAdminLoggedOut,orderController.generateReport)
+
+router.get('/coupons',adminAuth.isAdminLoggedOut,couponController.viewCouponPage)
+router.post('/addCoupon',adminAuth.isAdminLoggedOut,couponController.addNewCoupon)
+router.get('/wallet',adminAuth.isAdminLoggedOut,walletController.viewWallet)
+router.get('/page-not-found',adminAuth.isAdminLoggedOut,adminController.viewErrorPage)
+//     (req,res)=>{
+//     res.render('admin/login')
+// })
+
+// router.get('/dashboard',(req,res)=>{
+//     res.render('admin/dashboard')
+// })
+
+router.get('/salesReport',salesReportHelper.productsSold)
+
+
+
+module.exports=router

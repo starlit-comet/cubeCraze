@@ -148,11 +148,16 @@ const checkout = async (req,res)=>{
         let couponVal=0
         if(couponCode){
             let couponData = await couponSchema.findOne({code:couponCode})
-            console.log(couponData,'applied coupon')
+            console.log(couponData,' coupon')
             if(couponData){
                 if(couponData.discountType=='fixed'){
                     couponVal = couponData.discountValue
                     grandTotal=grandTotal-couponVal
+                }
+                else if (couponData.discountType=='percentage'){
+                    couponVal = Math.round(grandTotal*(couponData.discountValue/100))
+                    if(couponVal>couponData.maxDiscount) couponVal = couponData.maxDiscount
+                    grandTotal= grandTotal-couponVal
                 }
             }
         }
@@ -185,8 +190,21 @@ const checkout = async (req,res)=>{
         
             if(product.isBlocked===false )     cart.push(product) 
         }
-        const coupons = await couponSchema.find({isActive:true}) || []
-
+        let coupons = await couponSchema.find({isActive:true}) || []
+        // coupons=coupons.filter(coupon => {
+        //     const now = new Date();
+        
+        //     // 1. Not expired
+        //     const notExpired = coupon.expiryDate > now;
+        
+        //     // 2. Not used by this user
+        //     const notUsedByUser = !coupon.usedBy.some(entry => entry.userId.toString() === userId.toString());
+        
+        //     // 3. Order amount meets the minimum
+        //     const meetsMinOrderAmount = grandTotal >= coupon.minOrderAmount;
+        
+        //     return notExpired && notUsedByUser && meetsMinOrderAmount;
+        // });
         // console.log(cartItems,'fff',cart)
         return res.render ('users/checkout' , {
             //searchKeyWord:'',minPrice:500,maxPrice:7500,

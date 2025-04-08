@@ -80,7 +80,7 @@ const signUp = async (req, res) => {
 };
 const aboutPage = async (req, res) => {
   try {
-    res.render("users/about");
+    res.redirect("/pagenotfound");
   } catch (error) {
     console.log(error);
   }

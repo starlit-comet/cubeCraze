@@ -1,0 +1,170 @@
+<%-include ('partials/headSection.ejs') %>
+
+    <div class="screen-overlay"></div>
+   <%- include('partials/sidebar.ejs') %>
+    <main class="main-wrap">
+        <%- include('partials/header.ejs') %>
+      
+
+        <section class="content-main">
+            <div class="content-header">
+                <h2 class="content-title">Transactions </h2>
+                <h4>Current Balance: ₹ <%= wallet.balance %></h4>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <header class="border-bottom mb-4 pb-4">
+                                <div class="row">
+                                    <div class="col-lg-5 col-6 me-auto">
+                                        <input type="text" placeholder="Search..." class="form-control">
+                                    </div>
+                                    <div class="col-lg-2 col-6">
+                                        <select class="form-select">
+                                            <option>Type</option>
+                                            <option>All</option>
+                                            <option>Credit</option>
+                                            <option>Debit</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </header> <!-- card-header end// -->
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Transaction ID</th>
+                                            <th>User Details</th>
+                                            <th>Date</th>
+                                            <th>Type</th>
+                                            <th>Amount</th>
+                                            <th>Balance</th>
+                                            <th class="text-end">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% if (wallet && wallet.transactions && wallet.transactions.length > 0) { %>
+                                            <% for (let x = wallet.transactions.length - 1; x >= 0; x--) { 
+                                                let data = wallet.transactions[x];
+                                                let date = new Date(data.transactionDate.$date || data.transactionDate); 
+                                            %>
+                                                <tr>
+                                                    <td><b><%= data.transactionId %></b></td>
+                                                    <td><div class="col">
+                                                        <div class="row"><%= data.user?.name || "N/A" %>
+                                                    </div>
+                                                    <div class="row"><%= data.user?.email || "N/A" %></div>
+                                                    <div class="row" > <%= data.user?.phone || "N/A" %></div>
+                                                </div>
+                                                       </td>
+                                                    <td><%= date.toLocaleString() %></td>
+                                                    <td>
+                                                        <span class="badge bg-<%= data.transactionType === 'CREDIT' ? 'success' : 'danger' %>">
+                                                            <%= data.transactionType %>
+                                                        </span>
+                                                    </td>
+                                                   <% if( data.transactionType==='CREDIT' ){ %>
+                                                    <td>+ Rs. <%= data.amount %></td>
+                                                   <% } else { %>
+                                                    <td>- Rs. <%= data.amount %></td>
+                                                   <% } %>
+                                                    <td>₹ <%= data.timeStampBalance %></td>
+                                                    <td class="text-end">
+                                                        <button 
+                                                            class=" btn-sm btn-primary font-sm "
+                                                            onclick='showDetails(<%- JSON.stringify(data) %>)'>
+                                                            Details
+                                                        </button>
+                                                        
+                                                    </td>
+                                                </tr>
+                                            <% } %>
+                                        <% } else { %>
+                                            <tr>
+                                                <td colspan="6" class="text-center">No transactions found</td>
+                                            </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                                
+                                <script>
+                                    function showDetails(data) {
+                                        const date = new Date(data.transactionDate?.$date || data.transactionDate).toLocaleString();
+                                        Swal.fire({
+                                            title: `Transaction: ${data.transactionId}`,
+                                            html: `
+                                                <div style="text-align: left;">
+                                                    <p><strong>User Details:</strong> ${data.user?.name || "N/A"}</p>
+                                                    <p><strong>Date:</strong> ${date}</p>
+                                                    <p><strong>Type:</strong> ${data.transactionType}</p>
+                                                    <p><strong>Amount:</strong> ₹ ${data.amount}</p>
+                                                    <p><strong>Source:</strong> ${data.source || "N/A"}</p>
+                                                    <p><strong>Order ID:</strong> ${data.orderId || "N/A"}</p>
+                                                    <p><strong>Remarks:</strong> ${data.remarks || "None"}</p>
+                                                </div>
+                                            `,
+                                            icon: data.transactionType === 'CREDIT' ? 'success' : 'warning',
+                                            confirmButtonText:'View Order',
+                                            showCancelButton:true,
+                                            cancelButtonText: 'Close',
+                                            width: '30em'
+                                        }).then(result=>{
+                                            if(result.isConfirmed){
+                                                window.location.href=`/admin/orderDetail/${data.orderId}`
+                                            }
+                                        })
+                                    }
+                                </script>
+                                
+                            </div> <!-- table-responsive.// -->
+                        </div> <!-- col end// -->
+                        <!-- <aside class="col-lg-3">
+                            <div class="box bg-light" style="min-height:80%">
+                                <h6 class="mt-15">Transaction Details</h6>
+                                <hr>
+                                <h6 class="mb-0">Suplier:</h6>
+                                <p>TemplateMount</p><br>
+                                <h6 class="mb-0">Date:</h6>
+                                <p>December 19th, 2022</p><br>
+                                <h6 class="mb-0">Billing address</h6>
+                                <p>1901 Thornridge Cir. Shiloh, Hawaii 81063</p><br>
+                                <h6 class="mb-0">VAT ID:</h6>
+                                <p>54741654160</p><br>
+                                <h6 class="mb-0">Email:</h6>
+                                <p>support@example.com</p><br>
+                                <h6 class="mb-0">Item purchased:</h6><br>
+                                <p>
+                                    <a href="#"> Adidas Air Jordan <i class="icons material-icons md-launch"></i> </a>
+                                    <br>
+                                    <a href="#"> Great product <i class="icons material-icons md-launch"></i> </a>
+                                </p>
+                                <br>
+                                <p>Payment: PayPal</p>
+                                <p class="h4">$457.14</p>
+                                <hr>
+                                <a class="btn btn-light" href="#"> Download receipe </a>
+                            </div>
+                        </aside>  -->
+                        <!-- col end// -->
+                    </div> <!-- row end// -->
+                </div> <!-- card-body // -->
+            </div> <!-- card end// -->
+            <div class="pagination-area mt-30 mb-50">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-start">
+                        <li class="page-item active"><a class="page-link" href="#">01</a></li>
+                        <li class="page-item"><a class="page-link" href="#">02</a></li>
+                        <li class="page-item"><a class="page-link" href="#">03</a></li>
+                        <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                        <li class="page-item"><a class="page-link" href="#">16</a></li>
+                        <li class="page-item"><a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a></li>
+                    </ul>
+                </nav>
+            </div>
+        </section>
+      <script>
+  
+document.getElementById("wallet12e").classList.add("active");
+                    </script>
+        <%- include('partials/footer.ejs') %>

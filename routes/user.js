@@ -78,7 +78,7 @@ router.get('/viewProduct/:productId',productController.viewProduct) //error done
 
 router.get('/shop',shopController.viewShop)
 router.get('/home',shopController.loadHome)
-
+router.get('/',shopController.redirectToHome)
 router.get('/wishList',userAuth.isUserLoggedOut,productController.viewWishList)
 router.post('/removeFromWishList',userAuth.isUserLoggedOut,productController.removeFromWishList)
 router.post('/addtoWishList',userAuth.isUserLoggedOut,productController.addtoWishList)
@@ -116,5 +116,7 @@ router.post('/referFriend',referralController.sentEmail)
 router.post('/request-product-return',orderController.requestProductReturn)
 
 router.get('/cartAndWishlistData',productController.sendCartAndWishlistData)
+
+router.use('*',userController.errorPage)
 // router.get('/sentOTP',userController.generateOTP)
 module.exports=router

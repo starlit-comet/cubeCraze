@@ -12,147 +12,6 @@ const TemporaryOrder = require('../../models/tempRazorpayOrderSchema')
 const walletHelper = require('../../helpers/walletHelper')
 
 
-// const createOrder = async (req,res,)=>{
-//     try{
-//     const userId = req.session._id
-
-//     const {addressId,paymentType,additionalInformation,razorpayOrderId,razorpayPaymentId} =  req.body
-//     const {grandTotal, shipping,totalAmount,totalQuantity} = req.session
-//      const user = await userSchema.findOne({_id:userId,isBlocked:false,isOTPVerified:true})
-//     .select('name email phone cart addresses')
-//    // console.log(user.cart)
-//     let checkTotalQuantity=0 ,checkGrandTotal=0,checkTotalAmount=0
-//     const cart = await Promise.all(user.cart.map(async (item)=>{
-//         const product= await productSchema.findOne({_id:item.productId,isBlocked:false})
-//         .populate([
-//             { path: 'brand', select: 'brandName isBlocked -_id' },
-//             { path: 'category', select: 'categoryName isListed -_id' },
-//             { path: 'size', select: 'size' }
-//           ]) .lean()
-//         if(item.quantity>product.quantity) return res.status(400).json({message:`The requested quanity of '${product.productName}' is not availabe in the stock. kindly reduce its quantity from cart page`})
-//         if(product.brand.isBlocked || !product.category.isListed) return res.status(400).json({message:`The product '${product.productName}' is not availabe for sale(category or brand is blocked by admin). Kindly remove the product from cart to make a purchase`})
-//             checkTotalQuantity+=item.quantity
-//         checkTotalAmount+= 1 * product.promotionalPrice*item.quantity
-//         return {product,quantity:item.quantity}
-//     }))
-//    // console.log('jiij',cart[0].product)
-//     //console.log(addressId,paymentType,additionalInformation,grandTotal, shipping,totalAmount,totalQuantity)
-//     if(checkTotalQuantity!==totalQuantity || checkTotalAmount!== totalAmount) return res.status(400).json({message:'Error Calculating total quantity or total Amount, Kindly reInititate checkout from cart page'})
-//     // const shippingRates = [0, 200, 300, 500, 500];
-//     // const checkShipping = shippingRates[Math.min(Math.floor(checkTotalQuantity / 5), 4)];
-//     if(checkTotalQuantity>=1 && checkTotalQuantity<=5) checkShipping = 0
-//     else if(checkTotalQuantity>=6 && checkTotalQuantity<=10) checkShipping = 200
-//     else if(checkTotalQuantity>=11 && checkTotalQuantity<=15) checkShipping = 300
-//     else  checkShipping = 500
-
-//     checkGrandTotal = checkShipping + checkTotalAmount
-//     if(checkShipping !== shipping) return res.status(400).json({message:`Error in Calculating Shipping Charges`})
-//     if(checkGrandTotal !== grandTotal) return res.status(400).json({message:`Error in Calculating Total Amount Including shipping Charges`})
-//     const shippingAddress = await addressSchema.findOne({_id:addressId,userId})
-//     if (!shippingAddress) {
-//         return res.status(404).json({ message: 'Address not found' });
-//     }
-
-//     // Copy address fields into a plain object
-//     const copiedAddress = {
-//         fullname: shippingAddress.fullname,
-//         state: shippingAddress.state,
-//         district: shippingAddress.district,
-//         house_flat: shippingAddress.house_flat,
-//         pincode: shippingAddress.pincode,
-//         landmark: shippingAddress.landmark,
-//         mobile: shippingAddress.mobile,
-//         alt_phone: shippingAddress.alt_phone,
-//         village_city: shippingAddress.village_city,
-//         street: shippingAddress.street,
-//         addressType: shippingAddress.addressType
-//       };
-      
-
-//     const orderedItems = cart.map(item => ({
-//         product: item.product._id,
-//         quantity: item.quantity,
-//         price: item.product.promotionalPrice,
-//         productName: item.product.productName,
-//         productDetails:{
-//           name:item.product.productName,
-//           images:[...item.product.productImages],
-//           brand : item.product.brand.brandName,
-//           category: item.product.category.categoryName
-//         }
-//     }));
-
-//     const newOrder = new orderSchema({
-//         userId,
-//         userData:{
-//           name:user.name, email:user.email,phone:user.phone
-//         },
-//         orderedItems,
-//         shippingCharge:checkShipping,
-//         totalPrice: checkTotalAmount,
-//         finalAmount: checkGrandTotal,
-//         discount: 0, // You can modify this based on coupon logic
-//         address: copiedAddress,
-//         invoiceDate: new Date(),
-        
-//         status: 'Pending',
-//         paymentMethod: paymentType,
-//         // paymentDetails: {
-//         //     transactionId: '', // Fill when payment is successful
-//         //     orderId: '' // Can be linked to payment gateway orderId
-//         // },
-//         couponApplied: false, // Update if coupon applied
-//         orderNotes:additionalInformation,
-//         totalQuantity:checkTotalQuantity
-//     });
-    
-//     console.log('creating order.... ')
-
-//     if(paymentType=='cod'){
-//       console.log('cod order')
-//       newOrder.paymentDetails={
-      
-//       }
-//       await newOrder.save();
-//     }
-//     else if (paymentType == 'razorpay'){
-      
-//       newOrder.paymentDetails.paymentId = razorpayPaymentId
-//       newOrder.paymentDetails.orderId = razorpayOrderId
-//       await newOrder.save();
-//     }
-
-
-
-//     // Optional: clear user cart after successful order
-//     user.cart = [];
-//     if (!user.orderHistory) {
-//         user.orderHistory = []; // Initialize as an empty array
-//       }
-//     user.orderHistory.push(newOrder._id)
-//     await user.save();
-
-//     // Decrease quantity of each purchased product
-//     await Promise.all(cart.map(async (item) => {
-//     const productId = item.product._id;
-//     const purchasedQty = item.quantity;
-
-//     // Use $inc operator to decrease the quantity atomically
-//     await productSchema.updateOne(
-//         { _id: productId },
-//         { $inc: { quantity: -purchasedQty } }
-//     );
-//     }));
-
-
-//     return res.status(201).json({ message: 'Order placed successfully', orderId: newOrder.orderId });
-
-    
-// } catch(error){
-//     console.log(error)
-//     return res.status(500).json({message:`server Error: ${error}`})
-// }}
-
 const createOrder = async (req, res) => {
   try {
     const userId = req.session._id;
@@ -253,7 +112,8 @@ const createOrder = async (req, res) => {
         paymentId: razorpayPaymentId,
         orderId: razorpayOrderId
       };
-      await newOrder.save();
+     await newOrder.save();
+     await walletHelper.updateAdminWallet(userId,'CREDIT',newOrder.finalAmount,'Order Payment',newOrder.orderId,`New_order_placed`)
     }
 
     user.cart = [];
@@ -540,7 +400,8 @@ const cancelOrder =async (req, res) => {
       await Promise.all(restockPromises);
       if(order.paymentMethod !=='cod'){
       walletHelper.addCredit(userId,order.finalAmount,'ORDER_CANCEL_REFUND',order._id,)
-      }
+      walletHelper.updateAdminWallet(userId,'DEBIT',order.finalAmount,'Order_Cancellation',order.orderId,``)
+    }
       res.status(200).json({ok:true, message: 'Order cancelled!' });
         console.log('Order Cancelled and products restocked')
     } catch (error) {

@@ -2,6 +2,9 @@ const productSchema = require("../../models/productSchema")
 const sizeSchema = require('../../models/sizeSchema')
 const brandSchema = require('../../models/brandSchema')
 const categorySchema = require('../../models/categorySchema')
+const adminDashboardContoller = require('../admin/dashBoardController')
+
+
 
 const getCategoriesIdByName = async (arrayOfNames)=>{
     const categories= await categorySchema .find({ categoryName : { $in : arrayOfNames }, isListed:true})
@@ -127,13 +130,27 @@ const loadHome = async(req,res)=>{
         latestProduct = await productSchema.findById(productId)
         //console.log(latestProduct)
         const userData = req.session.user
-        res.render('users/userHome',{userData,latestProduct,searchKeyWord:search
+        const salesReport = await adminDashboardContoller.productsSold()
+
+        const productNames = salesReport.topProducts.map(item=>item.name)
+        const topProductData = await productSchema.find({productName:{$in:productNames},isBlocked:false}).limit(3)
+        
+        const topBrands = salesReport.topBrands.map(item=>item[0])
+        const topBrandsData = await brandSchema.find({brandName:{$in:topBrands}})
+        const bannerData = await (await productSchema.find({productName:{$nin:productNames},isBlocked:false}).populate('brand category size'))
+       // console.log('hb',bannerData)
+
+        res.render('users/userHome',{userData,latestProduct,searchKeyWord:search,topProductData,topBrandsData,bannerData
         })
     } catch (error) {
         console.log(error)
        // res.status(500).send('PageNotFound')
-        res.status(500).redirect('/pagenotfound')
+        res.status(404).redirect('/pagenotfound')
 
     }
 }
-module.exports={viewShop,loadHome}
+
+const redirectToHome = async (req,res)=>{
+    res.status(301).redirect('/home')
+}
+module.exports={viewShop,loadHome,redirectToHome}

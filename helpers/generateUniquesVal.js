@@ -18,8 +18,5 @@ const generateUniqueCode = async  () =>{
 }
 }
 
-const createReferalCoupon = async ()=>{
-
-}
 
  module.exports = {generateUniqueCode}
