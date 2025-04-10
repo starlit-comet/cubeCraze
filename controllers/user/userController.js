@@ -71,8 +71,7 @@ const errorPage = async (req, res) => {
 
 const signUp = async (req, res) => {
   try {
-    // const referralCode = req.query.referral ? req.query.referral : ''
-    // console.log(referralCode,'refCode')
+
     res.render("users/signUp");
   } catch (error) {
     console.log(error);
@@ -87,22 +86,18 @@ const aboutPage = async (req, res) => {
 };
 const signIn = async (req, res) => {
   try {
-    //  console.log(req.body)
     const { email, password } = req.body;
     const user = await userSchema
       .findOne({ email, googleId: "noGoogleId", isBlocked: false })
       .sort();
-    // console.log(user)
     if (!user) return res.status(200).json({ message: "email not found" });
 
     const isMatchPassword = await bcrypt.compare(password, user.hashedPassword);
-    //console.log(isMatchPassword)
     if (!isMatchPassword)
       return res
         .status(200)
         .json({ message: "passwords not matching", success: false });
     if (!user.isOTPVerified) {
-      // console.log(`user otp not verified`)
       req.session.userEmail = user.email;
       return res
         .status(200)
@@ -113,7 +108,6 @@ const signIn = async (req, res) => {
         });
     }
     if (isMatchPassword) {
-      //  console.log(`user login success`)
       req.session._id = user._id;
       return res
         .status(202)
@@ -125,7 +119,6 @@ const signIn = async (req, res) => {
 };
 const createUser = async (req, res) => {
   try {
-    // console.log(req.body)
     const referalCode = await couponGenerator.generateUniqueCode();
     const {
       email,
@@ -135,7 +128,6 @@ const createUser = async (req, res) => {
       referralCode,
       haveReferralCode,
     } = req.body;
-    //console.log(referralCode,'passed to body',console.log(req.body),haveReferralCode)
     if (name == "")
       return res.status(200).json({ message: "Name cannot be empty" });
     const user = await userSchema.findOne({ email });
@@ -156,7 +148,6 @@ const createUser = async (req, res) => {
              ,a special character. Password should have length of 8`,
         success: false,
       });
-    // console.log(process.env.SALTROUND)
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new userSchema({
@@ -196,10 +187,8 @@ const createUser = async (req, res) => {
   }
 };
 const userProfile = (req, res) => {
-  // const user = req.session.user
 
   if (!req.user) return res.redirect("/login");
-  // console.log(req.user,'requser')
   req.session._id = req.user._id;
   res.redirect("/home");
 };
@@ -213,7 +202,6 @@ const logout = (req, res) => {
 };
 
 const viewOTPpage = async (req, res) => {
-  //  req.session.userEmail = 'akshaitr031@gmail.com'
   const email = req.session.userEmail;
   const newUser = await userSchema.findOne({ email }).select("name email -_id");
   res.render("common/generateOTP", { newUser });
@@ -224,10 +212,6 @@ const verifyOTP = async (req, res) => {
   const userEmail = req.session.userEmail;
   const forgetPassword = req.session.forgetPassword;
 
-  // const referalCode = req.session.referalCode
-  // if(email!==emailFormFront) return res.status(200).json({message:'email error',success:false})
-
-  //var userEmail = user.email
   console.log(`otp from page: ${otp}`);
   console.log(`user data:${userEmail}`);
   if (!otp) {
@@ -237,7 +221,6 @@ const verifyOTP = async (req, res) => {
   }
   let userData = await userSchema.findOne({ email: userEmail });
   if (otp === userData.otp && userData.otpExpires > Date.now()) {
-    //   let newCoupon = couponGenerator.generateUniqueCode()
 
     userData = await userSchema.findByIdAndUpdate(
       userData._id,
@@ -289,7 +272,6 @@ const sendOTPtoEmail = async (req, res) => {
         .status(200)
         .json({ success: false, message: "User Already Verified" });
     const resendOTPafter = req.session.resendOTPafter;
-    // console.log('hiiehq2',resendOTPafter);
     if (resendOTPafter && userData.otpExpires > Date.now()) {
       if (resendOTPafter >= Date.now())
         return res
@@ -356,7 +338,6 @@ const sendOTPtoEmail = async (req, res) => {
       return res.status(200).json({
         message: "OTP already created, please wait before resending",
         success: false,
-        //otpExpires: userData.otpExpires
       });
     }
   } catch (error) {
@@ -365,19 +346,11 @@ const sendOTPtoEmail = async (req, res) => {
   }
 };
 
-const googleSignin = async (req, res) => {};
 
 const getOTPTimer = async (req, res) => {
   try {
-    // const email = req.session.userEmail;
-    // let userData = await userSchema.findOne({ email, isOTPVerified: false });
-
-    // if (!userData) {
-    //     return res.status(400).json({ success: false, message: "User not found" });
-    // }
     const resendOTPafter = req.session.resendOTPafter;
     const remainingTime = Math.max(0, resendOTPafter - Date.now());
-    // console.log('tiem',remainingTime)
     return res.status(200).json({ success: true, remainingTime });
   } catch (error) {
     console.error("Error fetching OTP timer:", error);
@@ -392,7 +365,6 @@ const viewForgotPassword = async (req, res) => {
 const findUserAccount = async (req, res) => {
   try {
     const { email } = req.body;
-    //  console.log(email)
     const userData = await userSchema.findOneAndUpdate(
       { email },
       { isOTPVerified: false },
@@ -402,7 +374,6 @@ const findUserAccount = async (req, res) => {
       return res.status(200).json({ message: "User Account Not Found" });
     req.session.userEmail = email;
     req.session.forgetPassword = true;
-    //userData = await userSchema.findOneAndUpdate()
     return res.status(200).json({ message: "Account Found", success: true });
   } catch {
     return res.status(400).json({ message: "Server error" });
@@ -411,7 +382,6 @@ const findUserAccount = async (req, res) => {
 
 const viewSetPassword = async (req, res) => {
   userId = req.session.user;
-  //console.log(userId)
   const userData = await userSchema.findById(userId);
   if (!userData) return res.status(200).json({ message: "User not found" });
   res.render("users/setPassword", { userData });
@@ -421,7 +391,6 @@ const updatePassword = async (req, res) => {
   try {
     const userId = req.session.user;
     const { email, password, confirmPassword } = req.body;
-    //console.log(userId,email,password,confirmPassword)
 
     if (password == "" || confirmPassword == "")
       return res.status(200).json({ message: "Passwords cannot be empty" });
@@ -475,7 +444,6 @@ const editPassword = async (req, res) => {
       isOTPVerified: true,
     });
     if (!user) return res.status(404).json({ message: "User Not Found" });
-    // console.log(user)
     if (!user.hashedPassword)
       return res
         .status(400)
@@ -511,8 +479,6 @@ const updateAccount = async (req, res) => {
     isBlocked: false,
     isOTPVerified: true,
   });
-
-  //  console.log(req.body,userId)
 };
 
 const addUserImage = async (req, res) => {
@@ -588,7 +554,6 @@ module.exports = {
   aboutPage,
   signIn,
   createUser,
-  googleSignin,
   userProfile,
   logout,
   verifyOTP,

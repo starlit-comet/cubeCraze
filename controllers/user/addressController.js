@@ -79,7 +79,6 @@ const viewAddressPage = async (req,res)=>{
 const viewEditAddress = async (req,res)=>{
     const userId = req.session._id
     const addressId = req.params._id
-    //console.log(userId,addressId)
     if (!mongoose.Types.ObjectId.isValid(addressId)) {
         console.log("Invalid ObjectId:", addressId);
         return res.status(400).redirect('/pagenotfound');
@@ -98,7 +97,6 @@ const editAddress = async (req, res) => {
         const userId  = req.session._id; // Get user ID from session
         const addressId = req.body.addressId; // Address ID (pass this from frontend)
         const updateFields = req.body; // Fields sent from frontend (only changed ones)
-      //  console.log(userId,addressId,updateFields)
         if (!userId || !addressId) {
             return res.status(400).json({ message: "Invalid request: Missing user or address ID." });
         }

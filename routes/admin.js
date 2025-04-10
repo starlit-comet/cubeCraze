@@ -29,7 +29,6 @@ router.post('/login',adminAuth.isAdminLoggedin,adminController.formValidate)
 
 router.use(adminAuth.isAdminLoggedOut)// routes below this apply this condition
 router.get('/dashboard',dashboardContoller.viewDashboard)
-//router.post('/findAdmin',adminController.sentOtp)   
 
 
 router.get('/customers',customerController.viewCustomers)

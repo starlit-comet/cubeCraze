@@ -63,18 +63,6 @@
   
 
                     
-                    <!-- <div class="col-xl-2 col-lg-3 col-md-4 col-6">
-                        <figure class="card border-1">
-                            <div class="card-header bg-white text-center">
-                                <img height="76" src="assets/imgs/brands/brand-9.jpg" class="img-fluid" alt="Logo">
-                            </div>
-                            <figcaption class="card-body text-center">
-                                <h6 class="card-title m-0">TwoHand</h6>
-                                <a href="#"> 398 items </a>
-                            </figcaption>
-                        </figure>
-                    </div>  -->
-                    <!-- col.// -->
                     
                 </div> <!-- row.// -->
             </div> <!-- card-body end// -->
@@ -90,10 +78,7 @@
        function openBrandDetails(name,description,offer=0,image,isBlocked){
        // console.log(brand)
         Swal.fire({
-          //  title: name,
-          //  text:description,
-          //  text:`${description}  Offer: ${offer}`,
-            imageUrl:image,
+          imageUrl:image,
             imageWidth:200,
             imageHeight:200,
             imageAlt:`${name} logo`,
@@ -182,9 +167,7 @@
                 body: formData
               });
               const status = await response.json();
-            //   if (!status.isConfirmed) {
-            //     throw new Error(status.message || "Something went wrong");
-            //   }
+           
               return status; // Pass response data to `then()`
             } catch (error) {
               Swal.showValidationMessage(error.message);

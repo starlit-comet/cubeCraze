@@ -161,7 +161,6 @@
         
                 document.getElementById("editAddress").addEventListener("submit", async function (event) {
                     event.preventDefault(); // Prevent default form submission
-        
                     const originalData = {
                         fullname: "<%= address.fullname %>",
                         mobile: "<%= address.mobile %>",
@@ -175,10 +174,8 @@
                         pincode: "<%= address.pincode %>",
                         landmark: "<%= address.landmark %>",
                     };
-        
                     const formData = {};
                     let hasChanges = false;
-        
                     // Function to check if the value is changed before adding to formData
                     function checkAndUpdate(fieldId, key) {
                         const newValue = document.getElementById(fieldId).value.trim();
@@ -187,7 +184,6 @@
                             hasChanges = true;
                         }
                     }
-        
                     // Check for changes in fields
                     checkAndUpdate("username", "fullname");
                     checkAndUpdate("phone", "mobile");
@@ -199,7 +195,6 @@
                     checkAndUpdate("state", "state");
                     checkAndUpdate("pincode", "pincode");
                     checkAndUpdate("landmark", "landmark");
-        
                     // Check address type separately
                     let selectedAddressType = document.getElementById("addressType").value;
                     if (selectedAddressType === "Other") {
@@ -219,7 +214,6 @@
                         });
                         return;
                     }
-        
                     try {
                         const response = await fetch("/editAddress", {
                             method: "POST",
@@ -228,9 +222,7 @@
                             },
                             body: JSON.stringify(formData)
                         });
-        
                         const data = await response.json();
-        
                         if (response.ok) {
                             Swal.fire({
                                 icon: "success",
@@ -257,6 +249,5 @@
                 });
             });
         </script>
-        
 </body>
 </html>

@@ -18,7 +18,6 @@ const passport=require('passport')
 
 const userValidator = async (req,res,next)=>{
     const user = req.session.user
-   // console.log(user,'validator')
     next()
 }
 
@@ -33,7 +32,6 @@ router.use((req,res,next)=>{
     res.locals.maxPrice=7500
     res.locals.cart={}
     if(req.session._id) res.locals.user=findUser(req.session._id)
-       // console.log('locals user set')
     next()
 })
 
@@ -118,5 +116,4 @@ router.post('/request-product-return',orderController.requestProductReturn)
 router.get('/cartAndWishlistData',productController.sendCartAndWishlistData)
 
 router.use('*',userController.errorPage)
-// router.get('/sentOTP',userController.generateOTP)
 module.exports=router

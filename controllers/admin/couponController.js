@@ -38,7 +38,6 @@ const addNewCoupon = async (req, res) => {
 const viewCouponPage = async (req,res)=>{
     try {
         const coupons = await couponSchema.find({})
-      //  console.log(coupons,'coupon data')
         res.render('admin/coupons',{coupons})
     } catch (error) {
         console.log('error in viewing coupon page',error)

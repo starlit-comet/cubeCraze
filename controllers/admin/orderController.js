@@ -26,7 +26,6 @@ const orderDetail = async (req,res)=>{
     try {
         const {orderId} = req.params
         const orderExists = await orderSchema.exists({orderId})
-        // console.log(productExists,'product find sttauts')
         if(!orderExists) return res.redirect('/admin/page-not-found')
         const order = await orderSchema.findOne({orderId})
         .populate('userId')

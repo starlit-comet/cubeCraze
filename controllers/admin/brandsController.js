@@ -1,11 +1,5 @@
 const brandsSchema = require('../../models/brandSchema')
 
-// const multer = require('multer')
-// const cloudinary = require('../../config/cloudinary')
-
-// const storage=multer.diskStorage({});
-// const upload = multer({storage})
-
 const viewBrands = async (req,res)=>{
 
     const brandsData = await brandsSchema.find({})

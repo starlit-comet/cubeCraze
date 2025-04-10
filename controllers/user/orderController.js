@@ -10,6 +10,7 @@ const razorpay = require('../../helpers/razorpay')
 const {validateWebhookSignature} = require('razorpay/dist/utils/razorpay-utils')
 const TemporaryOrder = require('../../models/tempRazorpayOrderSchema')
 const walletHelper = require('../../helpers/walletHelper')
+const walletSchema = require('../../models/walletSchema')
 
 
 const createOrder = async (req, res) => {
@@ -115,6 +116,9 @@ const createOrder = async (req, res) => {
      await newOrder.save();
      await walletHelper.updateAdminWallet(userId,'CREDIT',newOrder.finalAmount,'Order Payment',newOrder.orderId,`New_order_placed`)
     }
+    else if(paymentType ==='wallet'){
+      let userWallet = walletSchema.findOne()
+    }
 
     user.cart = [];
     user.orderHistory = user.orderHistory || [];
@@ -135,44 +139,6 @@ const createOrder = async (req, res) => {
 };
 
 
-// const createOrderRazorpay = async (req,res)=>{
-//   try {
-//     const userId = req.session._id
-//      const userData = await userSchema.findById(userId)
-
-//     const { amount, currency, receipt, notes, } = req.body;
-//     //if(req.session._id !== userData._id) return res.status(404).send('user not found')
-//     const options = {
-//       amount: amount * 100, // Convert amount to paise
-//       currency,
-//       receipt,
-//       notes,
-//     };
-
-//     const order = await razorpay.orders.create(options);
-        
-//     console.log('orderrrr',order,)
-//     // Read current orders, add new order, and write back to the file
-//     const tempOrder = new TemporaryOrder({
-//       userId,
-//       order_id: order.id,
-//       amount: order.amount,
-//       currency: order.currency,
-//       receipt: order.receipt,
-//       status: 'created',
-//       notes: notes || {},
-//       userEmail:userData.email,
-//       userName:userData.name,
-//       userPhone :userData.phone,
-//     });
-
-//     await tempOrder.save();
-//     res.json(order); // Send order details to frontend, including order ID
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send('Error creating order');
-//   }
-// }
 
 const createOrderRazorpay = async (req, res) => {
   try {
@@ -212,41 +178,6 @@ const createOrderRazorpay = async (req, res) => {
   }
 };
 
-
-// const verifyRazorpayPayment = async (req,res)=>{
-//   const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-
-//   const secret = razorpay.key_secret;
-//   const body = razorpay_order_id + '|' + razorpay_payment_id;
-
-//   try {
-//     const isValidSignature = validateWebhookSignature(body, razorpay_signature, secret);
-//     if (!isValidSignature) {
-//       console.log("Payment verification failed");
-//       return res.status(400).json({ status: 'verification_failed' });
-//     }
-
-//     // Find the order in the database
-//     const tempOrder = await TemporaryOrder.findOne({ order_id: razorpay_order_id });
-
-//     if (!tempOrder) {
-//       console.log("Order not found in temporary orders");
-//       return res.status(404).json({ status: 'order_not_found' });
-//     }
-
-//     // Update order status and payment ID
-//     tempOrder.status = 'paid';
-//     tempOrder.payment_id = razorpay_payment_id;
-
-//     await tempOrder.save();
-
-//     console.log("Payment verification successful");
-//     res.status(200).json({ status: 'ok',tempOrder });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ status: 'error', message: 'Error verifying payment' });
-//   }
-// }
 
 const verifyRazorpayPayment = async (req, res) => {
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;

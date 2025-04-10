@@ -116,7 +116,7 @@
                                                 <% if(productData.productImages[i]){ %>
                                                     <%= productData.productImages[i] %>
                                                     <%  } else { %>
-                                                       <%- "../../assets/imgs/theme/upload.svg"%>
+                                                       <%- "/assets/imgs/theme/upload.svg"%>
                                                        <% } %>
                                                 '  alt="Upload Image" class="img-preview" data-index="<%= i %>" width="100%">
                                                 <input type="file" name="productImages" class="form-control img-input" data-index="<%= i %>" accept="image/*">
@@ -203,7 +203,7 @@
                     });
 
                     removeButton.addEventListener("click", function () {
-                        previewImage.src = "../../assets/imgs/theme/upload.svg";
+                        previewImage.src = "/assets/imgs/theme/upload.svg";
                         input.value = "";
                     });
                 });

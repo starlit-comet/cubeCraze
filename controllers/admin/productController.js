@@ -16,7 +16,6 @@ const addProduct = async (req,res)=>{
     try {
         console.log(req.body)
         const { productName, description, regularPrice, promotionalPrice, brand, category, cubeSize,productQuantity } = req.body;
-      // console.log(productQuantity,description)
         if (!productName || !description || !regularPrice || !brand || !category || !cubeSize ||!productQuantity  ) {
             return res.status(400).json({ success: false, message: "All required fields must be filled!" });
         }
@@ -73,10 +72,7 @@ catch (error) {
 const editProduct= async (req,res)=>{
    try {
     const {productId,productName, description, regularPrice, promotionalPrice, brand, category, cubeSize,productQuantity} = req.body
-    //console.log( brand, category, cubeSize)
     const product = await productSchema.findById(productId)
-    //.populate([{path:'brand'},{path:'category'},{path:'size'}])
-    // console.log(product)
 
     let updatedFields = {}; // Store only changed fields
 
@@ -120,7 +116,6 @@ const deleteProduct = async (req,res)=> {
     try {
         const productId = req.params.id
         const productExists = await productSchema.exists({_id:productId})
-     //   console.log(productExists,'product find sttauts')
         if(!productExists) return res.redirect('/admin/page-not-found')
         await productSchema.findByIdAndUpdate(productId,{isBlocked:true})
         console.log('product Deleted (blocked)')
@@ -134,7 +129,6 @@ const changeStatus=async (req,res)=>{
         const productId = req.params.id
         const {changeStatusTo} = req.body
         const productExists = await productSchema.exists({_id:productId})
-        //console.log(productExists,'product find sttauts')
         if(!productExists) return res.redirect('/admin/page-not-found')
 
         await productSchema.findByIdAndUpdate(productId,{isBlocked:changeStatusTo})

@@ -313,13 +313,7 @@
         setTimeout(() => {
           window.location.reload();
         }, 1400);
-
-        // const quantityInput = document.getElementById(`value_${index}`)
-        // if(quantityInput){
-        //     quantityInput.textContent= data.value
-        // }
-        // console.log(quantityInput)
-        // console.log(data.value,'hiiihf')
+       
       } else {
         const Toast = Swal.mixin({
           toast: true,
@@ -338,8 +332,6 @@
       console.log(error);
     }
   }
-
-  //function to set wishlisst and cart count
 
   window.onload = function () {
       setTimeout(fetchCartData, 1500);

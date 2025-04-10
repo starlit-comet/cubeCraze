@@ -1,32 +1,24 @@
 <%- include('partials/headSection.ejs') %>
 </head>
-
 <body>
     <%- include('partials/header.ejs') %>
-
     <%- include('partials/mobileMenu.ejs') %>
-   
-
 <main class="main">
         <div class="page-header breadcrumb-wrap" >
             <div class="container">
                 <div class="breadcrumb">
                     <a href="home" rel="nofollow">Home</a>
                     <span></span> <a href="/profile" rel="nofollow">Profile</a>
-
                     <span></span> Order Detail
                 </div>
             </div>
         </div>
         <div class="row mt-15">
             <div class="col-1"></div>
-
-            
         <section class="content-main col-10 center">
             <div class="content-header">
                 <div>
                     <h2 class="content-title card-title">Order Detail</h2>
-                    
                     <p>Details for Order ID:<b class="text-danger"> <%= order.orderId %></b>
                     </p>
                 </div>
@@ -53,17 +45,6 @@
                             </span> <br>
                             <small class="text-muted">Order ID: <%= order.orderId %></small>
                         </div>
-                        <!-- 
-                        <div class="col-lg-6 col-md-6 ms-auto text-md-end">
-                            <select class="form-select d-inline-block mb-lg-0 mb-15 mw-200" disabled>
-                                <option>Change status</option>
-                                <option>Awaiting payment</option>
-                                <option>Confirmed</option>
-                                <option>Shipped</option>
-                                <option>Delivered</option>
-                            </select>
-                            <a class="btn btn-primary" href="#">Save</a>
-                            <a class="btn btn-secondary print ms-2" href="#"><i class="icon material-icons md-print"></i></a> -->
                         </div>
                     </div>
                 </header> <!-- card-header end// -->
@@ -225,18 +206,13 @@
                             <div class="box shadow-m bg-light">
                                 <h4 class="mb-15">Payment info</h4>
                                 <p><h6>Payment Method : <%= order.paymentMethod.toUpperCase() %></h6></p>
-                                <!-- <p>
-                                    <img src="assets/imgs/card-brands/2.png" class="border" height="20"> Master Card **** **** 4768 <br>
-                                    Business name: Grand Market LLC <br>
-                                    Phone: +1 (800) 555-154-52
-                                </p> -->
+                                
                             </div>
                             <div class="h-25 pt-4">
                                 <div class="mb-3">
                                     <label>Notes</label>
                                     <textarea disabled class="form-control" name="notes" id="notes" placeholder="<%= order.orderNotes %>" ></textarea>
                                 </div>
-                                <!-- <button class="btn btn-primary">Save note</button> -->
                             </div>
                         </div> <!-- col// -->
                     </div>
@@ -249,9 +225,8 @@
         <script>
             
 document.getElementById('printInvoiceBtn').addEventListener('click', () => {
-  const orderId = '<%= order.orderId  %>'; // replace this dynamically in template
+  const orderId = '<%= order.orderId  %>'; 
   const downloadUrl = `/order/invoice/${orderId}`;
-
   // Opens the PDF in a new tab or triggers download
   window.open(downloadUrl, '_blank');
 });
@@ -306,32 +281,6 @@ document.getElementById('cancelOrderBtn').addEventListener('click',async functio
                     });
                 }
             })
-            // .then((result) => {
-            //     if (result.isConfirmed) {
-            //         return  result.value           }
-            // });
-
-    // Swal.fire({
-    //   title: 'Are you sure?',
-    //   text: "Do you really want to cancel this order?",
-    //   icon: 'warning',
-    //   html: `
-    //                 <select id="returnReason" class="swal2-select"  style="width: 70%; border:solid grey 1px; padding: 10px; margin-top: 10px;">
-    //                     <option value="" disabled selected>Choose a reason</option>
-    //                     <option value="damaged">Product is damaged</option>
-    //                     <option value="wrongItem">Received wrong item</option>
-    //                     <option value="notSatisfied">Not satisfied with the product</option>
-    //                     <option value="other">Other (Specify)</option>
-    //                 </select>
-    //                 <input type="text" id="customReason" class="swal2-input" style="margin-top: 10px; display: none;" placeholder="Enter your reason">
-    //             `,
-    //                   showCancelButton: true,
-    //   confirmButtonColor: '#d33',
-    //   cancelButtonColor: '#3085d6',
-    //   confirmButtonText: 'Yes, cancel it!',
-    //   reverseButtons: true,
-    //   allowOutsideClick:false
-    // }).
     
     .then((result) => {
       if (result.isConfirmed) {
@@ -350,12 +299,6 @@ document.getElementById('cancelOrderBtn').addEventListener('click',async functio
                 text: data.message,
                 icon: 'success'
               });
-             // document.getElementById('cancelOrderBtn').classList.add('disabled')
-              // Optionally update status in DOM
-            //  document.getElementById('orderStatus').innerText = 'Cancelled';
-             // cancelBtn.disabled = true;
-            //  cancelBtn.innerText = 'Order Cancelled';
-             // cancelBtn.style.backgroundColor = 'gray';
              window.location.reload()
             } else {
               Swal.fire({
@@ -383,8 +326,6 @@ document.getElementById('cancelOrderBtn').addEventListener('click',async functio
         title: "Review Feature is not functional" 
     })
   }
-
-
   // Function to cancel a single product
   async function cancelSingleOrder(itemId, orderId) {
     try {
@@ -407,21 +348,17 @@ document.getElementById('cancelOrderBtn').addEventListener('click',async functio
             preConfirm: () => {
                 const selectedReason = document.getElementById("returnReason").value;
                 const customReason = document.getElementById("customReason").value.trim();
-
                 if (!selectedReason) {
                     return Swal.showValidationMessage("Please select a reason.");
                 }
-
                 if (selectedReason === "other" && !customReason) {
                     return Swal.showValidationMessage("Please enter a custom reason.");
                 }
-
                 return selectedReason === "other" ? customReason : selectedReason;
             },
             didOpen: () => {
                 const selectBox = document.getElementById("returnReason");
                 const customInput = document.getElementById("customReason");
-
                 selectBox.addEventListener("change", () => {
                     customInput.style.display = selectBox.value === "other" ? "block" : "none";
                 });
@@ -430,7 +367,6 @@ document.getElementById('cancelOrderBtn').addEventListener('click',async functio
             if (result.isConfirmed) {
                 const reason = result.value;
                 console.log(itemId, reason);
-
                 try {
                     const response = await fetch(`/orders/cancel-product/${orderId}`, {
                         method: 'POST',
@@ -442,9 +378,7 @@ document.getElementById('cancelOrderBtn').addEventListener('click',async functio
                             reason,
                         })
                     });
-
                     const resultData = await response.json();
-
                     if (response.ok) {
                         Swal.fire({
                             icon: 'success',
@@ -480,7 +414,6 @@ document.getElementById('cancelOrderBtn').addEventListener('click',async functio
     }
 }
 
-
 async function requestReturn(itemId, orderId) {
     try {
         const { value: reason } = await Swal.fire({
@@ -512,9 +445,7 @@ async function requestReturn(itemId, orderId) {
                 //returnRequestDate: new Date().toISOString()
             })
         });
-
         const result = await response.json();
-
         if (response.ok) {
             Swal.fire("Success", "Return request submitted successfully!", "success").then(() => {
                 window.location.reload();
@@ -527,7 +458,6 @@ async function requestReturn(itemId, orderId) {
         Swal.fire("Error", "An error occurred while submitting return request. Please try again.", "error");
     }
 }
-
 
        async function requestForReturn(order) {
         console.log(order)
@@ -543,9 +473,7 @@ async function requestReturn(itemId, orderId) {
                 <div>hello</div>
                 </div>`,
         })
-
        }
        </script>
-        
     <%- include('partials/scriptTags.ejs') %>
 </body>

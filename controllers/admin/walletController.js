@@ -8,7 +8,6 @@ const viewWallet = async (req,res)=>{
     })
 
     res.render('admin/wallet',{wallet})
-  //  console.log(wallet,wallet.transactions)
 } catch(error){
     console.log('error rendering admin wallet',error,)
 }}

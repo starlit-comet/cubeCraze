@@ -1,13 +1,5 @@
 <div class="col-lg-3 primary-sidebar sticky-sidebar">
-   <!-- <div class="widget-category mb-30">
-        <h5 class="section-title style-1 mb-30 wow fadeIn animated">Brands We have</h5>
-        <ul class="categories">
-            <% allBrands.forEach((cat,index)=>{  %>
-            <li><a href='?brand=<%= cat.brandName%>'><%= cat.brandName %></a></li>
-            <% })%>
-            
-        </ul>
-    </div> -->
+
     <!-- Fillter By Price -->
     <form id="shop-filter-form" action="/shop" method="GET">
         <div class="sidebar-widget price_range range mb-30">
@@ -47,38 +39,9 @@
                             <label class="form-check-label" for="<%=cat.categoryName %>"><span><%=cat.categoryName %></span></label>
                             <br>
                             <% }) %>
-                        <!-- <input class="form-check-input" type="checkbox" name="checkbox" id="exampleCheckbox21" value="">
-                        <label class="form-check-label" for="exampleCheckbox21"><span>Refurbished (27)</span></label>
-                        <br>
-                        <input class="form-check-input" type="checkbox" name="checkbox" id="exampleCheckbox31" value="">
-                        <label class="form-check-label" for="exampleCheckbox31"><span>Used (45)</span></label> -->
-                    </div>
-                </div>
-            </div>
-    
-            <!-- Categories Filter 
-            <div class="list-group">
-                <div class="list-group-item mb-10 mt-10">
-                    <label class="fw-900">Categories</label>
-                    <div class="custome-checkbox">
-                        <% allCategories.forEach((category, index) => { %>
-                            <input class="form-check-input " type="checkbox" name="category" value="<%= category._id %>">
-                            <label class="form-check-label"><span><%= category.categoryName %></span></label><br>
-                            <% }) %>
                         </div>
-                         -->
-                        <!--
-                    Cube Sizes Filter 
-                    <label class="fw-900 mt-15">Cube Sizes</label>
-                    <div class="custome-checkbox">
-                        <% allSizes.forEach(size => { %>
-                        <input class="form-check-input size-checkbox" type="checkbox" name="size" value="<%= size._id %>">
-                        <label class="form-check-label"><span><%= size.size %></span></label><br>
-                        <% }) %>
-                    </div>
                 </div>
             </div>
-            -->
     
             <!-- Apply Filters Button -->
              <div class="row">
@@ -101,7 +64,6 @@
    
 <script>
     const queryString = window.location.search
-    //console.log('urlpp',queryString)
     const params = new URLSearchParams(queryString);
     const price = params.get('price')
     const selectedBrands = params.getAll('brand')
@@ -110,13 +72,11 @@
     if(searchVal){
     document.getElementById('search-input').value = searchVal
     }
-    //console.log('resut',price,selectedBrands,selectedCategories)
-    // making check box active for the slected tags
+   
     for(let x of selectedBrands ){
       if ( document.getElementById(x)){
         const inputTag = document.getElementById(x)
         inputTag.checked = true
-       // console.log('function123',x,inputTag)
       }
        
     }
@@ -124,62 +84,10 @@
       if ( document.getElementById(x)){
         const inputTag = document.getElementById(x)
         inputTag.checked = true
-       // console.log('function123',x,inputTag)
       }
        
     }
 
 </script>
-    
-    <!-- Product sidebar Widget -->
-    <!-- <div class="sidebar-widget product-sidebar  mb-30 p-30 bg-grey border-radius-10">
-        <div class="widget-header position-relative mb-20 pb-10">
-            <h5 class="widget-title mb-10">New products</h5>
-            <div class="bt-1 border-color-1"></div>
-        </div>
-        <div class="single-post clearfix">
-            <div class="image">
-                <img src="assets/imgs/shop/thumbnail-3.jpg" alt="#">
-            </div>
-            <div class="content pt-10">
-                <h5><a href="shop-product-detail.html">Chen Cardigan</a></h5>
-                <p class="price mb-0 mt-5">$99.50</p>
-                <div class="product-rate">
-                    <div class="product-rating" style="width:90%"></div>
-                </div>
-            </div>
-        </div>
-        <div class="single-post clearfix">
-            <div class="image">
-                <img src="assets/imgs/shop/thumbnail-4.jpg" alt="#">
-            </div>
-            <div class="content pt-10">
-                <h6><a href="shop-product-detail.html">Chen Sweater</a></h6>
-                <p class="price mb-0 mt-5">$89.50</p>
-                <div class="product-rate">
-                    <div class="product-rating" style="width:80%"></div>
-                </div>
-            </div>
-        </div>
-        <div class="single-post clearfix">
-            <div class="image">
-                <img src="assets/imgs/shop/thumbnail-5.jpg" alt="#">
-            </div>
-            <div class="content pt-10">
-                <h6><a href="shop-product-detail.html">Colorful Jacket</a></h6>
-                <p class="price mb-0 mt-5">$25</p>
-                <div class="product-rate">
-                    <div class="product-rating" style="width:60%"></div>
-                </div>
-            </div>
-        </div>
-    </div> -->
-    <!-- <div class="banner-img wow fadeIn mb-45 animated d-lg-block d-none">
-        <img src="assets/imgs/banner/banner-11.jpg" alt="">
-        <div class="banner-text">
-            <span>Women Zone</span>
-            <h4>Save 17% on <br>Office Dress</h4>
-            <a href="shop-grid-right.html">Shop Now <i class="fi-rs-arrow-right"></i></a>
-        </div>
-    </div> -->
+   
 </div>

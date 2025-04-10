@@ -112,7 +112,7 @@
                                         </div>
                                         <div class="card-body">
                                             <div class="input-upload text-center">
-                                                <img src="../../assets/imgs/theme/upload.svg" alt="Upload Image" class="img-preview" data-index="<%= i %>" width="100%">
+                                                <img src="/assets/imgs/theme/upload.svg" alt="Upload Image" class="img-preview" data-index="<%= i %>" width="100%">
                                                 <input type="file" name="productImages" class="form-control img-input" data-index="<%= i %>" accept="image/*">
                                             </div>
                                         </div>
@@ -196,28 +196,13 @@
                     });
 
                     removeButton.addEventListener("click", function () {
-                        previewImage.src = "../../assets/imgs/theme/upload.svg";
+                        previewImage.src = "/assets/imgs/theme/upload.svg";
                         input.value = "";
                     });
                 });
                 
                 
-                //form data handling
-
-                
-                // Collect text input fields
-                // formData.append("productName", document.querySelector('input[name="productName"]').value);
-                // formData.append("description", document.querySelector('textarea[name="description"]').value);
-                // formData.append("regularPrice", document.querySelector('input[name="regularPrice"]').value);
-                // formData.append("promotionalPrice", document.querySelector('input[name="promotionalPrice"]').value);
-                // formData.append("brand", document.querySelector('select[name="brand"]').value);
-                // formData.append("category", document.querySelector('select[name="category"]').value);
-                // formData.append("cubeSize", document.querySelector('select[name="cubeSize"]').value);
-               // formData.append("tags", document.querySelectorAll('input[type="text"]')[3].value);
-            
-                // Collect images
-                // Prevent default form submission
-               // console.log('ji')
+               
 document.querySelector("#productForm").addEventListener("submit", async function (event) {
     event.preventDefault();
     Swal.fire({

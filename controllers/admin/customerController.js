@@ -1,10 +1,6 @@
 const { query } = require('express')
 const User = require('../../models/userSchema')
 
-// const viewCustomers=(req,res)=>{
-//     res.render('admin/customers')
-// }
-
 const viewCustomers = async (req,res)=>{
     try {
         let search=req.query.search??''

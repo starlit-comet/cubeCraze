@@ -4,11 +4,9 @@ const productSchema = require("../../models/productSchema")
 const sizeSchema = require('../../models/sizeSchema')
 const brandSchema = require('../../models/brandSchema')
 const categorySchema = require('../../models/categorySchema')
-//const adressSchema = require()
-//const { search } = require("../../routes/user")
 const viewProduct = async (req,res)=>{
   try
-  { //const productId = '67c0cb99a2f30570cddcd306'
+  { 
     let search = req.query.search ?? "";
     const productId = req.params.productId
      if (!mongoose.Types.ObjectId.isValid(productId)) {
@@ -28,7 +26,6 @@ const viewProduct = async (req,res)=>{
         { path: 'category' },
         { path: 'size' },
      ])
-     //console.log(productData)
     res.render('users/viewProduct',{productData,allCategories,allBrands,allSizes,
        minPrice:0, maxPrice:7500,
          searchKeyWord:search ,
@@ -41,8 +38,6 @@ catch(error){
 }}
 
 const viewWishList = async (req,res)=>{
-    // const userId = '67c81140c0b9a2f078c05b68'
-    // req.session._id= userId
 
     const userId = req.session._id
     const wishListData = await userSchema.findById(userId).select('wishList -_id')
@@ -54,7 +49,6 @@ const viewWishList = async (req,res)=>{
                  { path: 'size' },
         ]))
     );
-   // console.log(data)
     res.render('users/wishList',{
         data,
         searchKeyWord :'',
@@ -127,7 +121,6 @@ const  increaseQuantity = async (req,res)=>{
 
     const user = await userSchema.findById(userId)
     if(!user) return res.status(404).json({message:'User Not Found'})
-   // console.log(user.cart)
     const cartItem = user.cart.find(item=>
         item.productId.toString() === productId
     )
@@ -185,7 +178,6 @@ const sendCartAndWishlistData = async (req,res)=>{
                 return data
             
         }) )
-     //   console.log('datasss',wishList,cart)
         res.status(200).json({wishList,cart})
     } catch (error) {
         console.log('error in sending data of wishlist and cart',error)

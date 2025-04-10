@@ -43,14 +43,15 @@ const userSchema = new mongoose.Schema ({
         productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true }, // ✅ Stores Product ID
         quantity: { type: Number, required: true, default: 1 } // ✅ Stores quantity
     }],
-    wallet:[{
+    wallet:{
         type:Schema.Types.ObjectId,
-        ref:'wallet'
+        ref:'Wallet',
 
-    }],
+    },
     orderHistory:[{
         type:Schema.Types.ObjectId,
-        ref:'Order'
+        ref:'Order',
+        
     }],
     createdOn:{
         type:Date,

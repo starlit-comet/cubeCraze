@@ -1,14 +1,9 @@
 <%- include('partials/headSection.ejs') %>
     </head>
-
     <body>
-
         <%- include('partials/header.ejs') %>
-
             <%- include('partials/mobileMenu.ejs') %>
-
                 <main class="main">
-
                     <div class="page-header breadcrumb-wrap">
                         <div class="container">
                             <div class="breadcrumb">
@@ -17,7 +12,6 @@
                             </div>
                         </div>
                     </div>
-
                     <section class="content-main ml-15 mr-15 mt-10 mb-10">
                         <div class="content-header">
                             <div>
@@ -75,7 +69,6 @@
                                                         ₹ <%= order.finalAmount %>
                                                     </div>
                                                 </div>
-
                                                 <!-- Body -->
                                                 <div class="row">
                                                     <div class="col-4">
@@ -94,7 +87,6 @@
                                                                                         <%= item.status %>
                                                                                     </span>
                                                                     </p>
-
                                                                 </div>
                                                             </div>
                                                             <% }); %>
@@ -171,7 +163,6 @@
                             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
                             background-color: #fff;
                         }
-
                         .order-header {
                             background-color: #800000;
                             color: white;
@@ -181,100 +172,65 @@
                             border-top-left-radius: 8px;
                             border-top-right-radius: 8px;
                         }
-
                         .order-header div {
                             font-size: 14px;
                         }
-
                         .order-body {
                             padding: 5px;
                             display: flex;
                             align-items: center;
                         }
-
                         .order-body img {
                             width: 80px;
                             height: 80px;
                             margin-right: 15px;
                             border-radius: 4px;
                         }
-
                         .order-details {
                             flex: 1;
                         }
-
                         .order-details h3 {
                             margin: 0;
                             font-size: 16px;
                             color: #333;
                             font-weight: 600;
                         }
-
                         .order-details p {
                             margin: 5px 0;
                             font-size: 14px;
                             color: #555;
                         }
-
                         .status-Cancelled {
                             color: red;
                             font-weight: bold;
                         }
-
                         .status-Pending {
                             color: #f0ad4e;
                             font-weight: bold;
                         }
-
                         .status-Returned {
                             color: #e77728;
                             font-weight: bold;
                         }
-
                         .status-Delivered {
                             color: #28a745;
                             font-weight: bold;
                         }
-
                         .order-footer {
                             text-align: end;
                             padding: 10px;
                         }
-
                         .order-footer a {
                             color: #007bff;
                             text-decoration: none;
                             font-size: 14px;
                         }
-
                         .order-footer a:hover {
                             text-decoration: underline;
                         }
                     </style>
                 </main>
-
-                <%- include('partials/footer.ejs') %>
-
-                    <!-- Preloader Start -->
-                    <!-- <div id="preloader-active">
-        <div class="preloader d-flex align-items-center justify-content-center">
-            <div class="preloader-inner position-relative">
-                <div class="text-center">
-                    <h5 class="mb-5">Now Loading</h5>
-                    <div class="loader">
-                        <div class="bar bar1"></div>
-                        <div class="bar bar2"></div>
-                        <div class="bar bar3"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> -->
-
-
-                    <%- include('partials/scriptTags.ejs') %>
-
-
+          <%- include('partials/footer.ejs') %>
+          <%- include('partials/scriptTags.ejs') %>
     </body>
-
     </html>

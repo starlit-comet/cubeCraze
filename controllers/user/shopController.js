@@ -21,7 +21,6 @@ const getBrandsIdByName = async (arrayOfNames)=>{
 const viewShop = async (req, res) => {
     try {
         // Extract query parameters
-       // console.log('queries',req.query.brand,req.query.category)
         let categoryName = req.query.category ? req.query.category.split(','): []
         let brandName = req.query.brand ? req.query.brand.split(',') : []
         let search = req.query.search ?? "";
@@ -30,7 +29,6 @@ const viewShop = async (req, res) => {
         let limit = req.query.limit || 10;
         limit = limit === "all" ? 0 : parseInt(limit, 10) || 10; // Default limit is 10
         let sort = req.query.sort || 'Aa-Zz';
-       // console.log(brandName,categoryName,search,' 3 values')
         // Extract price filter
         let minPrice = req.query.minPrice|| 0; // Default min price
         let maxPrice = req.query.maxPrice || 7500; // Default max price
@@ -68,8 +66,6 @@ const viewShop = async (req, res) => {
         // Get total count before pagination
         const totalProducts = await productSchema.countDocuments(query);
 
-       // console.log('query',query)
-        // Apply sorting, pagination, and filtering
         let allProducts = await productSchema.find(query)
             .sort(sortQuery)
             .skip((page - 1) * limit) // Skip items for pagination
@@ -82,10 +78,6 @@ const viewShop = async (req, res) => {
 
         // Filter out blocked brands/categories before sending response
         allProducts = allProducts.filter(item => !item.brand.isBlocked && item.category.isListed);
-            // if(brandName) allProducts= allProducts.filter(item => item.brand.brandName == brandName)
-            // if(categoryName)allProducts= allProducts.filter(item => item.category.categoryName == categoryName)
-           //     console.log(allProducts,'shoep controller')
-        // Render shop page with data
         req.query.search = search
         res.render("users/shop", { 
             allProducts,
@@ -101,34 +93,19 @@ const viewShop = async (req, res) => {
             maxPrice,
             searchKeyWord:search,
         });
-       // console.log('sending data ',totalProducts,page,limit,sort,minPrice,maxPrice,search)
-       // console.log(search)
+     
     } catch (error) {
         console.error(error);
         res.status(500).redirect("/pagenotfound"); 
     }
 };
 
-// const viewShop = async (req,res)=>{
-//     const { brands,categories,sizes,minPrice,maxPrice,
-//             sortBy = 'date',
-//             sortOrder = 'desc',
-//             search = '',
-//             page = 1,
-//             pageSize = 10,
-
-//     } = req.query
-
-//     const filter ={}
-//     if
-// }
 
 const loadHome = async(req,res)=>{
     try {
         let search = req.query.search ?? "";
         const productId='67c3d742cbe4aa0e478180c5'
         latestProduct = await productSchema.findById(productId)
-        //console.log(latestProduct)
         const userData = req.session.user
         const salesReport = await adminDashboardContoller.productsSold()
 
@@ -138,13 +115,11 @@ const loadHome = async(req,res)=>{
         const topBrands = salesReport.topBrands.map(item=>item[0])
         const topBrandsData = await brandSchema.find({brandName:{$in:topBrands}})
         const bannerData = await (await productSchema.find({productName:{$nin:productNames},isBlocked:false}).populate('brand category size'))
-       // console.log('hb',bannerData)
 
         res.render('users/userHome',{userData,latestProduct,searchKeyWord:search,topProductData,topBrandsData,bannerData
         })
     } catch (error) {
         console.log(error)
-       // res.status(500).send('PageNotFound')
         res.status(404).redirect('/pagenotfound')
 
     }

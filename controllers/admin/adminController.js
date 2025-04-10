@@ -18,7 +18,6 @@ const loadLogin = async (req, res) => {
 // Admin Login Validation
 const formValidate = async (req, res) => {
     try {
-        // console.log("Received data:", req.body);
         const { email, password } = req.body;
 
         if (!email || !password) {
@@ -29,10 +28,8 @@ const formValidate = async (req, res) => {
         if (!admin) {
             return res.status(200).json({ message: 'Email Not Found', success: false });
         }
-       // console.log(admin)
         const isMatchPassword = await bcrypt.compare(password,admin.password);
-       // console.log(isMatchPassword,password,admin.password)
-       // console.log(isMatchPassword)
+    
         if (!isMatchPassword == true) {
             return res.status(200).json({ message: 'Invalid Password', success: false });
         }

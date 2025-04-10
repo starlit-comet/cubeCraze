@@ -56,9 +56,7 @@ async function productsSold (query) {
             topBrands: topBrands.slice(0, 5) // Top 5 brands
         };
         
-       // console.log('Sales Report:', salesReport);
         return salesReport
-      //  res.json(salesReport);
     } catch (error) {
         console.error("Error generating sales report:", error);
         
@@ -67,7 +65,6 @@ async function productsSold (query) {
 
 
 const viewDashboard = async (req, res) => {
-//    if(!req.session.admin) return res.redirect('/admin/login')
     let barGraphData=[10,20,30,40]
     const {date}=req.query
     console.log(date,'date')
@@ -160,17 +157,14 @@ const viewDashboard = async (req, res) => {
             })
             totalOrders++
         })
-        //console.log('totalCount',totalProductsSold)
-        // Get total order amount per month
+       
         const monthlySales = await orderSchema.aggregate([
             // {
             //     $match: {
             //         status: { $ne: "Cancelled" } // Optional: Exclude cancelled
             //     }
             // },
-            // {
-            //     $match:query
-            // },
+          
             {
                 $group: {
                     _id: { $month: "$createdOn" },
