@@ -1,25 +1,34 @@
 const Wallet = require("../models/walletSchema");
 const AdminWallet = require("../models/adminWalletSchema");
 const { v4: uuidv4 } = require("uuid");
-const { customAlphabet } = require("nanoid");
 
 const generateTransactionId = async () => {
   try {
     const chars = "0123456789ABCDEFGHILKLMNOPQRSTUVWXYZ";
-    const nanoid = customAlphabet(chars, 8); // Generate 8-character alphanumeric ID
+    const length = 8;
+
+    const createRandomId = () => {
+      let result = "";
+      for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return result;
+    };
+
     let uniqueCode;
     do {
-      uniqueCode = nanoid(); // Generate an unq ID
+      uniqueCode = createRandomId();
     } while (
       await AdminWallet.findOne({ "transactions.transactionId": uniqueCode })
-    ); // Check uniqueness
-   // console.log("New transaction code:", uniqueCode);
+    );
+
     return uniqueCode;
   } catch (error) {
-    console.error("Error in creating nanoId:", error);
+    console.error("Error generating transaction ID:", error);
     throw error;
   }
 };
+
 
 /**
  * Add credit to user's wallet

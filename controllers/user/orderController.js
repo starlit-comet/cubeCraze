@@ -117,7 +117,11 @@ const createOrder = async (req, res) => {
      await walletHelper.updateAdminWallet(userId,'CREDIT',newOrder.finalAmount,'Order Payment',newOrder.orderId,`New_order_placed`)
     }
     else if(paymentType ==='wallet'){
-      let userWallet = walletSchema.findOne()
+      let userWallet = await walletSchema.findOne({userId})
+      if(userWallet.balance<grandTotal){
+        return res.status(400).json({message:'Not Enough Balance in your Wallet'})
+      }
+      await newOrder.save()
     }
 
     user.cart = [];

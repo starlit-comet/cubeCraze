@@ -548,7 +548,7 @@ const editUserDetails = async (req, res) => {
 };
 
 module.exports = {
-  userLogin,
+  userLogin, 
   errorPage,
   signUp,
   aboutPage,

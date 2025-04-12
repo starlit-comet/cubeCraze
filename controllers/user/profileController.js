@@ -3,7 +3,6 @@ const orderSchema = require('../../models/orderSchema')
 const Wallet = require('../../models/walletSchema')
 
 const viewProfilePage=async (req,res)=>{
-   // const profileId = '67c7d0b3f12d98a81be2a36b'
 try{
      let search = req.query.search ?? "";
     let searchOrder = req.query.search_order ?? ''
@@ -19,8 +18,16 @@ try{
             )
         })
     }
-    let userWallet=[]
-    userWallet = await Wallet.findOne({userId})
+    let userWallet = await Wallet.findOne({userId})
+    if(!userWallet) {
+       userWallet =  new Wallet({
+        userId,transactions:[],
+       })
+       
+       userData.wallet=userWallet._id
+       await userWallet.save()
+       await userData.save()
+    }
    // userWallet.transactions.sort
     
    // console.log(userData)
