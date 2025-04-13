@@ -20,8 +20,9 @@ passport.use(
             
             try {
                 const referalCode = await referalGenerator.generateUniqueCode()
-                let user = await User.findOne({ googleId: profile.id });
+                let user = await User.findOne({ email: profile.emails[0].value });
                 if(user && user.isBlocked==true) return done(null,false,{message:'User is Blocked',userBlocked:true})
+                if(user && user.googleId=='noGoogleId') return done(null,false,{message:'Your email alreasy exists, kindly login using password'})
                 if (!user) {
                     user = new User({
                         googleId: profile.id,  

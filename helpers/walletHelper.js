@@ -129,9 +129,11 @@ async function deductAmount(
       productId,
       status: "SUCCESS",
       note,
+      balance:0,
     };
 
     wallet.balance -= amount;
+    transaction.balance=wallet.balance
     wallet.transactions.push(transaction);
     wallet.updatedAt = new Date();
 

@@ -9,15 +9,15 @@ const loadCategories = async (req,res)=>{
  const addCategory = async (req,res)=>{
     try {
     const {categoryName,description,offer} = req.body
-    console.log(categoryName,description,offer)
     if(!categoryName || !description ) return res.status(400).json({message:'All fields are required'})
     const isCategoryAlreadyExist = await categorySchema.findOne({categoryName})
-    console.log(isCategoryAlreadyExist,'ds')
-    if(isCategoryAlreadyExist) {
-        return res.status(200).json({message:'Category Already Exists'})
-    }
-    const category = await new categorySchema({categoryName,description,categoryOffer:offer})
-    category.save()
+    // if(isCategoryAlreadyExist) {
+    //     return res.status(200).json({message:'Category Already Exists'})
+    // }
+    const allCategoryNames =  (await categorySchema.find().select('categoryName -_id')).map(val=>val.categoryName.split(' ').join('').toLocaleLowerCase())
+    if (allCategoryNames.some(val=>val=== categoryName.toLowerCase().split(' ').join(''))) return res.status(400).json({message:'Category Already Exists'})
+    const category =  new categorySchema({categoryName,description,categoryOffer:offer})
+    //category.save()
        return res.status(200).json({success:true,message:'New Category Created'})
 }
     catch(error){

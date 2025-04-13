@@ -122,6 +122,9 @@ const createOrder = async (req, res) => {
         return res.status(400).json({message:'Not Enough Balance in your Wallet'})
       }
       await newOrder.save()
+      await walletHelper.deductAmount(userId,grandTotal,'PURCHASE_DEDUCT',newOrder.orderId, )
+      await walletHelper.updateAdminWallet(userId,'CREDIT',newOrder.finalAmount,'Order Payment',newOrder.orderId,`New_order_placed`)
+
     }
 
     user.cart = [];
@@ -141,8 +144,6 @@ const createOrder = async (req, res) => {
     res.status(500).json({ message: `Server error: ${error.message}` });
   }
 };
-
-
 
 const createOrderRazorpay = async (req, res) => {
   try {
@@ -181,7 +182,6 @@ const createOrderRazorpay = async (req, res) => {
     res.status(500).send('Error creating order');
   }
 };
-
 
 const verifyRazorpayPayment = async (req, res) => {
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
@@ -240,7 +240,8 @@ const orderDetail = async (req,res)=>{
 }
 catch(error){
 
-}}
+}
+}
 
 const orderTrack = async (req,res)=>{
     try {
@@ -278,6 +279,7 @@ const createInvoice = async (req, res) => {
       return res.status(500).json({ message: 'Server error while generating invoice.' });
     }
   }
+
 const cancelOrder =async (req, res) => {
     const userId = req.session._id;
     const {reason} =req.body 
@@ -344,7 +346,6 @@ const cancelOrder =async (req, res) => {
       res.status(500).json({ message: 'Server error while cancelling order.' });
     }
   }
-
 
 const createOrderViaCod =async(req,res)=>{
     try {
@@ -439,10 +440,7 @@ const createOrderViaCod =async(req,res)=>{
     }
   }
 
-
-
-
-  const cancelSingleProduct = async (req,res)=>{
+const cancelSingleProduct = async (req,res)=>{
     const userId = req.session._id
     const {orderId} = req.params
     const {reason,itemId,} = req.body
@@ -517,7 +515,6 @@ const requestProductReturn = async (req,res)=>{
 }
 
 }
-
 
 module.exports ={createOrder,viewOrders,orderDetail,orderTrack,createInvoice,cancelOrder,
                   createOrderRazorpay,verifyRazorpayPayment,createOrderViaCod,cancelSingleProduct,

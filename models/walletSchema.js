@@ -25,8 +25,7 @@ const walletTransactionSchema = new mongoose.Schema({
         required: true
     },
     orderId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Order',
+       type:String,
         default: null
     },
     productId: {
@@ -46,6 +45,9 @@ const walletTransactionSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    balance:{
+        type:Number,
     }
 });
 
