@@ -72,7 +72,7 @@ const errorPage = async (req, res) => {
 const signUp = async (req, res) => {
   try {
 
-    res.render("users/signUp");
+    res.render("users/signup");
   } catch (error) {
     console.log(error);
   }

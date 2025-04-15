@@ -67,26 +67,21 @@ async function productsSold (query) {
 const viewDashboard = async (req, res) => {
     let barGraphData=[10,20,30,40]
     const {date}=req.query
-    console.log(date,'date')
     let query={}
     if(date){ 
         const now = new Date();
         let startDate, endDate;
       
         switch (date) {
-        //   case 'today':
-        //     startDate = new Date(now.setHours(0, 0, 0, 0));
-        //     endDate = new Date(now.setHours(23, 59, 59, 999));
-        //     break;
       
-        //   case 'this_week':
-        //     const dayOfWeek = now.getDay();
-        //     const diffToMonday = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
-        //     startDate = new Date(now.setDate(diffToMonday));
-        //     startDate.setHours(0, 0, 0, 0);
-        //     endDate = new Date();
-        //     endDate.setHours(23, 59, 59, 999);
-        //     break;
+          case 'this_week':
+            const dayOfWeek = now.getDay();
+            const diffToMonday = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+            startDate = new Date(now.setDate(diffToMonday));
+            startDate.setHours(0, 0, 0, 0);
+            endDate = new Date();
+            endDate.setHours(23, 59, 59, 999);
+            break;
       
           case 'this_month':
             startDate = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -110,10 +105,10 @@ const viewDashboard = async (req, res) => {
             endDate.setHours(23, 59, 59, 999);
             break;
       
-        //   case 'this_year':
-        //     startDate = new Date(now.getFullYear(), 0, 1);
-        //     endDate = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
-        //     break;
+          case 'this_year':
+            startDate = new Date(now.getFullYear(), 0, 1);
+            endDate = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
+            break;
       
           case 'last_year':
             startDate = new Date(now.getFullYear() - 1, 0, 1);
@@ -137,7 +132,6 @@ const viewDashboard = async (req, res) => {
     }
     try {
         let dateRange = query.invoiceDate
-        console.log(dateRange,'date')
         const totalCustomers = await userSchema.find({createdOn:dateRange})
         const newProducts = await productSchema.find({createdAt:dateRange})
         const salesReport = await productsSold(query)
@@ -181,7 +175,6 @@ const viewDashboard = async (req, res) => {
         monthlySales.forEach(item => {
             salesData[item._id - 1] = item.total;
         });
-        console.log(salesReport)
         const wallet = await AdminWallet.findOne()
         const walletBalance = wallet.balance
        return res.render("admin/dashboard", { barGraphData,salesData,totalProductsSold,totalOrders,walletBalance,salesReport });
