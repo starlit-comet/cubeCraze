@@ -15,7 +15,6 @@ const viewOrders = async(req,res)=>{
     try {
         
         const orders = await orderSchema.find().sort({invoiceDate:-1})
-        console.log(orders )
         res.render('admin/orders',{orders}) 
     } catch (error) {
         
@@ -160,7 +159,6 @@ const approveReturnRequest = async(req,res)=>{
     if (item.status !== "Return Requested") {
         return res.status(400).json({ message: "This item is not in return requested status." });
     }
-    console.log(item,'updateThis')
     // Restore stock and credit usr wallt
     await productSchema.findByIdAndUpdate(item.product, { $inc: { quantity: item.quantity } });
     await walletHelper.addCredit(order.userId,item.price*item.quantity,'PRODUCT_RETURN_REFUND',order.id,item.product)

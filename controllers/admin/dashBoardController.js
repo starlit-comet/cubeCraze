@@ -158,7 +158,6 @@ const viewDashboard = async (req, res) => {
             //         status: { $ne: "Cancelled" } // Optional: Exclude cancelled
             //     }
             // },
-          
             {
                 $group: {
                     _id: { $month: "$createdOn" },

@@ -14,7 +14,6 @@ const viewProducts = async (req,res)=>{
 
 const addProduct = async (req,res)=>{
     try {
-        console.log(req.body)
         const { productName, description, regularPrice, promotionalPrice, brand, category, cubeSize,productQuantity } = req.body;
         if (!productName || !description || !regularPrice || !brand || !category || !cubeSize ||!productQuantity  ) {
             return res.status(400).json({ success: false, message: "All required fields must be filled!" });
@@ -35,7 +34,6 @@ const addProduct = async (req,res)=>{
 
         await newProduct.save();
         res.json({ success: true, message: "Product added successfully!" });
-        console.log("New Product Added Successfull")
         
 
     } catch (error) {
@@ -48,7 +46,6 @@ const viewEditProduct = async (req,res)=>{
     try {
         const productId  = req.params.productId;
         const productExists = await productSchema.exists({_id:productId})
-        console.log(productExists,'product find sttauts')
         if(!productExists) return res.redirect('/admin/page-not-found')
 
         const productData = await productSchema.findById(productId).populate([
@@ -97,7 +94,6 @@ const editProduct= async (req,res)=>{
     const updatedProduct = await productSchema.findByIdAndUpdate(productId,
         updatedFields,{new:true},
     )
-    console.log(`Edit Product Success` ,updatedFields)
     return res.status(200).json({ success: true, message: "Product Edited" });
 } catch (error) {
     
@@ -118,7 +114,6 @@ const deleteProduct = async (req,res)=> {
         const productExists = await productSchema.exists({_id:productId})
         if(!productExists) return res.redirect('/admin/page-not-found')
         await productSchema.findByIdAndUpdate(productId,{isBlocked:true})
-        console.log('product Deleted (blocked)')
         res.status(200).json({success:true})
     } catch (error) {
         res.status(404).json({success:false})   
@@ -133,7 +128,6 @@ const changeStatus=async (req,res)=>{
 
         await productSchema.findByIdAndUpdate(productId,{isBlocked:changeStatusTo})
         res.status(200).json({success:true})
-        console.log(`Product Status changed`)
     } catch (error) {
         res.status(400).json({success:false})
     }
@@ -141,10 +135,8 @@ const changeStatus=async (req,res)=>{
 
 const removeProductImage = async(req,res)=>{
     const {imgLink,productId} =req.body
-   console.log(imgLink,productId)
 
    const product = await productSchema.findByIdAndUpdate(productId,{$pull:{productImages:imgLink}},{new:true})
-   console.log(product)
 }
 
 module.exports={addProduct,viewProducts,viewAddProductPage,viewEditProduct,editProduct,

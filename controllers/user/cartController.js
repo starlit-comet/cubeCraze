@@ -53,7 +53,6 @@ try {
         { path: 'size' },
     ]).lean()
 
-    console.log(productData,'')
         if(!productData.category.isListed || productData.brand.isBlocked)    return res.status(400).json({message:`Product is Not Available (It's category or band may be blocked by Admin). This product will be removed from your cart`})
 
     if(productData . isBlocked ){ 
@@ -136,7 +135,6 @@ const checkout = async (req,res)=>{
         let couponVal=0
         if(couponCode){
             let couponData = await couponSchema.findOne({code:couponCode})
-            console.log(couponData,' coupon')
             if(couponData){
                 if(couponData.discountType=='fixed'){
                     couponVal = couponData.discountValue
@@ -162,7 +160,6 @@ const checkout = async (req,res)=>{
 
 
           const cartItems = await userSchema.findById(userId).select('cart -_id')
-        console.log(cartItems)
         let cart = []
         for(let item of cartItems.cart){
             let product = await productSchema.findById(item.productId)

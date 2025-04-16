@@ -98,7 +98,7 @@
           body: JSON.stringify({ productId, quantityToAdd: quantity }),
         });
         const data = await response.json();
-        console.log(data);
+        console.log(data,'daga');
         if (data.status == "Added") {
           Swal.fire({
             icon: "success",

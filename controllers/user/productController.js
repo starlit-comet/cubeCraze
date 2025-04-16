@@ -10,7 +10,6 @@ const viewProduct = async (req,res)=>{
     let search = req.query.search ?? "";
     const productId = req.params.productId
      if (!mongoose.Types.ObjectId.isValid(productId)) {
-            console.log("Invalid ObjectId:", productId);
             return res.status(400).redirect('/pagenotfound');
         }
         const productExist = await productSchema.exists({_id:productId})
@@ -41,7 +40,6 @@ const viewWishList = async (req,res)=>{
 
     const userId = req.session._id
     const wishListData = await userSchema.findById(userId).select('wishList -_id')
-        console.log(userId,wishListData)
     const data = await Promise.all(
         wishListData.wishList.map(item => productSchema.findById(item).populate([
                  { path: 'brand' },
@@ -94,7 +92,6 @@ const addtoWishList = async (req, res) => {
         // Check if the product is already in the wishlist
         const isProductInWishlist = user.wishList.includes(productId);
         const isProductInCart = user.cart.some(item=>item.productId.toString()===productId)
-        console.log(user,productId)
         if (isProductInWishlist) {
             return res.status(400).json({ message: 'Product already in wishlist' });
         } 

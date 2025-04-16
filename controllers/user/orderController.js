@@ -217,7 +217,6 @@ const viewOrders = async (req,res)=>{
     const userId = req.session._id
     const user = await  userSchema.findById(userId)
     const orders = await orderSchema.find({userId}).sort({invoiceDate:-1})
-    // console.log('list:',orders)
     res.render('users/ordersList',{user,orders})
 }
 
@@ -235,7 +234,6 @@ const orderDetail = async (req,res)=>{
     if(!order) return res.status(404).json({message:'order no3t found'})
     
     res.render('users/orderDetail',{order})
-   // console.log('new order details',order)
 
 }
 catch(error){
@@ -248,10 +246,8 @@ const orderTrack = async (req,res)=>{
         const userId = req.session.id
         const orderId = req.params.orderId
         const orderExists =await  orderSchema.exists({orderId})
-        console.log('ordertracking does nt exist',orderExists)
         if(!orderExists) return res.status(404).redirect('/pagenotfound')
         const order = await orderSchema.findOne({orderId})
-       // console.log('reached',order,orderId)
         return res.render('users/trackOrder',{order})
     } catch (error) {
         console.log(error)
@@ -283,7 +279,6 @@ const createInvoice = async (req, res) => {
 const cancelOrder =async (req, res) => {
     const userId = req.session._id;
     const {reason} =req.body 
-    console.log('reason for cancel',reason)
   
     try {
       const { orderId } = req.params;
@@ -306,7 +301,6 @@ const cancelOrder =async (req, res) => {
       if (order.status === 'Cancelled') {
         return res.status(400).json({ message: 'Order already cancelled' });
       }
-      console.log('update this order,', order)
       // ✅ Update the order status
       order.orderedItems
       order.status = 'Cancelled';
@@ -340,7 +334,6 @@ const cancelOrder =async (req, res) => {
       walletHelper.updateAdminWallet(userId,'DEBIT',order.finalAmount,'Order_Cancellation',order.orderId,``)
     }
       res.status(200).json({ok:true, message: 'Order cancelled!' });
-        console.log('Order Cancelled and products restocked')
     } catch (error) {
       console.error('Error cancelling order:', error);
       res.status(500).json({ message: 'Server error while cancelling order.' });
@@ -464,7 +457,6 @@ const cancelSingleProduct = async (req,res)=>{
         order.finalAmount-=(order.orderedItems[productIndex].price*order.orderedItems[productIndex].quantity)
         order.totalPrice-=(order.orderedItems[productIndex].price*order.orderedItems[productIndex].quantity)
         
-        console.log('order after 1 prodcut cancel',order)
         restockProduct.quantity+=order.orderedItems[productIndex].quantity
 
         if(order.orderedItems.every(item=>item.status=='Cancelled')) {
@@ -481,7 +473,6 @@ const cancelSingleProduct = async (req,res)=>{
         }
         res.status(200).json({message:'Product Cancelled Succesfully'})
 
-      console.log(reason,itemId,'jkn',productIndex)
       
     } catch (error) {
       console.log(error)
@@ -506,7 +497,6 @@ const requestProductReturn = async (req,res)=>{
     item.returnReason = reason;
     item.returnRequestedOn = new Date(Date.now());
     
-    //console.log(order,'requested order')
     await order.save();
     res.json({ message: "Return request submitted successfully!" });
 } catch (error) {
