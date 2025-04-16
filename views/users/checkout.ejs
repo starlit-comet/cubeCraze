@@ -519,11 +519,11 @@ let grandTotal = <%= grandTotal %>;
                 if (response.ok) {
                   await Swal.fire({
                     icon: 'success',
-                    color: '#06b406',
+                    color: '#06b4F6',
                     title: 'Order Placed!',
                     text: 'Your order has been placed successfully.',
                     background: 'url(https://static.licdn.com/aero-v1/sc/h/f55std566o6x1mr1opdy220oi?1741952662218)',
-                    backdrop: `rgba(24, 19, 18, 0.53)`
+                    backdrop: `rgba(24, 19, 18, 0.63)`
                   });
           
                   window.location.href = `/viewOrder/${result.orderId}`;
