@@ -117,15 +117,18 @@ console.log(user); // Use this in JavaScript
                 .then(result => {
                     if (result.success) {
                         Swal.fire({
-                            icon: "success",
-                            title: "OTP Sent!",
-                            text: "Please check your email for the OTP.",
-                            timer: 2000,
-                        showConfirmButton:true
-                        }).then(()=>{
-                            window.location.reload()
+    icon: "success",
+    title: "OTP Sent!",
+    text: "Please check your email for the OTP.",
+    timer: 2000,
+    showConfirmButton: true
+}).then(() => {
+    // Change button text and optionally ID
+    const sendBtn = document.getElementById("sendBtn");
+    sendBtn.textContent = "RESEND OTP";
+    sendBtn.id = "resendBtn"; // Optional: if you want to use different ID after
+});
 
-                        });
 
                        // startResendTimer(); // Start the countdown for resend button
                     }
@@ -279,32 +282,7 @@ async function startResendTimer() {
     }, 1000);
 }
 
-// Call the function when page loads
-//window.onload = startResendTimer;
 
-
-// function resendOTP() {
-   // resendBtn.disabled = true;
-    // timerDisplay.textContent = "01:00";
-    // startResendTimer();
-
-//     fetch("/resend-otp", {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({ otp:null,user })
-//     })
-//     .then(response => response.json())
-//     .then(result => {
-//         Swal.fire({
-//             icon: result.success ? "success" : "error",
-//             title: result.success ? "OTP Resent" : "Resend Failed",
-//             text: result.message,
-//         });
-//     })
-//     .catch(error => console.error("Error resending OTP:", error));
-// }
-
-// Start the timer when the page loads
 window.onload = startResendTimer();
 
     </script>

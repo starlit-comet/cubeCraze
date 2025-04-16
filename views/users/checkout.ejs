@@ -189,104 +189,107 @@
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
         <script>
-            $(document).ready(function() {
 
-// Show SweetAlert with the address form
-$('#addNewAddressBtn').on('click', function() {
+          
+$(document).ready(function () {
+
+$('#addNewAddressBtn').on('click', function () {
     Swal.fire({
         title: 'Add New Address',
         html: `
             <form id="addAddressForm" onsubmit="return false;">
-                                            <h4>Name & Phone </h4>
-                                            <div class="row">
-                                                <div class="form-group col-6 ">
-                                                    <label for="username">Full Name:</label>
-                                                    <input type="text" id="username" required name="fullname" placeholder="Enter your full name" >
-                                                </div>
-                                                <div class="form-group col-6">
-                                                    <label for="phone">Phone Number:</label>
-                                                    <input type="text" id="phone" required name="mobile" placeholder="Enter phone number">
-                                                </div>
-                                            </div>
-                                            <h4>Address Details</h4>
-                                        <div class="row">
-                                            <div class="form-group col-6">
-                                            
-                                            <div class="form-group col-6 " >
-                                                <label for="addressType">Address Type:</label>
-                                                <select id="addressType" name="addressType" class="border font-xl" required>
-                                                    <option value="Home">Home</option>
-                                                    <option value="Work">Work</option>
-                                                    <option value="Other">Other</option>
-                                                </select>
-                                            </div>
-                                            <input type="text" id="customAddressType" name="customAddressType"  placeholder="Enter address type" style="display: none;">
-                                            
-                                        </div></div>
-                                        <div class="row">
-
-                                            <div class="form-group col-6">
-                                                <label for="house_flat">House/Flat Number:</label>
-                                                <input type="text" id="house_flat" required name="house_flat" placeholder="Enter house or flat number">
-                                            </div>
-                                            <div class="form-group col-6">
-                                                <label for="street">Street:</label>
-                                                <input type="text" id="street" required name="street" placeholder="Enter street name">
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="form-group col-6">
-                                                <label for="city">Village or City :</label>
-                                                <input type="text" id="city" required name="village_city" placeholder="Enter city">
-                                            </div>
-                                            
-                                            <div class="form-group col-6">
-                                                <label for="district">District:</label>
-                                                <input type="text" id="district" required name="district" placeholder="Enter district">
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="form-group col-6">
-                                                <label for="state">State:</label>
-                                                <input type="text" id="state" required name="state" placeholder="Enter state">
-                                            </div>
-                                            
-                                            <div class="form-group col-6">
-                                                <label for="pincode">Pincode:</label>
-                                                <input type="number" id="pincode" required name="pincode" placeholder="Enter pincode">
-                                            </div>
-                                        </div>
-                                            
-                                            <div class="row">
-
-                                                <div class="form-group col-8">
-                                                    <label for="landmark">Landmark (Optional):</label>
-                                                    <input type="text" id="landmark" name="landmark" placeholder="Enter landmark">
-                                                </div>
-                                                <div class="form-group col-4">
-                                                    <label for="alt_phone">Alt Phone (Optional):</label>
-                                                    <input type="number" id="alt_phone" name="alt_phone" placeholder="Enter alternative phone number">
-                                                </div>
-                                                
-                                            </div>
-                                            
-                                        </form>
+                <h4>Name & Phone </h4>
+                <div class="row">
+                    <div class="form-group col-6">
+                        <label for="username">Full Name:</label>
+                        <input type="text" id="username" name="fullname" placeholder="Enter your full name">
+                        <small class="text-danger" id="error-username"></small>
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="phone">Phone Number:</label>
+                        <input type="text" id="phone" name="mobile" placeholder="Enter phone number">
+                        <small class="text-danger" id="error-phone"></small>
+                    </div>
+                </div>
+                <h4>Address Details</h4>
+                <div class="row">
+                    <div class="form-group col-6">
+                        <label for="addressType">Address Type:</label>
+                        <select id="addressType" name="addressType" class="border font-xl">
+                            <option value="Home">Home</option>
+                            <option value="Work">Work</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <small class="text-danger" id="error-addressType"></small>
+                        <input type="text" id="customAddressType" name="customAddressType" placeholder="Enter address type" style="display: none;">
+                        <small class="text-danger" id="error-customAddressType"></small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-6">
+                        <label for="house_flat">House/Flat Number:</label>
+                        <input type="text" id="house_flat" name="house_flat" placeholder="Enter house or flat number">
+                        <small class="text-danger" id="error-house_flat"></small>
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="street">Street:</label>
+                        <input type="text" id="street" name="street" placeholder="Enter street name">
+                        <small class="text-danger" id="error-street"></small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-6">
+                        <label for="city">Village or City :</label>
+                        <input type="text" id="city" name="village_city" placeholder="Enter city">
+                        <small class="text-danger" id="error-city"></small>
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="district">District:</label>
+                        <input type="text" id="district" name="district" placeholder="Enter district">
+                        <small class="text-danger" id="error-district"></small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-6">
+                        <label for="state">State:</label>
+                        <input type="text" id="state" name="state" placeholder="Enter state">
+                        <small class="text-danger" id="error-state"></small>
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="pincode">Pincode:</label>
+                        <input type="number" id="pincode" name="pincode" placeholder="Enter pincode">
+                        <small class="text-danger" id="error-pincode"></small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-8">
+                        <label for="landmark">Landmark (Optional):</label>
+                        <input type="text" id="landmark" name="landmark" placeholder="Enter landmark">
+                    </div>
+                    <div class="form-group col-4">
+                        <label for="alt_phone">Alt Phone (Optional):</label>
+                        <input type="number" id="alt_phone" name="alt_phone" placeholder="Enter alternative phone number">
+                    </div>
+                </div>
+            </form>
         `,
         focusConfirm: false,
         showCancelButton: true,
         confirmButtonText: 'Submit',
         didOpen: () => {
-            // Attach change event for Address Type dropdown
-            $('#addressType').change(function() {
+            $('#addressType').change(function () {
                 if ($(this).val() === "Other") {
                     $('#customAddressType').show().attr('required', true);
                 } else {
                     $('#customAddressType').hide().val('').removeAttr('required');
+                    $('#error-customAddressType').text('');
                 }
             });
         },
         preConfirm: () => {
-            // Collect the data
+            // Clear previous errors
+            $('small.text-danger').text('');
+
             const formData = {
                 fullname: $('#username').val().trim(),
                 mobile: $('#phone').val().trim(),
@@ -300,28 +303,69 @@ $('#addNewAddressBtn').on('click', function() {
                 pincode: $('#pincode').val().trim(),
                 landmark: $('#landmark').val().trim(),
             };
-            // Validate required fields
-            if (!formData.fullname || !formData.mobile || !formData.state || !formData.district || !formData.pincode) {
-                Swal.showValidationMessage(`Please fill in all required fields.`);
-                return false;
+
+            let isValid = true;
+
+            // Validation
+            if (!formData.fullname) {
+                $('#error-username').text('Full name is required');
+                isValid = false;
             }
-            // Submit the data (async function)
+
+            if (!formData.mobile || !/^\d{10}$/.test(formData.mobile)) {
+                $('#error-phone').text('Enter a valid 10-digit phone number');
+                isValid = false;
+            }
+
+            if ($('#addressType').val() === "Other" && !$('#customAddressType').val().trim()) {
+                $('#error-customAddressType').text('Please enter address type');
+                isValid = false;
+            }
+
+            if (!formData.house_flat) {
+                $('#error-house_flat').text('House/Flat number is required');
+                isValid = false;
+            }
+
+            if (!formData.street) {
+                $('#error-street').text('Street is required');
+                isValid = false;
+            }
+
+            if (!formData.village_city) {
+                $('#error-city').text('City is required');
+                isValid = false;
+            }
+
+            if (!formData.district) {
+                $('#error-district').text('District is required');
+                isValid = false;
+            }
+
+            if (!formData.state) {
+                $('#error-state').text('State is required');
+                isValid = false;
+            }
+
+            if (!formData.pincode || !/^\d{6}$/.test(formData.pincode)) {
+                $('#error-pincode').text('Enter a valid 6-digit pincode');
+                isValid = false;
+            }
+
+            if (!isValid) return false;
+
             return fetch('/addAddress', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
-            })
-            .then(response => {
+            }).then(response => {
                 if (!response.ok) {
                     return response.json().then(data => {
                         throw new Error(data.message || "Failed to add address");
                     });
                 }
                 return response.json();
-            })
-            .catch(error => {
+            }).catch(error => {
                 Swal.showValidationMessage(`Error: ${error.message}`);
             });
         }
@@ -332,13 +376,16 @@ $('#addNewAddressBtn').on('click', function() {
                 title: 'Success!',
                 text: 'Address has been added successfully.'
             }).then(() => {
-                window.location.reload(); // Or update the address list without reloading
+                window.location.reload();
             });
         }
     });
 });
+
 });
-            let grandTotal = <%= grandTotal %>;
+
+
+let grandTotal = <%= grandTotal %>;
             var userData = {
               name: '<%= userData.name %>',
               phone: '<%= userData.phone %>',
