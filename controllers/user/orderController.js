@@ -282,6 +282,7 @@ const cancelOrder =async (req, res) => {
   
     try {
       const { orderId } = req.params;
+
   
       // Find the order
       const order = await orderSchema.findOne({ orderId, userId });
@@ -434,11 +435,14 @@ const createOrderViaCod =async(req,res)=>{
   }
 
 const cancelSingleProduct = async (req,res)=>{
-    const userId = req.session._id
-    const {orderId} = req.params
-    const {reason,itemId,} = req.body
-    try {
-      const order = await orderSchema.findOne({orderId})
+  const userId = req.session._id
+  const {orderId} = req.params
+  const {reason,itemId,} = req.body
+  try {
+    let productToReturn = await productSchema.findOne({_id:itemId})
+    console.log(productToReturn)
+    const order = await orderSchema.findOne({orderId})
+    
       const restockProduct = await productSchema.findById(itemId)  //PRODUCT TO RESTOCK
       if(!order) return res.status(404).json({message:'Order Not Found'})
       const productIndex = order.orderedItems.findIndex(item=>item.product.toString()=== itemId)
@@ -468,9 +472,16 @@ const cancelSingleProduct = async (req,res)=>{
        await order.save()
        await restockProduct.save()
 
+       let amountToReturn = price*order.orderedItems[productIndex].quantity
+       if(productToReturn.quantity<5){
+        amountToReturn = amountToReturn * .5
+      }
+
        if(order.paymentMethod !=='cod'){
-        walletHelper.addCredit(userId,(order.orderedItems[productIndex].price*order.orderedItems[productIndex].quantity),'PRODUCT_CANCEL_REFUND',order._id,order.orderedItems[productIndex].product,reason)
-        }
+        // walletHelper.addCredit(userId,(order.orderedItems[productIndex].price*order.orderedItems[productIndex].quantity),'PRODUCT_CANCEL_REFUND',order._id,order.orderedItems[productIndex].product,reason)
+                walletHelper.addCredit(userId,(order.orderedItems[productIndex].amountToReturn),'PRODUCT_CANCEL_REFUND',order._id,order.orderedItems[productIndex].product,reason)
+
+      }
         res.status(200).json({message:'Product Cancelled Succesfully'})
 
       
