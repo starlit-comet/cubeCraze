@@ -1,4 +1,5 @@
 const orderSchema = require('../models/orderSchema')
+const responseCodes = require('./StatusCodes')
 
 const productsSold = async (req, res) => {
     try {
@@ -48,7 +49,7 @@ const productsSold = async (req, res) => {
         res.json(salesReport);
     } catch (error) {
         console.error("Error generating sales report:", error);
-        res.status(500).json({ message: "Internal server error" });
+        res.status(responseCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
     }
 };
 

@@ -3,6 +3,7 @@ const sizeSchema = require('../../models/sizeSchema')
 const brandSchema = require('../../models/brandSchema')
 const categorySchema = require('../../models/categorySchema')
 const adminDashboardContoller = require('../admin/dashBoardController')
+const responseCodes = require('../../helpers/StatusCodes')
 
 
 
@@ -96,7 +97,7 @@ const viewShop = async (req, res) => {
      
     } catch (error) {
         console.error(error);
-        res.status(500).redirect("/pagenotfound"); 
+        res.status(responseCodes.INTERNAL_SERVER_ERROR).redirect("/pagenotfound"); 
     }
 };
 
@@ -120,12 +121,12 @@ const loadHome = async(req,res)=>{
         })
     } catch (error) {
         console.log(error)
-        res.status(404).redirect('/pagenotfound')
+        res.status(responseCodes.NOT_FOUND).redirect('/pagenotfound')
 
     }
 }
 
 const redirectToHome = async (req,res)=>{
-    res.status(301).redirect('/home')
+    res.status(responseCodes.MOVED_PERMANENTLY).redirect('/home')
 }
 module.exports={viewShop,loadHome,redirectToHome}

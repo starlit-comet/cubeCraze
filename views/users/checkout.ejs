@@ -412,6 +412,15 @@ let grandTotal = <%= grandTotal %>;
                   });
                   return;
                 }
+                if(grandTotal<0){
+                  Swal.fire({
+                    icon:'error',
+                    title:'Error in Calculating Total Amount',
+                    text:'Please reinitate checkout or try without coupon'
+
+                  })
+                  return;
+                }
           
                 if (!paymentOption) {
                   Swal.fire({
@@ -477,6 +486,7 @@ let grandTotal = <%= grandTotal %>;
                   }
                 }
                 else if(paymentOption.value==='wallet'){
+
                   console.log('wallet option selected')
                   const confirmation = await Swal.fire({
                     title: 'Confirm Order?',

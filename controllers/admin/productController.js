@@ -2,6 +2,8 @@ const productSchema = require('../../models/productSchema')
 const categorySchema = require('../../models/categorySchema')
 const brandSchema = require('../../models/brandSchema')
 const sizeSchema = require('../../models/sizeSchema')
+const responseCodes= require('../../helpers/StatusCodes')
+
 
 const viewProducts = async (req,res)=>{
     const productData = await productSchema.find({}).populate([
@@ -16,12 +18,12 @@ const addProduct = async (req,res)=>{
     try {
         const { productName, description, regularPrice, promotionalPrice, brand, category, cubeSize,productQuantity } = req.body;
         if (!productName || !description || !regularPrice || !brand || !category || !cubeSize ||!productQuantity  ) {
-            return res.status(400).json({ success: false, message: "All required fields must be filled!" });
+            return res.status(responseCodes.BAD_REQUEST).json({ success: false, message: "All required fields must be filled!" });
         }
-        if(productQuantity<5)return res.status(400).json({message:'Minimum Quanity of 5 is needed to add a product'})
+        if(productQuantity<5)return res.status(responseCodes.BAD_REQUEST).json({message:'Minimum Quanity of 5 is needed to add a product'})
 
         if (!req.files || req.files.length <3) {
-            return res.status(400).json({ success: false, message: "Minimum Three Images are required" });
+            return res.status(responseCodes.BAD_REQUEST).json({ success: false, message: "Minimum Three Images are required" });
         }
 
         const imageUrls = req.files.map(file => file.path); // Extract Cloudinary URLs
@@ -86,15 +88,15 @@ const editProduct= async (req,res)=>{
     if (cubeSize) updatedFields.size=cubeSize
     const isEmpty = Object.entries(updatedFields).length 
     if(isEmpty === 0 ){
-        return res.status(400).json({ success: false, message:"No Edit in Product Data found" });
+        return res.status(responseCodes.BAD_REQUEST).json({ success: false, message:"No Edit in Product Data found" });
         
     }
     updatedFields.updatedAt = new Date()
-    if(1*productQuantity<0) return res.status(400).json({success:false,message:" Quantity can't be less than 0 "})
+    if(1*productQuantity<0) return res.status(responseCodes.BAD_REQUEST).json({success:false,message:" Quantity can't be less than 0 "})
     const updatedProduct = await productSchema.findByIdAndUpdate(productId,
         updatedFields,{new:true},
     )
-    return res.status(200).json({ success: true, message: "Product Edited" });
+    return res.status(responseCodes.OK).json({ success: true, message: "Product Edited" });
 } catch (error) {
     
    }
@@ -114,9 +116,9 @@ const deleteProduct = async (req,res)=> {
         const productExists = await productSchema.exists({_id:productId})
         if(!productExists) return res.redirect('/admin/page-not-found')
         await productSchema.findByIdAndUpdate(productId,{isBlocked:true})
-        res.status(200).json({success:true})
+        res.status(responseCodes.OK).json({success:true})
     } catch (error) {
-        res.status(404).json({success:false})   
+        res.status(responseCodes.NOT_FOUND).json({success:false})   
     }
 }
 const changeStatus=async (req,res)=>{
@@ -127,9 +129,9 @@ const changeStatus=async (req,res)=>{
         if(!productExists) return res.redirect('/admin/page-not-found')
 
         await productSchema.findByIdAndUpdate(productId,{isBlocked:changeStatusTo})
-        res.status(200).json({success:true})
+        res.status(responseCodes.OK).json({success:true})
     } catch (error) {
-        res.status(400).json({success:false})
+        res.status(responseCodes.BAD_REQUEST).json({success:false})
     }
 }
 

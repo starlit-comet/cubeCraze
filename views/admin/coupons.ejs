@@ -41,7 +41,7 @@
 
                                 <div class="col-3 mb-4">
                                     <label for="minPurchase" class="form-label">Minimum Purchase Amount</label>
-                                    <input type="number" id="minPurchase" placeholder="Enter minimum order value" class="form-control" min="0" value="0" />
+                                    <input type="number" id="minPurchase" placeholder="Enter minimum order value" class="form-control" min="100" required />
                                 </div>
                                 
                                 <div class="col-3 mb-4">
@@ -90,7 +90,7 @@
                                          <%}%>
                                          >
                                             <td>
-                                                <%= index+1 %>
+                                                <%= ((currentPage-1)*limit) +  index+1 %>
                                             </td>
                                             <td><div class="row" >
                                                 <% if(item.name){ %>
@@ -180,6 +180,40 @@
                     </div> <!-- .row // -->
                 </div> <!-- card body .// -->
             </div> <!-- card .// -->
+             <!--pagination-->
+                        <div class="pagination-area mt-15 mb-sm-5 mb-lg-0">
+                            <nav aria-label="Page navigation example">
+                                
+                                <div class="row">
+                                   <div class="col-4">
+                                    <% if(totalItems>0){ %>
+                                      <p>Currenly Showing page<strong class="text-brand"> <%=currentPage%></strong> of total <strong class="text-brand"><%=totalPages%> </strong> pages</p><br>
+                                        <% }%>
+                                    </div> 
+                                   <div class="col-8">
+                                    <ul class="pagination justify-content-end">
+
+                                    <% if (currentPage>1){ %>
+                                        <li class="page-item"><a class="page-link" data-page="<%= currentPage-1 %>" href="#">
+                                            <i class="material-icons md-chevron_left"></i></a></li>
+                                    <%}%>
+                                    <% for(let x = 1 ; x<=totalPages ; x++){ %>
+                                    <% if(x==currentPage ) { %>
+                                        <li class="page-item active"><a class="page-link" data-page="<%= x%>" href="#"><%= x %></a></li>
+                                    <% }else{ %>
+                                        <li class="page-item"><a class="page-link" data-page="<%= x %>" href="#"><%= x  %></a></li>
+                                    <% }} %>
+                                   
+                                    <% if (currentPage<totalPages){ %>
+                                    <li class="page-item"><a class="page-link" data-page="<%= currentPage+1 %>" href="#">
+                                        <i class="material-icons md-chevron_right"></i></a></li>
+                                    <%}%>
+                                </ul>
+                                   </div>
+                                </div>
+                                
+                            </nav>
+                        </div>
         </section> <!-- content-main end// -->
                     <script>
                         function showCategoryDetails(name,description,status){
@@ -244,6 +278,18 @@
         }
     });
 }
+
+ // page selection event
+ document.querySelectorAll(".page-link").forEach(item => {
+        item.addEventListener("click", function (e) {
+            e.preventDefault();
+           console.log(typeof(this.getAttribute('data-page')),'data type of page')
+           const url = new URL(window.location.href)
+           url.searchParams.set('page',this.getAttribute('data-page'))
+      
+        window.location.href=url
+        });
+    });
 
 function updateCategory(data) {
    console.log(data)

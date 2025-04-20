@@ -5,6 +5,8 @@ const bcrypt = require("bcrypt");
 const nodemailer = require("../../helpers/nodemailer");
 const couponGenerator = require("../../helpers/generateUniquesVal"); // same fn as referal generator
 const { validate } = require("uuid");
+const responseCodes = require('../../helpers/StatusCodes')
+
 
 const generateNewOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -58,7 +60,7 @@ const userLogin = async (req, res) => {
     res.render("users/login");
   } catch (error) {
     console.log(error);
-    res.status(500).redirect("/pagenotfound");
+    res.status(responseCodes.INTERNAL_SERVER_ERROR ).redirect("/pagenotfound");
   }
 };
 const errorPage = async (req, res) => {
@@ -90,17 +92,17 @@ const signIn = async (req, res) => {
     const user = await userSchema
       .findOne({ email, googleId: "noGoogleId", isBlocked: false })
       .sort();
-    if (!user) return res.status(200).json({ message: "email not found" });
+    if (!user) return res.status(responseCodes.OK).json({ message: "email not found" });
 
     const isMatchPassword = await bcrypt.compare(password, user.hashedPassword);
     if (!isMatchPassword)
       return res
-        .status(200)
+        .status(responseCodes.OK)
         .json({ message: "passwords not matching", success: false });
     if (!user.isOTPVerified) {
       req.session.userEmail = user.email;
       return res
-        .status(200)
+        .status(responseCodes.OK)
         .json({
           message: "User is Not OTP verified redirecting to verify otp",
           success: false,
@@ -110,7 +112,7 @@ const signIn = async (req, res) => {
     if (isMatchPassword) {
       req.session._id = user._id;
       return res
-        .status(202)
+        .status(responseCodes.ACCEPTED)
         .json({ message: "Login SuccesFull", success: true });
     } else res.send("password not matching");
   } catch (error) {
@@ -129,21 +131,21 @@ const createUser = async (req, res) => {
       haveReferralCode,
     } = req.body;
     if (name == "")
-      return res.status(200).json({ message: "Name cannot be empty" });
+      return res.status(responseCodes.BAD_REQUEST).json({ message: "Name cannot be empty" });
     const user = await userSchema.findOne({ email });
     if (user)
       return res
-        .status(200)
+        .status(responseCodes.BAD_REQUEST)
         .json({ message: "User already exists", success: false });
     if (password == "" || confirmPassword == "")
-      return res.status(200).json({ message: "Passwords cannot be empty" });
+      return res.status(responseCodes.BAD_REQUEST).json({ message: "Passwords cannot be empty" });
     if (password !== confirmPassword)
       return res
-        .status(200)
+        .status(responseCodes.BAD_REQUEST)
         .json({ message: "passwords not Matching", success: false });
     const passwordStrength = isStrongPassword(password);
     if (!passwordStrength)
-      return res.status(200).json({
+      return res.status(responseCodes.BAD_REQUEST).json({
         message: `Password Not Strong, kindly incluede a Captial letter, a small letter, a symbol, a number
              ,a special character. Password should have length of 8`,
         success: false,
@@ -162,7 +164,7 @@ const createUser = async (req, res) => {
       });
       if (!isReferalValid)
         return res
-          .status(400)
+          .status(responseCodes.BAD_REQUEST)
           .json({
             message:
               "Referal Code not Valid kindly try another or give it as empty",
@@ -177,7 +179,7 @@ const createUser = async (req, res) => {
     console.log(`new User added : ${name}`);
     req.session.userEmail = email;
     return res
-      .status(200)
+      .status(responseCodes.CREATED)
       .json({
         message: "New Account Created Please verify OTP to continue",
         success: true,
@@ -216,7 +218,7 @@ const verifyOTP = async (req, res) => {
   console.log(`user data:${userEmail}`);
   if (!otp) {
     return res
-      .status(200)
+      .status(responseCodes.BAD_REQUEST)
       .json({ success: false, message: "OTP is required." });
   }
   let userData = await userSchema.findOne({ email: userEmail });
@@ -232,14 +234,14 @@ const verifyOTP = async (req, res) => {
 
     if (forgetPassword) {
       return res
-        .status(200)
+        .status(responseCodes.CREATED)
         .json({
           message: "redirecting to password page",
           forgetPassword: true,
         });
     }
 
-    return res.status(200).json({ success: true, message: "otp verified" });
+    return res.status(responseCodes.OK).json({ success: true, message: "otp verified" });
   } else if (userData.otpExpires <= Date.now()) {
     console.log(`otp matched but its expired`);
     await userSchema.findByIdAndUpdate(userData._id, {
@@ -247,18 +249,18 @@ const verifyOTP = async (req, res) => {
       otpExpires: null,
     });
     return res
-      .status(200)
+      .status(responseCodes.BAD_REQUEST)
       .json({
         message: "Otp expired Kindly,click send OTP to Generate a new one",
         success: false,
       });
   } else if (otp !== userData.otp && userData.otpExpires > Date.now()) {
     return res
-      .status(200)
+      .status(responseCodes.NOT_FOUND)
       .json({ message: "OTP not matching", success: false });
   } else {
     return res
-      .status(400)
+      .status(responseCodes.BAD_REQUEST)
       .json({ success: false, message: "Incorrect OTP. Please try again." });
   }
 };
@@ -269,13 +271,13 @@ const sendOTPtoEmail = async (req, res) => {
     let userData = await userSchema.findOne({ email });
     if (userData.isOTPVerified == true)
       return res
-        .status(200)
+        .status(responseCodes.BAD_REQUEST)
         .json({ success: false, message: "User Already Verified" });
     const resendOTPafter = req.session.resendOTPafter;
     if (resendOTPafter && userData.otpExpires > Date.now()) {
       if (resendOTPafter >= Date.now())
         return res
-          .status(200)
+          .status(responseCodes.BAD_REQUEST)
           .json({
             success: false,
             message: "kindly wait for some time to redend the otp",
@@ -287,7 +289,7 @@ const sendOTPtoEmail = async (req, res) => {
         console.log("otp resent success");
         req.session.resendOTPafter = Date.now() + 60 * 1000;
         return res
-          .status(200)
+          .status(responseCodes.OK)
           .json({ message: "Otp resend success", resend: true });
       }
     }
@@ -308,7 +310,7 @@ const sendOTPtoEmail = async (req, res) => {
 
       req.session.resendOTPafter = Date.now() + 60 * 1000;
 
-      return res.status(200).json({
+      return res.status(responseCodes.OK ).json({
         message: "OTP sent to mail id",
         success: true,
         otpExpires,
@@ -328,21 +330,21 @@ const sendOTPtoEmail = async (req, res) => {
       );
       req.session.resendOTPafter = Date.now() + 60 * 1000; // 1 min timer
       return res
-        .status(200)
+        .status(responseCodes.CREATED)
         .json({
           message:
             "Otp Expired, Hence generated a new OTP and sent it to your mail",
           newOTP: true,
         });
     } else {
-      return res.status(200).json({
+      return res.status(responseCodes.BAD_REQUEST).json({
         message: "OTP already created, please wait before resending",
         success: false,
       });
     }
   } catch (error) {
     console.error("Error sending OTP:", error);
-    return res.status(500).json({ message: "Server error", success: false });
+    return res.status(responseCodes.INTERNAL_SERVER_ERROR ).json({ message: "Server error", success: false });
   }
 };
 
@@ -351,10 +353,10 @@ const getOTPTimer = async (req, res) => {
   try {
     const resendOTPafter = req.session.resendOTPafter;
     const remainingTime = Math.max(0, resendOTPafter - Date.now());
-    return res.status(200).json({ success: true, remainingTime });
+    return res.status(responseCodes.OK).json({ success: true, remainingTime });
   } catch (error) {
     console.error("Error fetching OTP timer:", error);
-    return res.status(500).json({ message: "Server error", success: false });
+    return res.status(responseCodes.INTERNAL_SERVER_ERROR ).json({ message: "Server error", success: false });
   }
 };
 
@@ -371,19 +373,19 @@ const findUserAccount = async (req, res) => {
       { new: true }
     );
     if (!userData)
-      return res.status(200).json({ message: "User Account Not Found" });
+      return res.status(responseCodes.NOT_FOUND).json({ message: "User Account Not Found" });
     req.session.userEmail = email;
     req.session.forgetPassword = true;
-    return res.status(200).json({ message: "Account Found", success: true });
+    return res.status(responseCodes.OK).json({ message: "Account Found", success: true });
   } catch {
-    return res.status(400).json({ message: "Server error" });
+    return res.status(responseCodes.BAD_REQUEST).json({ message: "Server error" });
   }
 };
 
 const viewSetPassword = async (req, res) => {
   userId = req.session.user;
   const userData = await userSchema.findById(userId);
-  if (!userData) return res.status(200).json({ message: "User not found" });
+  if (!userData) return res.status(responseCodes.NOT_FOUND).json({ message: "User not found" });
   res.render("users/setPassword", { userData });
 };
 
@@ -393,17 +395,17 @@ const updatePassword = async (req, res) => {
     const { email, password, confirmPassword } = req.body;
 
     if (password == "" || confirmPassword == "")
-      return res.status(200).json({ message: "Passwords cannot be empty" });
+      return res.status(responseCodes.BAD_REQUEST).json({ message: "Passwords cannot be empty" });
 
     if (password !== confirmPassword)
       return res
-        .status(200)
+        .status(responseCodes.BAD_REQUEST)
         .json({ message: "passwords not Matching", success: false });
     const user = await userSchema.findOne({ email });
 
     const passwordStrength = isStrongPassword(password);
     if (!passwordStrength)
-      return res.status(200).json({
+      return res.status(responseCodes.BAD_REQUEST).json({
         message: `Password Not Strong, kindly incluede a Captial letter, a small letter, a symbol, a number
              ,a special character. Password should have length of 8`,
         success: false,
@@ -417,7 +419,7 @@ const updatePassword = async (req, res) => {
     );
     console.log(`password changed`);
     return res
-      .status(200)
+      .status(responseCodes.OK )
       .json({
         message: "Your Password Has been Changed Succesfully",
         success: true,
@@ -443,31 +445,31 @@ const editPassword = async (req, res) => {
       isBlocked: false,
       isOTPVerified: true,
     });
-    if (!user) return res.status(404).json({ message: "User Not Found" });
+    if (!user) return res.status(responseCodes.NOT_FOUND).json({ message: "User Not Found" });
     if (!user.hashedPassword)
       return res
-        .status(400)
+        .status(responseCodes.BAD_REQUEST)
         .json({ message: "You are Not authorised to change password" });
     if (newPassword !== confirmNewPassword)
-      return res.status(400).json({ message: "Passwords Not Matching" });
+      return res.status(responseCodes.BAD_REQUEST).json({ message: "Passwords Not Matching" });
     const isMatchPassword = await bcrypt.compare(
       currentPassword,
       user.hashedPassword
     );
     if (!isMatchPassword)
-      return res.status(400).json({ message: "Current Password is Incorrect" });
+      return res.status(responseCodes.BAD_REQUEST).json({ message: "Current Password is Incorrect" });
     const isPasswordStrong = isStrongPassword(newPassword);
     if (!isPasswordStrong)
       return res
-        .status(400)
+        .status(responseCodes.BAD_REQUEST)
         .json({ message: "Your New Password is not strong" });
     const newHashPassword = await bcrypt.hash(newPassword, 10);
     user.hashedPassword = newHashPassword;
     await user.save();
-    return res.status(200).json({ message: "password Updated" });
+    return res.status(responseCodes.OK).json({ message: "password Updated" });
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ message: `server error: ${err}` });
+    return res.status(responseCodes.INTERNAL_SERVER_ERROR ).json({ message: `server error: ${err}` });
   }
 };
 
@@ -489,11 +491,11 @@ const addUserImage = async (req, res) => {
     isBlocked: false,
     isOTPVerified: true,
   });
-  if (!user) return res.status(400).json({ message: "user Not Found" });
+  if (!user) return res.status(responseCodes.BAD_REQUEST).json({ message: "user Not Found" });
   user.avatar = avatar;
   await user.save();
   console.log(avatar, "je");
-  return res.status(200).json({ message: "Profile Image Updated" });
+  return res.status(responseCodes.OK).json({ message: "Profile Image Updated" });
 };
 
 const editUserDetails = async (req, res) => {
@@ -503,11 +505,11 @@ const editUserDetails = async (req, res) => {
 
     // Validate the inputs first
     if (!validateName(name)) {
-      return res.status(400).json({ message: "Invalid name format" });
+      return res.status(responseCodes.BAD_REQUEST).json({ message: "Invalid name format" });
     }
 
     if (!validatePhoneNumber(phone)) {
-      return res.status(400).json({ message: "Invalid phone number format" });
+      return res.status(responseCodes.BAD_REQUEST).json({ message: "Invalid phone number format" });
     }
 
     // Find the user
@@ -518,7 +520,7 @@ const editUserDetails = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(400).json({ message: "User not found" });
+      return res.status(responseCodes.BAD_REQUEST).json({ message: "User not found" });
     }
 
     let changes = false;
@@ -534,16 +536,16 @@ const editUserDetails = async (req, res) => {
     }
 
     if (!changes) {
-      return res.status(200).json({ message: "No changes detected" });
+      return res.status(responseCodes.BAD_REQUEST).json({ message: "No changes detected" });
     }
 
     await user.save();
     return res
-      .status(200)
+      .status(responseCodes.OK)
       .json({ success: true, message: "User details changed successfully" });
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ message: `Server error: ${err.message}` });
+    return res.status(responseCodes.INTERNAL_SERVER_ERROR ).json({ message: `Server error: ${err.message}` });
   }
 };
 

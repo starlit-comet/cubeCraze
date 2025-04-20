@@ -1,5 +1,6 @@
 const { query } = require('express')
 const User = require('../../models/userSchema')
+const responseCodes = require('../../helpers/StatusCodes')
 
 const viewCustomers = async (req,res)=>{
     try {
@@ -57,7 +58,7 @@ const blockCustomer = async(req,res)=>{
 
 const searchCustomer = async (req,res)=>{
 const {searchValue} = req.body
-if(!searchValue) return res.status(400).json({message:'Enter a Search Value'})
+if(!searchValue) return res.status(responseCodes.BAD_REQUEST).json({message:'Enter a Search Value'})
 
     try {
         const regex = new RegExp(searchValue,'i')

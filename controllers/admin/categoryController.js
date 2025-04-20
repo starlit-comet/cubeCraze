@@ -1,4 +1,5 @@
 const categorySchema = require('../../models/categorySchema')
+const responseCodes = require('../../helpers/StatusCodes')
 
 
 const loadCategories = async (req,res)=>{  
@@ -9,13 +10,13 @@ const loadCategories = async (req,res)=>{
  const addCategory = async (req,res)=>{
     try {
     const {categoryName,description,offer} = req.body
-    if(!categoryName || !description ) return res.status(400).json({message:'All fields are required'})
+    if(!categoryName || !description ) return res.status(responseCodes.BAD_REQUEST).json({message:'All fields are required'})
     const isCategoryAlreadyExist = await categorySchema.findOne({categoryName})
     const allCategoryNames =  (await categorySchema.find().select('categoryName -_id')).map(val=>val.categoryName.split(' ').join('').toLocaleLowerCase())
-    if (allCategoryNames.some(val=>val=== categoryName.toLowerCase().split(' ').join(''))) return res.status(400).json({message:'Category Already Exists'})
+    if (allCategoryNames.some(val=>val=== categoryName.toLowerCase().split(' ').join(''))) return res.status(responseCodes.BAD_REQUEST).json({message:'Category Already Exists'})
     const category =  new categorySchema({categoryName,description,categoryOffer:offer})
     category.save()
-       return res.status(200).json({success:true,message:'New Category Created'})
+       return res.status(responseCodes.OK).json({success:true,message:'New Category Created'})
     }
     catch(error){
         console.log(error)
@@ -32,7 +33,7 @@ const loadCategories = async (req,res)=>{
         }, {new:true});
 
         if (!updatedCategory) {
-            return res.status(404).json({ success: false, message: "Category not found" });
+            return res.status(responseCodes.NOT_FOUND).json({ success: false, message: "Category not found" });
         }
             console.log(`Category Updated : ${updatedCategory.categoryName}`)
         res.json({ success: true });

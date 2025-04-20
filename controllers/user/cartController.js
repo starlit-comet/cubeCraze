@@ -3,6 +3,8 @@ const addressSchema = require('../../models/addressSchema')
 const productSchema = require ('../../models/productSchema')
 const orderSchema = require('../../models/orderSchema')
 const couponSchema = require('../../models/referalCouponSchema')
+const responseCodes = require('../../helpers/StatusCodes')
+
 
 const viewCart = async (req,res)=>{
 try{
@@ -53,19 +55,19 @@ try {
         { path: 'size' },
     ]).lean()
 
-        if(!productData.category.isListed || productData.brand.isBlocked)    return res.status(400).json({message:`Product is Not Available (It's category or band may be blocked by Admin). This product will be removed from your cart`})
+        if(!productData.category.isListed || productData.brand.isBlocked)    return res.status(responseCodes.BAD_REQUEST).json({message:`Product is Not Available (It's category or band may be blocked by Admin). This product will be removed from your cart`})
 
     if(productData . isBlocked ){ 
         user.cart.pull(productId)
         await user.save()
-        return res.status(400).json({message:'Product is Not Available (It may be blocked by Admin). This product will be removed from your cart'})}
+        return res.status(responseCodes.BAD_REQUEST).json({message:'Product is Not Available (It may be blocked by Admin). This product will be removed from your cart'})}
 
     
-        if(quantityToAdd <1 ) return res.status(400).json({message:'Atleast one quanitity is required inorder to add product to cart'})
-    if(productData.quantity < quantityToAdd)  return res.status(400).json({message:'Requested quantity is not available in the supplier, kindly reduce the quantity'})
+        if(quantityToAdd <1 ) return res.status(responseCodes.BAD_REQUEST).json({message:'Atleast one quanitity is required inorder to add product to cart'})
+    if(productData.quantity < quantityToAdd)  return res.status(responseCodes.BAD_REQUEST).json({message:'Requested quantity is not available in the supplier, kindly reduce the quantity'})
 
     if(user.cart[existingItemIndex] && user.cart[existingItemIndex].quantity + 1* quantityToAdd >10){
-        return res.status(400).json({
+        return res.status(responseCodes.BAD_REQUEST).json({
             message: `Product Already in cart, Total  quantity of the product  exceeds maximum limit of 10. kindly reduce the quantity to max ${10-user.cart[existingItemIndex].quantity}`,
             status:'updated'
             })
@@ -77,7 +79,7 @@ try {
 
         await user.save();
 
-        return res.status(200).json({
+        return res.status(responseCodes.OK).json({
         message: `Product Already in cart, Hence quantity of the product is increased to ${countOfQuantity}`,
         status:'updated'
         })
@@ -90,12 +92,12 @@ try {
         user.wishList.pull(productId)
         await user.save();
         
-        return res.status(200).json({message:'Product Added to Cart',status:"Added"});
+        return res.status(responseCodes.OK).json({message:'Product Added to Cart',status:"Added"});
     }
 
 } catch (error) {
     console.log(error)
-    return res.status(500).json({
+    return res.status(responseCodes.INTERNAL_SERVER_ERROR).json({
         message:'An Error Occured while adding to Cart',
         Status:'Error'
     })
@@ -109,21 +111,21 @@ const userId = req.session._id
 const user = await userSchema.findById(userId)
 user.cart.pull({productId})
 await user.save()
-return res.status(200).json({ message: 'Product removed from cart' ,success:true});
+return res.status(responseCodes.OK).json({ message: 'Product removed from cart' ,success:true});
 
 
 }
 catch (error) {
     console.error('Error removing from cart:', error);
-    return res.status(500).json({ message: 'Internal Server Error' });
+    return res.status(responseCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal Server Error' });
   }
 
 }
 const cartCheck = async (req,res)=>{
     const   userId = req.session._id
     const cartItems = await userSchema.findById(userId).select('cart -_id')
-    if(cartItems.cart.length<1) return res.status(400).json({message:'Your Cart Is Empty'})
-        return res.status(200).json({success:true})
+    if(cartItems.cart.length<1) return res.status(responseCodes.BAD_REQUEST).json({message:'Your Cart Is Empty'})
+        return res.status(responseCodes.OK).json({success:true})
 }
 const checkout = async (req,res)=>{
     const {couponCode} = req.query || ''
@@ -174,7 +176,13 @@ const checkout = async (req,res)=>{
             if(product.isBlocked===false )     cart.push(product) 
         }
         let coupons = await couponSchema.find({isActive:true}) || []
-       
+        const dateNow = new Date()
+        console.log(dateNow,'dateNow')
+        coupons = coupons.filter(item=>{
+            if(item.expiresAt>dateNow && item.minPurchase<totalAmount){
+                return true
+            }
+        })
         return res.render ('users/checkout' , {
             cart,grandTotal,addressData ,userData,
             shipping,

@@ -3,6 +3,7 @@ const adminModel = require('../../models/adminModel');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
+const responseCodes = require('../../helpers/StatusCodes')
 
 
 // Load Admin Login Page
@@ -11,7 +12,7 @@ const loadLogin = async (req, res) => {
         res.render('admin/login');
     } catch (error) {
         console.error("Error loading login page:", error);
-        res.status(500).send("Server error");
+        res.status(responseCodes.INTERNAL_SERVER_ERROR).send("Server error");
     }
 };
 
@@ -21,24 +22,24 @@ const formValidate = async (req, res) => {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return res.status(200).json({ message: 'Email and Password are required', success: false });
+            return res.status(responseCodes.OK).json({ message: 'Email and Password are required', success: false });
         }
 
         const admin = await adminModel.findOne({ email });
         if (!admin) {
-            return res.status(200).json({ message: 'Email Not Found', success: false });
+            return res.status(responseCodes.OK).json({ message: 'Email Not Found', success: false });
         }
         const isMatchPassword = await bcrypt.compare(password,admin.password);
     
         if (!isMatchPassword == true) {
-            return res.status(200).json({ message: 'Invalid Password', success: false });
+            return res.status(responseCodes.OK).json({ message: 'Invalid Password', success: false });
         }
         console.log('adminlogged in')
         req.session.admin = true;
-        return res.status(200).json({ message: 'LOGIN SUCCESS', success: true });
+        return res.status(responseCodes.OK).json({ message: 'LOGIN SUCCESS', success: true });
     } catch (error) {
         console.error("Login Error:", error);
-        res.status(500).json({ message: 'Server Error', success: false });
+        res.status(responseCodes.INTERNAL_SERVER_ERROR).json({ message: 'Server Error', success: false });
     }
 };
 
@@ -48,7 +49,7 @@ const forgetPassword = async (req, res) => {
         res.render('admin/forgetPassword');
     } catch (error) {
         console.error("Error loading forget password page:", error);
-        res.status(500).send("Server error");
+        res.status(responseCodes.INTERNAL_SERVER_ERROR).send("Server error");
     }
 };
 
@@ -59,12 +60,12 @@ const sendOtp = async (req, res) => {
         const { email } = req.body;
 
         if (!email) {
-            return res.status(400).json({ message: "Email is required" });
+            return res.status(responseCodes.BAD_REQUEST).json({ message: "Email is required" });
         }
 
         const admin = await adminModel.findOne({ email });
         if (!admin) {
-            return res.status(400).json({ message: 'Admin Data not Found' });
+            return res.status(responseCodes.BAD_REQUEST).json({ message: 'Admin Data not Found' });
         }
 
         // Generate OTP
@@ -97,7 +98,7 @@ const sendOtp = async (req, res) => {
 
     } catch (error) {
         console.error("OTP Error:", error);
-        res.status(500).json({ message: 'Server Error' });
+        res.status(responseCodes.INTERNAL_SERVER_ERROR).json({ message: 'Server Error' });
     }
 };
 

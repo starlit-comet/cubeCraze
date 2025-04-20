@@ -1,4 +1,6 @@
 const sizeSchema = require('../../models/sizeSchema')
+const responseCodes= require('../../helpers/StatusCodes')
+
 
 const viewCubeSizes = async (req,res)=>{
     const sizeData = await sizeSchema.find({})
@@ -12,7 +14,7 @@ const addSize = async (req,res)=>{
         const {description,cubeSize} =req.body
         const isSize = await sizeSchema.find({size:cubeSize})
         if(!isSize){
-            return res.status(201).json({message:"Size Already Exists",isconfirmed:false})
+            return res.status(responseCodes.CREATED).json({message:"Size Already Exists",isconfirmed:false})
         }
         const newSize = new sizeSchema({description,size:cubeSize})
         newSize.save()

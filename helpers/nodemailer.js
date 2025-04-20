@@ -43,10 +43,3 @@ module.exports={
 transporter,mailCreator,referalMail
 }
 
-
-// {
-//     from: process.env.GOOGLE_APP_EMAIL,
-//     to: userData.email,
-//     subject: "Your OTP for CubeCraze SignUp",
-//     text: `Your OTP code is ${newSecretOTP}. It is valid for 3 minute.`
-// };

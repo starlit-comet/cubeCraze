@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const addressSchema = require('../../models/addressSchema');
 const { updateMany } = require('../../models/brandSchema');
 const userSchema = require('../../models/userSchema')
+const responseCodes = require('../../helpers/StatusCodes')
 
 function isValidData(input) {
 
@@ -15,7 +16,7 @@ const addAddress = async (req,res)=>{
         // Retrieve user ID from session
         const userId = req.session?._id;
         if (!userId) {
-            return res.status(401).json({ message: "Unauthorized! Please log in." });
+            return res.status(responseCodes.UNAUTHORIZED).json({ message: "Unauthorized! Please log in." });
         }
 
         // Extract other fields from request body
@@ -23,21 +24,21 @@ const addAddress = async (req,res)=>{
 
         // Server-side validation
         if (!fullname || !mobile || !state || !district || !pincode) {
-            return res.status(400).json({ message: "All required fields must be filled!" });
+            return res.status(responseCodes.BAD_REQUEST).json({ message: "All required fields must be filled!" });
         }
-        if(!isValidData(fullname)) return res.status(400).json({ message: "Name field Should not contain symbols, if required add space in between!" });
+        if(!isValidData(fullname)) return res.status(responseCodes.BAD_REQUEST).json({ message: "Name field Should not contain symbols, if required add space in between!" });
 
 
         if (!/^\d{6}$/.test(pincode)) {
-            return res.status(400).json({ message: "Invalid Pincode! It must be 6 digits." });
+            return res.status(responseCodes.BAD_REQUEST).json({ message: "Invalid Pincode! It must be 6 digits." });
         }
 
         if (!/^\d{10}$/.test(mobile)) {
-            return res.status(400).json({ message: "Invalid Mobile Number! It must be 10 digits." });
+            return res.status(responseCodes.BAD_REQUEST).json({ message: "Invalid Mobile Number! It must be 10 digits." });
         }
 
         if (alt_phone && !/^\d{10}$/.test(alt_phone)) {
-            return res.status(400).json({ message: "Invalid Alternate Phone! It must be 10 digits." });
+            return res.status(responseCodes.BAD_REQUEST).json({ message: "Invalid Alternate Phone! It must be 10 digits." });
         }
 
         // Create new address entry
@@ -62,10 +63,10 @@ const addAddress = async (req,res)=>{
         await userSchema.findByIdAndUpdate(userId, { 
             $push: { addresses: savedAddress._id } 
         });
-        res.status(201).json({ message: "Address added successfully!" });
+        res.status(responseCodes.CREATED).json({ message: "Address added successfully!" });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Internal Server Error" });
+        res.status(responseCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal Server Error" });
     }
 
 }
@@ -79,10 +80,10 @@ const viewEditAddress = async (req,res)=>{
     const userId = req.session._id
     const addressId = req.params._id
     if (!mongoose.Types.ObjectId.isValid(addressId)) {
-        return res.status(400).redirect('/pagenotfound');
+        return res.status(responseCodes.NOT_FOUND).redirect('/pagenotfound');
     }
     const addressExist = await addressSchema.exists({_id:addressId})
-    if(!addressExist) return res.status(404).redirect('/pagenotfound')
+    if(!addressExist) return res.status(responseCodes.NOT_FOUND).redirect('/pagenotfound')
     const address = await addressSchema.findById(addressId)
     res.render('users/editAddress',{address,searchKeyWord:'',minPrice:0,maxPrice:0})
 
@@ -94,14 +95,14 @@ const editAddress = async (req, res) => {
         const addressId = req.body.addressId; // Address ID (pass this from frontend)
         const updateFields = req.body; // Fields sent from frontend (only changed ones)
         if (!userId || !addressId) {
-            return res.status(400).json({ message: "Invalid request: Missing user or address ID." });
+            return res.status(responseCodes.BAD_REQUEST).json({ message: "Invalid request: Missing user or address ID." });
         }
 
         // Find the existing address to ensure it belongs to the user
         const address = await addressSchema.findOne({ _id: addressId, userId });
 
         if (!address) {
-            return res.status(404).json({ message: "Address not found or not authorized." });
+            return res.status(responseCodes.NOT_FOUND).json({ message: "Address not found or not authorized." });
         }
 
         // Update only changed fields
@@ -115,10 +116,10 @@ const editAddress = async (req, res) => {
         await address.save();
 
         console.log(`Address Updated`)
-        return res.status(200).json({ message: "Address updated successfully." });
+        return res.status(responseCodes.OK).json({ message: "Address updated successfully." });
     } catch (error) {
         console.error("Error updating address:", error);
-        return res.status(500).json({ message: "Internal server error." });
+        return res.status(responseCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error." });
     }
 }
 
@@ -128,12 +129,12 @@ const deleteAddress = async (req, res) => {
         let { addressId } = req.body;
 
         if (!userId || !addressId) {
-            return res.status(400).json({ message: "Invalid request: Missing user or address ID." });
+            return res.status(responseCodes.BAD_REQUEST).json({ message: "Invalid request: Missing user or address ID." });
         }
 
         // Convert addressId to ObjectId
         if (!mongoose.Types.ObjectId.isValid(addressId)) {
-            return res.status(400).json({ message: "Invalid address ID format." });
+            return res.status(responseCodes.BAD_REQUEST).json({ message: "Invalid address ID format." });
         }
 
         addressId = new mongoose.Types.ObjectId(addressId);
@@ -142,23 +143,23 @@ const deleteAddress = async (req, res) => {
         const addressCount = await addressSchema.countDocuments({ userId });
 
         if (addressCount <= 1) {
-            return res.status(400).json({ message: "You must have at least one address." });
+            return res.status(responseCodes.BAD_REQUEST).json({ message: "You must have at least one address." });
         }
 
         // Find and delete the address
         const deletedAddress = await addressSchema.findOneAndDelete({ _id: addressId, userId });
         if (!deletedAddress) {
-            return res.status(404).json({ message: "Address not found or not authorized." });
+            return res.status(responseCodes.NOT_FOUND).json({ message: "Address not found or not authorized." });
         }
         const updatedUser = await userSchema.findByIdAndUpdate(userId,{
             $pull:{addresses:addressId} // removes addressId from user data
         })
 
-        return res.status(200).json({ message: "Address deleted successfully." });
+        return res.status(responseCodes.OK).json({ message: "Address deleted successfully." });
 
     } catch (error) {
         console.error("Error deleting address:", error);
-        return res.status(500).json({ message: "Internal server error." });
+        return res.status(responseCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error." });
     }
 }
 

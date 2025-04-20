@@ -17,10 +17,6 @@ const dashboardContoller = require('../controllers/admin/dashBoardController.js'
 const upload = require('../helpers/multer.js')
 const multer = require('multer')
 
-router.use((req,res,next)=>{
-    console.log(`${req.method} ${req.originalUrl} url linked`)
-    next()
-})
 router.get('/logout',adminController.logout)
 router.get('/forgetPassword',adminController.forgetPassword) 
 

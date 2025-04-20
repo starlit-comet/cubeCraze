@@ -1,6 +1,8 @@
 const userSchema = require('../../models/userSchema')
 const orderSchema = require('../../models/orderSchema')
 const Wallet = require('../../models/walletSchema')
+const responseCodes = require('../../helpers/StatusCodes')
+
 
 const viewProfilePage=async (req,res)=>{
 try{
@@ -28,12 +30,13 @@ try{
        await userData.save()
     }
       
-    return res.render('users/profile',{userData,userWallet,searchKeyWord:search,
+    return res.status(responseCodes.OK).render('users/profile',{userData,userWallet,searchKeyWord:search,
         minPrice:0,maxPrice:7500, orders
     })
 }
 catch(error){
     console.log(error)
+    return res.status(responseCodes.INTERNAL_SERVER_ERROR).json({message:'server Error'})
 }
 }
 
