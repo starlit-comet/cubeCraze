@@ -5,7 +5,8 @@ const bcrypt = require("bcrypt");
 const nodemailer = require("../../helpers/nodemailer");
 const couponGenerator = require("../../helpers/generateUniquesVal"); // same fn as referal generator
 const { validate } = require("uuid");
-const responseCodes = require('../../helpers/StatusCodes')
+const RESPONSE_CODES = require('../../utils/StatusCodes');
+const MESSAGES = require("../../utils/responseMessages");
 
 
 const generateNewOTP = () => {
@@ -57,15 +58,15 @@ async function createCuponForReferal(R_Code) {
 
 const userLogin = async (req, res) => {
   try {
-    res.render("users/login");
+    res.status(RESPONSE_CODES.OK).render("users/login");
   } catch (error) {
     console.log(error);
-    res.status(responseCodes.INTERNAL_SERVER_ERROR ).redirect("/pagenotfound");
+    res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR ).redirect("/pagenotfound");
   }
 };
 const errorPage = async (req, res) => {
   try {
-    res.render("users/pagenotfound");
+    res.status(RESPONSE_CODES.OK).render("users/pagenotfound");
   } catch (error) {
     console.log(error);
   }
@@ -77,6 +78,7 @@ const signUp = async (req, res) => {
     res.render("users/signup");
   } catch (error) {
     console.log(error);
+    
   }
 };
 const aboutPage = async (req, res) => {
@@ -92,19 +94,19 @@ const signIn = async (req, res) => {
     const user = await userSchema
       .findOne({ email, googleId: "noGoogleId", isBlocked: false })
       .sort();
-    if (!user) return res.status(responseCodes.OK).json({ message: "email not found" });
+    if (!user) return res.status(RESPONSE_CODES.OK).json({ message: MESSAGES.EMAIL_NOT_FOUND });
 
     const isMatchPassword = await bcrypt.compare(password, user.hashedPassword);
     if (!isMatchPassword)
       return res
-        .status(responseCodes.OK)
-        .json({ message: "passwords not matching", success: false });
+        .status(RESPONSE_CODES.OK)
+        .json({ message: MESSAGES.PASSWORDS_NOT_MATCHING , success: false });
     if (!user.isOTPVerified) {
       req.session.userEmail = user.email;
       return res
-        .status(responseCodes.OK)
+        .status(RESPONSE_CODES.OK)
         .json({
-          message: "User is Not OTP verified redirecting to verify otp",
+          message: MESSAGES.USER_NOT_OTP_VERIFIED ,
           success: false,
           redirectOTP: true,
         });
@@ -112,9 +114,9 @@ const signIn = async (req, res) => {
     if (isMatchPassword) {
       req.session._id = user._id;
       return res
-        .status(responseCodes.ACCEPTED)
-        .json({ message: "Login SuccesFull", success: true });
-    } else res.send("password not matching");
+        .status(RESPONSE_CODES.ACCEPTED)
+        .json({ message: MESSAGES.LOGIN_SUCCESS, success: true });
+    } else res.send(MESSAGES.PASSWORDS_NOT_MATCHING);
   } catch (error) {
     console.log(error);
   }
@@ -131,23 +133,22 @@ const createUser = async (req, res) => {
       haveReferralCode,
     } = req.body;
     if (name == "")
-      return res.status(responseCodes.BAD_REQUEST).json({ message: "Name cannot be empty" });
+      return res.status(RESPONSE_CODES.BAD_REQUEST).json({ message: MESSAGES.NAME_CANNOT_BE_EMPTY });
     const user = await userSchema.findOne({ email });
     if (user)
       return res
-        .status(responseCodes.BAD_REQUEST)
-        .json({ message: "User already exists", success: false });
+        .status(RESPONSE_CODES.BAD_REQUEST)
+        .json({ message: MESSAGES.USER_ALREADY_EXISTS, success: false });
     if (password == "" || confirmPassword == "")
-      return res.status(responseCodes.BAD_REQUEST).json({ message: "Passwords cannot be empty" });
+      return res.status(RESPONSE_CODES.BAD_REQUEST).json({ message: MESSAGES.PASSWORD_CANNOT_BE_EMPTY  });
     if (password !== confirmPassword)
       return res
-        .status(responseCodes.BAD_REQUEST)
-        .json({ message: "passwords not Matching", success: false });
+        .status(RESPONSE_CODES.BAD_REQUEST)
+        .json({ message: MESSAGES.PASSWORDS_NOT_MATCHING , success: false });
     const passwordStrength = isStrongPassword(password);
     if (!passwordStrength)
-      return res.status(responseCodes.BAD_REQUEST).json({
-        message: `Password Not Strong, kindly incluede a Captial letter, a small letter, a symbol, a number
-             ,a special character. Password should have length of 8`,
+      return res.status(RESPONSE_CODES.BAD_REQUEST).json({
+        message: MESSAGES.PASSWORD_NOT_STRONG ,
         success: false,
       });
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -164,10 +165,9 @@ const createUser = async (req, res) => {
       });
       if (!isReferalValid)
         return res
-          .status(responseCodes.BAD_REQUEST)
+          .status(RESPONSE_CODES.BAD_REQUEST)
           .json({
-            message:
-              "Referal Code not Valid kindly try another or give it as empty",
+            message: MESSAGES.REFERAL_CODE_NOT_VALID
           });
       else {
         couponId = await createCuponForReferal(referralCode);
@@ -179,26 +179,27 @@ const createUser = async (req, res) => {
     console.log(`new User added : ${name}`);
     req.session.userEmail = email;
     return res
-      .status(responseCodes.CREATED)
+      .status(RESPONSE_CODES.CREATED)
       .json({
-        message: "New Account Created Please verify OTP to continue",
+        message: MESSAGES.NEW_ACCOUNT_CREATED_VERIFY_OTP,
         success: true,
       });
   } catch (error) {
     console.log(error);
+    res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR).json({message:MESSAGES.ERROR_CREATING_NEW_ACCOUNT})
   }
 };
 const userProfile = (req, res) => {
 
   if (!req.user) return res.redirect("/login");
   req.session._id = req.user._id;
-  res.redirect("/home");
+  res.status(RESPONSE_CODES.TEMPORARY_REDIRECT).redirect("/home");
 };
 const logout = (req, res) => {
   req.logout((err) => {
     if (err) return next(err);
     req.session.destroy(() => {
-      res.redirect("/home");
+      res.status(RESPONSE_CODES.TEMPORARY_REDIRECT).redirect("/home");
     });
   });
 };
@@ -206,7 +207,7 @@ const logout = (req, res) => {
 const viewOTPpage = async (req, res) => {
   const email = req.session.userEmail;
   const newUser = await userSchema.findOne({ email }).select("name email -_id");
-  res.render("common/generateOTP", { newUser });
+  res.status(RESPONSE_CODES.OK).render("common/generateOTP", { newUser });
 };
 
 const verifyOTP = async (req, res) => {
@@ -218,8 +219,8 @@ const verifyOTP = async (req, res) => {
   console.log(`user data:${userEmail}`);
   if (!otp) {
     return res
-      .status(responseCodes.BAD_REQUEST)
-      .json({ success: false, message: "OTP is required." });
+      .status(RESPONSE_CODES.BAD_REQUEST)
+      .json({ success: false, message: MESSAGES.OTP_REQUIRED });
   }
   let userData = await userSchema.findOne({ email: userEmail });
   if (otp === userData.otp && userData.otpExpires > Date.now()) {
@@ -234,14 +235,14 @@ const verifyOTP = async (req, res) => {
 
     if (forgetPassword) {
       return res
-        .status(responseCodes.CREATED)
+        .status(RESPONSE_CODES.CREATED)
         .json({
-          message: "redirecting to password page",
+          message: MESSAGES.REDIRECTING_TO_OTP_PAGES,
           forgetPassword: true,
         });
     }
 
-    return res.status(responseCodes.OK).json({ success: true, message: "otp verified" });
+    return res.status(RESPONSE_CODES.OK).json({ success: true, message: MESSAGES.OTP_VERIFIED });
   } else if (userData.otpExpires <= Date.now()) {
     console.log(`otp matched but its expired`);
     await userSchema.findByIdAndUpdate(userData._id, {
@@ -249,19 +250,19 @@ const verifyOTP = async (req, res) => {
       otpExpires: null,
     });
     return res
-      .status(responseCodes.BAD_REQUEST)
+      .status(RESPONSE_CODES.BAD_REQUEST)
       .json({
-        message: "Otp expired Kindly,click send OTP to Generate a new one",
+        message: MESSAGES.OTP_EXPIRED_GENERATE_NEW_ONE,
         success: false,
       });
   } else if (otp !== userData.otp && userData.otpExpires > Date.now()) {
     return res
-      .status(responseCodes.NOT_FOUND)
-      .json({ message: "OTP not matching", success: false });
+      .status(RESPONSE_CODES.NOT_FOUND)
+      .json({ message: MESSAGES.OTP_NOT_MATCHING , success: false });
   } else {
     return res
-      .status(responseCodes.BAD_REQUEST)
-      .json({ success: false, message: "Incorrect OTP. Please try again." });
+      .status(RESPONSE_CODES.BAD_REQUEST)
+      .json({ success: false, message: MESSAGES.INCORRECT_OTP });
   }
 };
 
@@ -271,16 +272,16 @@ const sendOTPtoEmail = async (req, res) => {
     let userData = await userSchema.findOne({ email });
     if (userData.isOTPVerified == true)
       return res
-        .status(responseCodes.BAD_REQUEST)
-        .json({ success: false, message: "User Already Verified" });
+        .status(RESPONSE_CODES.BAD_REQUEST)
+        .json({ success: false, message: MESSAGES.USER_ALREADY_VERIFIED  });
     const resendOTPafter = req.session.resendOTPafter;
     if (resendOTPafter && userData.otpExpires > Date.now()) {
       if (resendOTPafter >= Date.now())
         return res
-          .status(responseCodes.BAD_REQUEST)
+          .status(RESPONSE_CODES.BAD_REQUEST)
           .json({
             success: false,
-            message: "kindly wait for some time to redend the otp",
+            message: MESSAGES.KINDLY_WAIT_FOR_SOME_TIME
           });
       else if (resendOTPafter < Date.now()) {
         let userData = await userSchema.findOne({ email });
@@ -289,8 +290,8 @@ const sendOTPtoEmail = async (req, res) => {
         console.log("otp resent success");
         req.session.resendOTPafter = Date.now() + 60 * 1000;
         return res
-          .status(responseCodes.OK)
-          .json({ message: "Otp resend success", resend: true });
+          .status(RESPONSE_CODES.OK)
+          .json({ message: MESSAGES.OTP_RESEND_SUCCESS , resend: true });
       }
     }
 
@@ -306,12 +307,11 @@ const sendOTPtoEmail = async (req, res) => {
 
       const mailOptions = nodemailer.mailCreator(userData);
       await nodemailer.transporter.sendMail(mailOptions);
-      console.log("Mail sent");
 
       req.session.resendOTPafter = Date.now() + 60 * 1000;
 
-      return res.status(responseCodes.OK ).json({
-        message: "OTP sent to mail id",
+      return res.status(RESPONSE_CODES.OK ).json({
+        message: MESSAGES.OTP_SEND_TO_MAIL,
         success: true,
         otpExpires,
       });
@@ -325,26 +325,23 @@ const sendOTPtoEmail = async (req, res) => {
       );
       const mailOptions = nodemailer.mailCreator(userData);
       await nodemailer.transporter.sendMail(mailOptions);
-      console.log(
-        "otp expired hence creating a new otp and updating expiry time"
-      );
+      
       req.session.resendOTPafter = Date.now() + 60 * 1000; // 1 min timer
       return res
-        .status(responseCodes.CREATED)
+        .status(RESPONSE_CODES.CREATED)
         .json({
-          message:
-            "Otp Expired, Hence generated a new OTP and sent it to your mail",
+          message: MESSAGES.OTP_EXPIRED_GENERATED_NEWONE,
           newOTP: true,
         });
     } else {
-      return res.status(responseCodes.BAD_REQUEST).json({
-        message: "OTP already created, please wait before resending",
+      return res.status(RESPONSE_CODES.BAD_REQUEST).json({
+        message: MESSAGES.OTP_ALREADY_CREATED_PLEASE_WAIT ,
         success: false,
       });
     }
   } catch (error) {
     console.error("Error sending OTP:", error);
-    return res.status(responseCodes.INTERNAL_SERVER_ERROR ).json({ message: "Server error", success: false });
+    return res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR ).json({ message: MESSAGES.INTERNAL_SERVER_ERROR, success: false });
   }
 };
 
@@ -353,10 +350,10 @@ const getOTPTimer = async (req, res) => {
   try {
     const resendOTPafter = req.session.resendOTPafter;
     const remainingTime = Math.max(0, resendOTPafter - Date.now());
-    return res.status(responseCodes.OK).json({ success: true, remainingTime });
+    return res.status(RESPONSE_CODES.OK).json({ success: true, remainingTime });
   } catch (error) {
     console.error("Error fetching OTP timer:", error);
-    return res.status(responseCodes.INTERNAL_SERVER_ERROR ).json({ message: "Server error", success: false });
+    return res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR ).json({ message: MESSAGES.INTERNAL_SERVER_ERROR, success: false });
   }
 };
 
@@ -373,21 +370,25 @@ const findUserAccount = async (req, res) => {
       { new: true }
     );
     if (!userData)
-      return res.status(responseCodes.NOT_FOUND).json({ message: "User Account Not Found" });
+      return res.status(RESPONSE_CODES.NOT_FOUND).json({ message: MESSAGES.USER_NOT_FOUND });
     req.session.userEmail = email;
     req.session.forgetPassword = true;
-    return res.status(responseCodes.OK).json({ message: "Account Found", success: true });
+    return res.status(RESPONSE_CODES.OK).json({ message: MESSAGES.ACCOUNT_FOUND, success: true });
   } catch {
-    return res.status(responseCodes.BAD_REQUEST).json({ message: "Server error" });
+    return res.status(RESPONSE_CODES.BAD_REQUEST).json({ message: MESSAGES.INTERNAL_SERVER_ERROR });
   }
 };
 
 const viewSetPassword = async (req, res) => {
+  try{
   userId = req.session.user;
   const userData = await userSchema.findById(userId);
-  if (!userData) return res.status(responseCodes.NOT_FOUND).json({ message: "User not found" });
+  if (!userData) return res.status(RESPONSE_CODES.NOT_FOUND).json({ message: MESSAGES.USER_NOT_FOUND });
   res.render("users/setPassword", { userData });
-};
+}catch(error){
+  console.log(error)
+  res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR).json({message:MESSAGES.INTERNAL_SERVER_ERROR})
+}}
 
 const updatePassword = async (req, res) => {
   try {
@@ -395,19 +396,18 @@ const updatePassword = async (req, res) => {
     const { email, password, confirmPassword } = req.body;
 
     if (password == "" || confirmPassword == "")
-      return res.status(responseCodes.BAD_REQUEST).json({ message: "Passwords cannot be empty" });
+      return res.status(RESPONSE_CODES.BAD_REQUEST).json({ message: MESSAGES.PASSWORD_CANNOT_BE_EMPTY });
 
     if (password !== confirmPassword)
       return res
-        .status(responseCodes.BAD_REQUEST)
-        .json({ message: "passwords not Matching", success: false });
+        .status(RESPONSE_CODES.BAD_REQUEST)
+        .json({ message: MESSAGES.PASSWORDS_NOT_MATCHING , success: false });
     const user = await userSchema.findOne({ email });
 
     const passwordStrength = isStrongPassword(password);
     if (!passwordStrength)
-      return res.status(responseCodes.BAD_REQUEST).json({
-        message: `Password Not Strong, kindly incluede a Captial letter, a small letter, a symbol, a number
-             ,a special character. Password should have length of 8`,
+      return res.status(RESPONSE_CODES.BAD_REQUEST).json({
+        message: MESSAGES.PASSWORD_NOT_STRONG,
         success: false,
       });
 
@@ -417,15 +417,15 @@ const updatePassword = async (req, res) => {
       { hashedPassword },
       { new: true }
     );
-    console.log(`password changed`);
     return res
-      .status(responseCodes.OK )
+      .status(RESPONSE_CODES.OK )
       .json({
-        message: "Your Password Has been Changed Succesfully",
+        message: MESSAGES.PASSWORD_CHANGE_SUCCESS ,
         success: true,
       });
   } catch (error) {
     console.log(error);
+    res.status(RESPONSE_CODES.BAD_REQUEST).json({message:MESSAGES.BAD_REQUEST})
   }
 };
 
@@ -445,35 +445,36 @@ const editPassword = async (req, res) => {
       isBlocked: false,
       isOTPVerified: true,
     });
-    if (!user) return res.status(responseCodes.NOT_FOUND).json({ message: "User Not Found" });
+    if (!user) return res.status(RESPONSE_CODES.NOT_FOUND).json({ message: MESSAGES.USER_NOT_FOUND });
     if (!user.hashedPassword)
       return res
-        .status(responseCodes.BAD_REQUEST)
-        .json({ message: "You are Not authorised to change password" });
+        .status(RESPONSE_CODES.BAD_REQUEST)
+        .json({ message: MESSAGES.YOU_ARE_NOT_AUTHORISED_TO_CHANGE_PASSWORD });
     if (newPassword !== confirmNewPassword)
-      return res.status(responseCodes.BAD_REQUEST).json({ message: "Passwords Not Matching" });
+      return res.status(RESPONSE_CODES.BAD_REQUEST).json({ message: MESSAGES.PASSWORDS_NOT_MATCHING });
     const isMatchPassword = await bcrypt.compare(
       currentPassword,
       user.hashedPassword
     );
     if (!isMatchPassword)
-      return res.status(responseCodes.BAD_REQUEST).json({ message: "Current Password is Incorrect" });
+      return res.status(RESPONSE_CODES.BAD_REQUEST).json({ message: MESSAGES.INCORRECT_CURRENT_PASSWORD });
     const isPasswordStrong = isStrongPassword(newPassword);
     if (!isPasswordStrong)
       return res
-        .status(responseCodes.BAD_REQUEST)
-        .json({ message: "Your New Password is not strong" });
+        .status(RESPONSE_CODES.BAD_REQUEST)
+        .json({ message: MESSAGES.PASSWORD_NOT_STRONG });
     const newHashPassword = await bcrypt.hash(newPassword, 10);
     user.hashedPassword = newHashPassword;
     await user.save();
-    return res.status(responseCodes.OK).json({ message: "password Updated" });
+    return res.status(RESPONSE_CODES.OK).json({ message: MESSAGES.PASSWORD_CHANGE_SUCCESS });
   } catch (err) {
     console.log(err);
-    return res.status(responseCodes.INTERNAL_SERVER_ERROR ).json({ message: `server error: ${err}` });
+    return res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR ).json({ message: `server error: ${err}` });
   }
 };
 
 const updateAccount = async (req, res) => {
+  try{
   const userId = req.session._id;
   const { name, phone } = req.body;
   const user = await user.findOne({
@@ -481,9 +482,13 @@ const updateAccount = async (req, res) => {
     isBlocked: false,
     isOTPVerified: true,
   });
-};
+}catch(error){
+  console.log(error)
+  
+}}
 
 const addUserImage = async (req, res) => {
+  try{
   const userId = req.session._id;
   const avatar = req.file.path;
   const user = await userSchema.findOne({
@@ -491,12 +496,14 @@ const addUserImage = async (req, res) => {
     isBlocked: false,
     isOTPVerified: true,
   });
-  if (!user) return res.status(responseCodes.BAD_REQUEST).json({ message: "user Not Found" });
+  if (!user) return res.status(RESPONSE_CODES.BAD_REQUEST).json({ message: MESSAGES.USER_NOT_FOUND });
   user.avatar = avatar;
   await user.save();
-  console.log(avatar, "je");
-  return res.status(responseCodes.OK).json({ message: "Profile Image Updated" });
-};
+  return res.status(RESPONSE_CODES.OK).json({ message: MESSAGES.PROFILE_IMAGE_UPDATE_SUCCESS });
+}catch(error){
+  console.log(error)
+  res.status(RESPONSE_CODES.BAD_REQUEST).json({message:MESSAGES.PROFILE_IMAGE_UPDATE_FAILED})
+}}
 
 const editUserDetails = async (req, res) => {
   try {
@@ -505,11 +512,11 @@ const editUserDetails = async (req, res) => {
 
     // Validate the inputs first
     if (!validateName(name)) {
-      return res.status(responseCodes.BAD_REQUEST).json({ message: "Invalid name format" });
+      return res.status(RESPONSE_CODES.BAD_REQUEST).json({ message: MESSAGES.INVALIID_NAME_FORMAT  });
     }
 
     if (!validatePhoneNumber(phone)) {
-      return res.status(responseCodes.BAD_REQUEST).json({ message: "Invalid phone number format" });
+      return res.status(RESPONSE_CODES.BAD_REQUEST).json({ message: MESSAGES.INVALID_MOBILE_NUMBER });
     }
 
     // Find the user
@@ -520,7 +527,7 @@ const editUserDetails = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(responseCodes.BAD_REQUEST).json({ message: "User not found" });
+      return res.status(RESPONSE_CODES.BAD_REQUEST).json({ message: MESSAGES.USER_NOT_FOUND });
     }
 
     let changes = false;
@@ -536,16 +543,16 @@ const editUserDetails = async (req, res) => {
     }
 
     if (!changes) {
-      return res.status(responseCodes.BAD_REQUEST).json({ message: "No changes detected" });
+      return res.status(RESPONSE_CODES.BAD_REQUEST).json({ message: MESSAGES.NO_CHANGES_FOUND });
     }
 
     await user.save();
     return res
-      .status(responseCodes.OK)
-      .json({ success: true, message: "User details changed successfully" });
+      .status(RESPONSE_CODES.OK)
+      .json({ success: true, message: MESSAGES.USER_DATA_CHANGE_SUCCESS });
   } catch (err) {
     console.log(err);
-    return res.status(responseCodes.INTERNAL_SERVER_ERROR ).json({ message: `Server error: ${err.message}` });
+    return res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR ).json({ message: `Server error: ${err.message}` });
   }
 };
 
@@ -571,4 +578,4 @@ module.exports = {
   updateAccount,
   addUserImage,
   editUserDetails,
-};
+}

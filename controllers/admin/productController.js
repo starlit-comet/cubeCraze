@@ -2,28 +2,38 @@ const productSchema = require('../../models/productSchema')
 const categorySchema = require('../../models/categorySchema')
 const brandSchema = require('../../models/brandSchema')
 const sizeSchema = require('../../models/sizeSchema')
-const responseCodes= require('../../helpers/StatusCodes')
-
+const RESPONSE_CODES = require('../../utils/StatusCodes')
+const MESSAGES = require('../../utils/responseMessages')
 
 const viewProducts = async (req,res)=>{
-    const productData = await productSchema.find({}).populate([
+    let currentPage = parseInt(req.query.page,10) || 1
+    if(currentPage<1) currentPage=1
+    let totalPages , limit = 5,totalItems
+    let allProducts = await productSchema.find({})
+    totalItems = allProducts.length
+     totalPages = Math.ceil(allProducts.length / limit)
+    const productData = await productSchema.find({})
+    .sort({createdAt:-1})
+    .skip((currentPage-1)*limit)
+    .limit(limit)
+    .populate([
         { path: 'brand' },
         { path: 'category' },
         { path: 'size' },
     ]   )
-    res.render('admin/products',{productData})
+    res.status(RESPONSE_CODES.OK).render('admin/products',{productData,totalItems,totalPages,currentPage,limit})
 }
 
 const addProduct = async (req,res)=>{
     try {
         const { productName, description, regularPrice, promotionalPrice, brand, category, cubeSize,productQuantity } = req.body;
         if (!productName || !description || !regularPrice || !brand || !category || !cubeSize ||!productQuantity  ) {
-            return res.status(responseCodes.BAD_REQUEST).json({ success: false, message: "All required fields must be filled!" });
+            return res.status(RESPONSE_CODES.BAD_REQUEST).json({ success: false, message:MESSAGES.ALL_FIELDS_ARE_REQUIRED });
         }
-        if(productQuantity<5)return res.status(responseCodes.BAD_REQUEST).json({message:'Minimum Quanity of 5 is needed to add a product'})
+        if(productQuantity<5)return res.status(RESPONSE_CODES.BAD_REQUEST).json({message:MESSAGES.MINIMUN_QUANTIY_NOT_ACHIEVED})
 
         if (!req.files || req.files.length <3) {
-            return res.status(responseCodes.BAD_REQUEST).json({ success: false, message: "Minimum Three Images are required" });
+            return res.status(RESPONSE_CODES.BAD_REQUEST).json({ success: false, message: MESSAGES.MINIMUM_THREE_IMAGES_REQUIRED });
         }
 
         const imageUrls = req.files.map(file => file.path); // Extract Cloudinary URLs
@@ -35,12 +45,12 @@ const addProduct = async (req,res)=>{
         });
 
         await newProduct.save();
-        res.json({ success: true, message: "Product added successfully!" });
+        res.status(RESPONSE_CODES.OK).json({ success: true, message: MESSAGES.PRODUCT_ADDED_SUCCESSFULLY  });
         
 
     } catch (error) {
         console.error(error);
-        res.status(500).json({ success: false, message: "Server Error" });
+        res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR).json({ success: false, message: MESSAGES.INTERNAL_SERVER_ERROR });
     }
 }
 
@@ -62,10 +72,8 @@ const viewEditProduct = async (req,res)=>{
 }       
 catch (error) {
     console.log(error)
-}
-
-
-}
+    res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR).redirect('/admin/internal-server-error')
+}}
 
 
 const editProduct= async (req,res)=>{
@@ -88,15 +96,15 @@ const editProduct= async (req,res)=>{
     if (cubeSize) updatedFields.size=cubeSize
     const isEmpty = Object.entries(updatedFields).length 
     if(isEmpty === 0 ){
-        return res.status(responseCodes.BAD_REQUEST).json({ success: false, message:"No Edit in Product Data found" });
+        return res.status(RESPONSE_CODES.BAD_REQUEST).json({ success: false, message: MESSAGES.NO_EDIT_IN_PRODUCT_DATA });
         
     }
     updatedFields.updatedAt = new Date()
-    if(1*productQuantity<0) return res.status(responseCodes.BAD_REQUEST).json({success:false,message:" Quantity can't be less than 0 "})
+    if(1*productQuantity<0) return res.status(RESPONSE_CODES.BAD_REQUEST).json({success:false,message: MESSAGES.QUANTITY_CANNOT_BE_LESSTHAN_0 })
     const updatedProduct = await productSchema.findByIdAndUpdate(productId,
         updatedFields,{new:true},
     )
-    return res.status(responseCodes.OK).json({ success: true, message: "Product Edited" });
+    return res.status(RESPONSE_CODES.OK).json({ success: true, message: MESSAGES.PRODUCT_EDITED });
 } catch (error) {
     
    }
@@ -104,11 +112,15 @@ const editProduct= async (req,res)=>{
 
 
 const viewAddProductPage=  async (req,res)=>{
+    try{
     const activeBrandNames = await brandSchema.find({isBlocked:false},'brandName')
     const activeCategories = await categorySchema.find({isListed:true},'categoryName')
     const cubeSizes = await sizeSchema.find({},'size')
     res.render('admin/addProduct',{activeBrandNames,activeCategories,cubeSizes})
-}
+} catch(err){
+    console.log(error) 
+    res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR)
+}}
 
 const deleteProduct = async (req,res)=> {
     try {
@@ -116,9 +128,9 @@ const deleteProduct = async (req,res)=> {
         const productExists = await productSchema.exists({_id:productId})
         if(!productExists) return res.redirect('/admin/page-not-found')
         await productSchema.findByIdAndUpdate(productId,{isBlocked:true})
-        res.status(responseCodes.OK).json({success:true})
+        res.status(RESPONSE_CODES.OK).json({success:true})
     } catch (error) {
-        res.status(responseCodes.NOT_FOUND).json({success:false})   
+        res.status(RESPONSE_CODES.NOT_FOUND).json({success:false})   
     }
 }
 const changeStatus=async (req,res)=>{
@@ -129,9 +141,9 @@ const changeStatus=async (req,res)=>{
         if(!productExists) return res.redirect('/admin/page-not-found')
 
         await productSchema.findByIdAndUpdate(productId,{isBlocked:changeStatusTo})
-        res.status(responseCodes.OK).json({success:true})
+        res.status(RESPONSE_CODES.OK).json({success:true})
     } catch (error) {
-        res.status(responseCodes.BAD_REQUEST).json({success:false})
+        res.status(RESPONSE_CODES.BAD_REQUEST).json({success:false})
     }
 }
 

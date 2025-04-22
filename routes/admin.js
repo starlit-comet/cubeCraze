@@ -66,7 +66,7 @@ router.get('/coupons',couponController.viewCouponPage)
 router.post('/addCoupon',couponController.addNewCoupon)
 router.get('/wallet',walletController.viewWallet)
 router.get('/page-not-found',adminController.viewErrorPage)
-
+router.get('/internal-server-error',adminController.viewServerErrorPage)
 
 router.get('/salesReport',salesReportHelper.productsSold)
 

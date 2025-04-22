@@ -3,7 +3,7 @@ const sizeSchema = require('../../models/sizeSchema')
 const brandSchema = require('../../models/brandSchema')
 const categorySchema = require('../../models/categorySchema')
 const adminDashboardContoller = require('../admin/dashBoardController')
-const responseCodes = require('../../helpers/StatusCodes')
+const RESPONSE_CODES = require('../../utils/StatusCodes')
 
 
 
@@ -80,7 +80,7 @@ const viewShop = async (req, res) => {
         // Filter out blocked brands/categories before sending response
         allProducts = allProducts.filter(item => !item.brand.isBlocked && item.category.isListed);
         req.query.search = search
-        res.render("users/shop", { 
+        res.status(RESPONSE_CODES.OK).render("users/shop", { 
             allProducts,
             allBrands,
             allCategories,
@@ -97,7 +97,7 @@ const viewShop = async (req, res) => {
      
     } catch (error) {
         console.error(error);
-        res.status(responseCodes.INTERNAL_SERVER_ERROR).redirect("/pagenotfound"); 
+        res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR).redirect("/pagenotfound"); 
     }
 };
 
@@ -117,16 +117,16 @@ const loadHome = async(req,res)=>{
         const topBrandsData = await brandSchema.find({brandName:{$in:topBrands}})
         const bannerData = await (await productSchema.find({productName:{$nin:productNames},isBlocked:false}).populate('brand category size'))
 
-        res.render('users/userHome',{userData,latestProduct,searchKeyWord:search,topProductData,topBrandsData,bannerData
+        res.status(RESPONSE_CODES.OK).render('users/userHome',{userData,latestProduct,searchKeyWord:search,topProductData,topBrandsData,bannerData
         })
     } catch (error) {
         console.log(error)
-        res.status(responseCodes.NOT_FOUND).redirect('/pagenotfound')
+        res.status(RESPONSE_CODES.NOT_FOUND).redirect('/pagenotfound')
 
     }
 }
 
 const redirectToHome = async (req,res)=>{
-    res.status(responseCodes.MOVED_PERMANENTLY).redirect('/home')
+    res.status(RESPONSE_CODES.MOVED_PERMANENTLY).redirect('/home')
 }
 module.exports={viewShop,loadHome,redirectToHome}

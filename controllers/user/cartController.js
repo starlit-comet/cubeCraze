@@ -3,8 +3,9 @@ const addressSchema = require('../../models/addressSchema')
 const productSchema = require ('../../models/productSchema')
 const orderSchema = require('../../models/orderSchema')
 const couponSchema = require('../../models/referalCouponSchema')
-const responseCodes = require('../../helpers/StatusCodes')
-
+const RESPONSE_CODES = require('../../utils/StatusCodes')
+const MESSAGES = require('../../utils/responseMessages')
+const { response } = require('express')
 
 const viewCart = async (req,res)=>{
 try{
@@ -34,10 +35,11 @@ for(let item of cartItems.cart){
     req.session.shipping = shipping
     req.session.totalAmount = totalAmount
     req.session.totalQuantity = totalQuantity
-res.render('users/cart',{cart,searchKeyWord:'',minPrice:0,maxPrice:7500,totalQuantity,totalAmount,shipping,grandTotal})
+res.status(RESPONSE_CODES.OK).render('users/cart',{cart,searchKeyWord:'',minPrice:0,maxPrice:7500,totalQuantity,totalAmount,shipping,grandTotal})
 }
 catch(error){
     console.log(error)
+    res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR).redirect('/admin/internal-server-error')
 }
 }
 
@@ -55,19 +57,20 @@ try {
         { path: 'size' },
     ]).lean()
 
-        if(!productData.category.isListed || productData.brand.isBlocked)    return res.status(responseCodes.BAD_REQUEST).json({message:`Product is Not Available (It's category or band may be blocked by Admin). This product will be removed from your cart`})
+        if(!productData.category.isListed || productData.brand.isBlocked)    return res.status(RESPONSE_CODES.BAD_REQUEST).json({message: MESSAGES.PRODUCT_NOT_AVAILABLE })
 
     if(productData . isBlocked ){ 
         user.cart.pull(productId)
         await user.save()
-        return res.status(responseCodes.BAD_REQUEST).json({message:'Product is Not Available (It may be blocked by Admin). This product will be removed from your cart'})}
+        return res.status(RESPONSE_CODES.BAD_REQUEST).json({message: MESSAGES.PRODUCT_NOT_AVAILABLE })
+    }
 
     
-        if(quantityToAdd <1 ) return res.status(responseCodes.BAD_REQUEST).json({message:'Atleast one quanitity is required inorder to add product to cart'})
-    if(productData.quantity < quantityToAdd)  return res.status(responseCodes.BAD_REQUEST).json({message:'Requested quantity is not available in the supplier, kindly reduce the quantity'})
+    if(quantityToAdd <1 ) return res.status(RESPONSE_CODES.BAD_REQUEST).json({message: MESSAGES.ATLEAST_ONE_QUANTITY_IS_REQUIRED })
+    if(productData.quantity < quantityToAdd)  return res.status(RESPONSE_CODES.BAD_REQUEST).json({message: MESSAGES.REQUESTED_QUANTITY_IS_NOT_AVAILABLE })
 
     if(user.cart[existingItemIndex] && user.cart[existingItemIndex].quantity + 1* quantityToAdd >10){
-        return res.status(responseCodes.BAD_REQUEST).json({
+        return res.status(RESPONSE_CODES.BAD_REQUEST).json({
             message: `Product Already in cart, Total  quantity of the product  exceeds maximum limit of 10. kindly reduce the quantity to max ${10-user.cart[existingItemIndex].quantity}`,
             status:'updated'
             })
@@ -79,7 +82,7 @@ try {
 
         await user.save();
 
-        return res.status(responseCodes.OK).json({
+        return res.status(RESPONSE_CODES.OK).json({
         message: `Product Already in cart, Hence quantity of the product is increased to ${countOfQuantity}`,
         status:'updated'
         })
@@ -92,13 +95,13 @@ try {
         user.wishList.pull(productId)
         await user.save();
         
-        return res.status(responseCodes.OK).json({message:'Product Added to Cart',status:"Added"});
+        return res.status(RESPONSE_CODES.OK).json({message: MESSAGES.PRODUCT_ADDED_TO_CART ,status:"Added"});
     }
 
 } catch (error) {
     console.log(error)
-    return res.status(responseCodes.INTERNAL_SERVER_ERROR).json({
-        message:'An Error Occured while adding to Cart',
+    return res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR).json({
+        message: MESSAGES.INTERNAL_SERVER_ERROR,
         Status:'Error'
     })
 }
@@ -111,21 +114,21 @@ const userId = req.session._id
 const user = await userSchema.findById(userId)
 user.cart.pull({productId})
 await user.save()
-return res.status(responseCodes.OK).json({ message: 'Product removed from cart' ,success:true});
+return res.status(RESPONSE_CODES.OK).json({ message: MESSAGES.PRODUCT_REMOVED_FROM_CART  ,success:true});
 
 
 }
 catch (error) {
     console.error('Error removing from cart:', error);
-    return res.status(responseCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal Server Error' });
+    return res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR).json({ message: MESSAGES.INTERNAL_SERVER_ERROR });
   }
 
 }
 const cartCheck = async (req,res)=>{
     const   userId = req.session._id
     const cartItems = await userSchema.findById(userId).select('cart -_id')
-    if(cartItems.cart.length<1) return res.status(responseCodes.BAD_REQUEST).json({message:'Your Cart Is Empty'})
-        return res.status(responseCodes.OK).json({success:true})
+    if(cartItems.cart.length<1) return res.status(RESPONSE_CODES.BAD_REQUEST).json({message: MESSAGES.YOUR_CART_IS_EMPTY })
+        return res.status(RESPONSE_CODES.OK).json({success:true})
 }
 const checkout = async (req,res)=>{
     const {couponCode} = req.query || ''
@@ -183,7 +186,7 @@ const checkout = async (req,res)=>{
                 return true
             }
         })
-        return res.render ('users/checkout' , {
+        return res.status(RESPONSE_CODES.OK).render ('users/checkout' , {
             cart,grandTotal,addressData ,userData,
             shipping,
             totalAmount,
@@ -195,6 +198,7 @@ const checkout = async (req,res)=>{
 
         catch(error){
             console.log(error)
+            res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR).redirect('/admin/internal-server-error')
         }
         }
 

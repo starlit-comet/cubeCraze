@@ -1,6 +1,7 @@
 const { query } = require('express')
 const User = require('../../models/userSchema')
-const responseCodes = require('../../helpers/StatusCodes')
+const RESPONSE_CODES = require('../../utils/StatusCodes')
+const MESSAGES = require('../../utils/responseMessages')
 
 const viewCustomers = async (req,res)=>{
     try {
@@ -29,9 +30,10 @@ const viewCustomers = async (req,res)=>{
             ]
         }).countDocuments()
         let link = ``
-        res.render('admin/customers',{userData,count,limit,page,link})
+        res.status(RESPONSE_CODES.OK).render('admin/customers',{userData,count,limit,page,link})
     } catch (error) {
         console.log(error)
+        res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR).redirect('/admin/internal-server-error')
         
     }
 }
@@ -42,6 +44,8 @@ const unblockCustomer= async(req,res)=>{
         res.redirect('/admin/customers')
     } catch (error) {
         console.log(error)
+        res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR).json({message:MESSAGES.INTERNAL_SERVER_ERROR})
+
     }
 }
 
@@ -52,19 +56,22 @@ const blockCustomer = async(req,res)=>{
         res.redirect('/admin/customers')
     } catch (error) {
         console.log(error)
+        res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR).json({message:MESSAGES.INTERNAL_SERVER_ERROR})
+
     }
 }
 
 
 const searchCustomer = async (req,res)=>{
 const {searchValue} = req.body
-if(!searchValue) return res.status(responseCodes.BAD_REQUEST).json({message:'Enter a Search Value'})
+if(!searchValue) return res.status(RESPONSE_CODES.BAD_REQUEST).json({message:MESSAGES.ENTER_A_SEARCH_VALUE})
 
     try {
         const regex = new RegExp(searchValue,'i')
         
     } catch (error) {
-        
+        console.log(error)
+        res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR).json({message:MESSAGES.INTERNAL_SERVER_ERROR})
     }
 }
 

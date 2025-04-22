@@ -1,46 +1,43 @@
-<%-include ('partials/headSection.ejs') %>
+<%- include('partials/headSection.ejs') %>
+</head>
 
-    <div class="screen-overlay"></div>
-   <%- include('partials/sidebar.ejs') %>
-    <main class="main-wrap">
-        <%- include('partials/header.ejs') %>
-      
+<body>
+    
+    <%- include('partials/header.ejs') %>
 
-        <section class="content-main">
-            <div class="content-header">
-                <h2 class="content-title">Transactions </h2>
-                <h4>Current Balance: ₹ <%= wallet.balance %></h4>
+    <%- include('partials/mobileMenu.ejs') %>
+    
+    <main class="main">
+       
+        <div class="page-header breadcrumb-wrap">
+            <div class="container row">
+                <div class="breadcrumb col ml-20">
+                    <a href="/home" >Home</a>
+                    <span></span> <a href="" >Wallet</a>
+                </div>
+                    <div class="text-end col" >
+                        <h3>Balance: <%= wallet.balance %></h3>
+                </div>
             </div>
+        </div>
+
+        <section class="mt-50 container mb-50">
+           
             <div class="card">
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-lg-12">
-                            <header class="border-bottom mb-4 pb-4">
-                                <div class="row">
-                                    <div class="col-lg-5 col-6 me-auto">
-                                        <input type="text" placeholder="Search..." class="form-control">
-                                    </div>
-                                    <div class="col-lg-2 col-6">
-                                        <select class="form-select">
-                                            <option>Type</option>
-                                            <option>All</option>
-                                            <option>Credit</option>
-                                            <option>Debit</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </header> <!-- card-header end// -->
+                        <div class="col-1"></div>
+                        <div class="col-lg-10">
+                            
                             <div class="table-responsive">
                                 <table class="table table-hover">
                                     <thead>
                                         <tr>
                                             <th>Sl.No</th>
-                                            <th>Transaction ID</th>
-                                            <th>User Details</th>
-                                            <th>Date</th>
+                                            <th>Date & Time</th>
+                                            <th>Details</th>
                                             <th>Type</th>
                                             <th>Amount</th>
-                                            <th>Balance</th>
                                             <th class="text-end">Action</th>
                                         </tr>
                                     </thead>
@@ -48,30 +45,22 @@
                                         <% if (wallet && wallet.transactions && wallet.transactions.length > 0) { %>
                                             <% for (let x = 0; x < wallet.transactions.length ; x++) { 
                                                 let data = wallet.transactions[x];
-                                                let date = new Date(data.transactionDate.$date || data.transactionDate); 
-                                            %>
+                                                let date = new Date(data.createdAt.$date || data.createdAt); %>
                                                 <tr>
                                                     <td><%= ((currentPage-1)*limit) + x+1 %></td>
-                                                    <td><b><%= data.transactionId %></b></td>
-                                                    <td><div class="col">
-                                                        <div class="row"><%= data.user?.name || "N/A" %>
-                                                    </div>
-                                                    <div class="row"><%= data.user?.email || "N/A" %></div>
-                                                    <div class="row" > <%= data.user?.phone || "N/A" %></div>
-                                                </div>
-                                                       </td>
+                                                    
                                                     <td><%= date.toLocaleString() %></td>
+                                                    <td><%= data.reason %></td>
                                                     <td>
-                                                        <span class="badge bg-<%= data.transactionType === 'CREDIT' ? 'success' : 'danger' %>">
-                                                            <%= data.transactionType %>
+                                                        <span class="badge bg-<%= data.type === 'CREDIT' ? 'success' : 'danger' %>">
+                                                            <%= data.type %>
                                                         </span>
                                                     </td>
-                                                   <% if( data.transactionType==='CREDIT' ){ %>
+                                                   <% if( data.type==='CREDIT' ){ %>
                                                     <td>+ Rs. <%= data.amount %></td>
                                                    <% } else { %>
                                                     <td>- Rs. <%= data.amount %></td>
                                                    <% } %>
-                                                    <td>₹ <%= data.timeStampBalance %></td>
                                                     <td class="text-end">
                                                         <button 
                                                             class=" btn-sm btn-primary font-sm "
@@ -114,7 +103,7 @@
 
                         <% if (currentPage>1){ %>
                             <li class="page-item"><a class="page-link" data-page="<%= currentPage-1 %>" href="#">
-                                <i class="material-icons md-chevron_left"></i></a></li>
+                                <i class="fi-rs-angle-double-small-left"></i></a></li>
                         <%}%>
                         <% for(let x = 1 ; x<=totalPages ; x++){ %>
                         <% if(x==currentPage ) { %>
@@ -125,7 +114,7 @@
                        
                         <% if (currentPage<totalPages){ %>
                         <li class="page-item"><a class="page-link" data-page="<%= currentPage+1 %>" href="#">
-                            <i class="material-icons md-chevron_right"></i></a></li>
+                            <i class="fi-rs-angle-double-small-right"></i></a></li>
                         <%}%>
                     </ul>
                        </div>
@@ -133,19 +122,30 @@
                     
                 </nav>
             </div>
-        </section><script>
-                                    function showDetails(data) {
+        </section>
+
+
+    </main>
+    
+    <%- include('partials/footer.ejs') %>
+
+  
+
+    <%- include('partials/scriptTags.ejs') %>
+
+    
+
+   <script>
+         function showDetails(data) {
                                         const date = new Date(data.transactionDate?.$date || data.transactionDate).toLocaleString();
                                         Swal.fire({
-                                            title: `Transaction: ${data.transactionId}`,
+                                            title: `OrderId : ${data.orderId}`,
                                             html: `
                                                 <div style="text-align: left;">
-                                                    <p><strong>User Details:</strong> ${data.user?.name || "N/A"}</p>
-                                                    <p><strong>Date:</strong> ${date}</p>
-                                                    <p><strong>Type:</strong> ${data.transactionType}</p>
+                                                    <p><strong>Date:</strong> ${data.createdAt}</p>
+                                                    <p><strong>Type:</strong> ${data.type}</p>
                                                     <p><strong>Amount:</strong> ₹ ${data.amount}</p>
-                                                    <p><strong>Source:</strong> ${data.source || "N/A"}</p>
-                                                    <p><strong>Order ID:</strong> ${data.orderId || "N/A"}</p>
+                                                    <p><strong>Details:</strong> ${data.reason || "N/A"}</p>
                                                     <p><strong>Remarks:</strong> ${data.remarks || "None"}</p>
                                                 </div>
                                             `,
@@ -156,14 +156,11 @@
                                             width: '30em'
                                         }).then(result=>{
                                             if(result.isConfirmed){
-                                                window.location.href=`/admin/orderDetail/${data.orderId}`
+                                                window.location.href=`/orderDetail/${data.orderId}`
                                             }
                                         })
                                     }
-                                </script>
-      <script>
-   // page selection event
- document.querySelectorAll(".page-link").forEach(item => {
+                                    document.querySelectorAll(".page-link").forEach(item => {
         item.addEventListener("click", function (e) {
             e.preventDefault();
            const url = new URL(window.location.href)
@@ -172,6 +169,8 @@
         window.location.href=url
         });
     });
-document.getElementById("wallet12e").classList.add("active");
-                    </script>
-        <%- include('partials/footer.ejs') %>
+    
+   </script>
+</body>
+
+</html>

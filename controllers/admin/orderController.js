@@ -8,17 +8,27 @@ const categorySchema = require('../../models/categorySchema')
 const walletHelper = require('../../helpers/walletHelper')
 const generateInvoice = require('../../helpers/generateInvoice')
 const generateSalesReport = require('../../helpers/generateSalesReport')
-const responseCodes= require('../../helpers/StatusCodes')
+const RESPONSE_CODES = require('../../utils/StatusCodes')
 
 
 const fs = require('fs')
+const MESSAGES = require('../../utils/responseMessages')
 
 const viewOrders = async(req,res)=>{
     try {
-        
+        let totalItems, currentPage,totalPages,limit=10
+        currentPage = parseInt(req.query.page,10) || 1
+        if(currentPage<1) currentPage =1
+        let allOrders = await orderSchema.find({})
+        totalItems = allOrders.length
+        totalPages = Math.ceil(totalItems/limit)
         const orders = await orderSchema.find().sort({invoiceDate:-1})
-        res.render('admin/orders',{orders}) 
+        .skip((currentPage-1)*limit)
+        .limit(limit)
+        res.render('admin/orders',{orders,totalItems, currentPage,totalPages,limit}) 
     } catch (error) {
+        console.log(error)
+        res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR).redirect('/admin/internal-server-error')
         
     }
 }
@@ -39,9 +49,10 @@ const orderDetail = async (req,res)=>{
             {path:'category',select:'categoryName'}
         ]
     })
-        res.render('admin/orderDetail',{order})
+        res.status(RESPONSE_CODES.OK).render('admin/orderDetail',{order})
     } catch (error) {
-        
+        console.log(error)
+        res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR).redirect('/admin/internal-server-error')
     }
 }
 
@@ -51,15 +62,15 @@ const changeOrderStatus = async (req, res) => {
 
   try {
       const orderExists = await orderSchema.exists({orderId})
-      if(!orderExists) return res.status(responseCodes.NOT_FOUND).redirect('/admin/page-not-found')
+      if(!orderExists) return res.status(RESPONSE_CODES.NOT_FOUND).redirect('/admin/page-not-found')
       const order = await orderSchema.findOne({ orderId });
 
       if (!order) {
-          return res.status(responseCodes.NOT_FOUND).json({ message: 'Order not found!' });
+          return res.status(RESPONSE_CODES.NOT_FOUND).json({ message: MESSAGES.ORDER_NOT_FOUND});
       }
 
       if (order.status === "Cancelled" || order.status === "Delivered") {
-          return res.status(responseCodes.BAD_REQUEST).json({ message: "Can't make any further changes to this order" });
+          return res.status(RESPONSE_CODES.BAD_REQUEST).json({ message: MESSAGES.CANT_MAKE_ANY_OTHER_CHANGES });
       }
 
       if (status === 'Cancelled') {
@@ -77,7 +88,7 @@ const changeOrderStatus = async (req, res) => {
       } 
       else if (status === "Shipped") {
           if (order.status !== 'Processing') {
-              return res.status(responseCodes.BAD_REQUEST).json({ message: "Only pending orders can be changed to shipped" });
+              return res.status(RESPONSE_CODES.BAD_REQUEST).json({ message: MESSAGES.ONLY_PENDING_ORDERS_CANBE_CHANGED_TO_SHIPPING });
           }
           order.status = status;
           for (let item of order.orderedItems) {
@@ -88,7 +99,7 @@ const changeOrderStatus = async (req, res) => {
       } 
       else if (status === "Delivered") {
           if (order.status !== 'Shipped') {
-              return res.status(responseCodes.BAD_REQUEST).json({ message: "Only shipped orders can be changed to delivered" });
+              return res.status(RESPONSE_CODES.BAD_REQUEST).json({ message: MESSAGES.ONLY_SHIPPED_ORDERS_CAN_BE_CHANGED_TO_DELIVERED  });
           }
           order.status = status;
           for (let item of order.orderedItems) {
@@ -100,14 +111,14 @@ const changeOrderStatus = async (req, res) => {
           await walletHelper.updateAdminWallet(order.userId,'CREDIT',order.finalAmount,'Order Payment',order.orderId,'cod_payment_after_delivery')
           }
       } else {
-          return res.status(responseCodes.BAD_REQUEST).json({ message: "Invalid status update" });
+          return res.status(RESPONSE_CODES.BAD_REQUEST).json({ message: MESSAGES.INVALID_STATUS_UPDATE });
       }
 
       await order.save();
-      res.json({ message: `Order status updated to ${status}` });
+      res.status(RESPONSE_CODES.OK).json({ message: `Order status updated to ${status}` });
   } catch (error) {
       console.error(error);
-      res.status(responseCodes.INTERNAL_SERVER_ERROR).json({ message: 'Server error' });
+      res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR).json({ message: MESSAGES.INTERNAL_SERVER_ERROR });
   }
 };
 
@@ -116,11 +127,11 @@ const  createInvoice = async(req,res)=>{
         try {
           const { orderId } = req.params;
           const orderExists = await orderSchema.exists({orderId})
-          if(!orderExists) return res.status(responseCodes.NOT_FOUND).redirect('/admin/page-not-found')
+          if(!orderExists) return res.status(RESPONSE_CODES.NOT_FOUND).redirect('/admin/page-not-found')
           // Fetch the order
           const order = await orderSchema.findOne({ orderId }).lean();
           if (!order) {
-              return res.status(responseCodes.NOT_FOUND).json({ message: 'Order not found!' });
+              return res.status(RESPONSE_CODES.NOT_FOUND).json({ message: MESSAGES.ORDER_NOT_FOUND });
             }
             const userId = order.userId; // Secure access, if session available
       
@@ -131,7 +142,7 @@ const  createInvoice = async(req,res)=>{
           generateInvoice(order, user, res);
         } catch (error) {
           console.log('Invoice generation error:', error);
-          return res.status(responseCodes.INTERNAL_SERVER_ERROR ).json({ message: 'Server error while generating invoice.' });
+          return res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR ).json({ message: MESSAGES.INTERNAL_SERVER_ERROR });
         }
 }
 
@@ -145,7 +156,7 @@ const generateReport = async (req, res) => {
     return generateSalesReport.generatePDFReport(fromDate,toDate,res)
   }
 
-  else return res.status(responseCodes.BAD_REQUEST).json({ error: "Invalid file type requested." });
+  else return res.status(RESPONSE_CODES.BAD_REQUEST).json({ error: MESSAGES.INVALID_FILE_TYPE_REQUESTED });
 };
 
 const approveReturnRequest = async(req,res)=>{
@@ -153,13 +164,13 @@ const approveReturnRequest = async(req,res)=>{
     const { orderId, itemId } = req.body;
 
     const order = await orderSchema.findOne({ orderId });
-    if (!order) return res.status(responseCodes.NOT_FOUND).json({ message: "Order not found!" });
+    if (!order) return res.status(RESPONSE_CODES.NOT_FOUND).json({ message: MESSAGES.ORDER_NOT_FOUND });
 
     const item = order.orderedItems.find(item => item.product.toString() === itemId);
-    if (!item) return res.status(responseCodes.NOT_FOUND).json({ message: "Item not found in order!" });
+    if (!item) return res.status(RESPONSE_CODES.NOT_FOUND).json({ message: MESSAGES.ITEM_NOT_FOUND_IN_ORDER });
 
     if (item.status !== "Return Requested") {
-        return res.status(responseCodes.BAD_REQUEST).json({ message: "This item is not in return requested status." });
+        return res.status(RESPONSE_CODES.BAD_REQUEST).json({ message:MESSAGES.ITEM_NOT_IN_RETURN_REQUEST });
     }
     // Restore stock and credit usr wallt
     await productSchema.findByIdAndUpdate(item.product, { $inc: { quantity: item.quantity } });
@@ -173,10 +184,10 @@ const approveReturnRequest = async(req,res)=>{
     await walletHelper.updateAdminWallet(order.userId,'DEBIT',item.price*item.quantity,'Refund',order.orderId,'product_return_refund')
 
     await order.save();
-    res.json({ message: "Return approved and processed successfully!" });
+    res.status(RESPONSE_CODES.OK).json({ message: MESSAGES.RETURN_APPROVED_AND_PROCESSED_SUCCESSFULLY  });
 } catch (error) {
     console.error(error);
-    res.status(responseCodes.INTERNAL_SERVER_ERROR ).json({ message: "Server error while approving return." });
+    res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR ).json({ message: MESSAGES.INTERNAL_SERVER_ERROR });
 }}
 
 const rejectReturnRequest = async (req,res)=>{
@@ -184,25 +195,26 @@ const rejectReturnRequest = async (req,res)=>{
 
     try {
         const order = await orderSchema.findOne({ orderId });
-        if (!order) return res.status(responseCodes.NOT_FOUND).json({ message: 'Order not found' });
+        if (!order) return res.status(RESPONSE_CODES.NOT_FOUND).json({ message: MESSAGES.ORDER_NOT_FOUND });
 
         const item = order.orderedItems.find(i => i.product.toString() === itemId);
-        if (!item) return res.status(responseCodes.NOT_FOUND).json({ message: 'Item not found in order' });
+        if (!item) return res.status(RESPONSE_CODES.NOT_FOUND).json({ message: MESSAGES.ITEM_NOT_FOUND_IN_ORDER });
 
         if (item.status !== 'Return Requested') {
-            return res.status(responseCodes.BAD_REQUEST).json({ message: "Return request not found or already processed" });
+            return res.status(RESPONSE_CODES.BAD_REQUEST).json({ message: MESSAGES.RETURN_REQUEST_NOT_FOUND_OR_ALREADY_PROCESSED });
         }
 
         // Change status back to Delivered
         item.status = 'Return Cancelled';
+        
 
         await order.save();
 
-        res.json({ message: "Return request denied" });
+        res.status(RESPONSE_CODES.OK).json({ message: "Return request denied" });
 
     } catch (error) {
         console.error("Error denying return:", error);
-        res.status(responseCodes.INTERNAL_SERVER_ERROR ).json({ message: "Internal server error" });
+        res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR ).json({ message: MESSAGES.INTERNAL_SERVER_ERROR });
     }
 }
 

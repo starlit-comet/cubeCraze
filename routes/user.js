@@ -8,7 +8,7 @@ const addressController = require('../controllers/user/addressController')
 const cartController = require('../controllers/user/cartController')
 const orderController = require('../controllers/user/orderController')
 const referralController = require('../controllers/user/referralController')
-
+const walletController = require('../controllers/user/walletController')
 const userSchema = require('../models/userSchema')
 
 
@@ -115,5 +115,7 @@ router.post('/request-product-return',orderController.requestProductReturn)
 
 router.get('/cartAndWishlistData',productController.sendCartAndWishlistData)
 
+router.get('/wallet',userAuth.isUserLoggedOut,walletController.viewWallet)
+router.get('/orderDetail/:_id',userAuth.isUserLoggedOut,orderController.OrderDetail)
 router.use('*',userController.errorPage)
 module.exports=router

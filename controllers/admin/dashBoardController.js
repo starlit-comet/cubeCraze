@@ -10,7 +10,7 @@ const walletHelper = require('../../helpers/walletHelper')
 const generateInvoice = require('../../helpers/generateInvoice')
 const generateSalesReport = require('../../helpers/generateSalesReport')
 const AdminWallet = require("../../models/adminWalletSchema");
-const responseCodes= require('../../helpers/StatusCodes')
+const RESPONSE_CODES = require('../../utils/StatusCodes')
 
 
 async function productsSold (query) {
@@ -180,7 +180,7 @@ const viewDashboard = async (req, res) => {
        return res.render("admin/dashboard", { barGraphData,salesData,totalProductsSold,totalOrders,walletBalance,salesReport });
     } catch (error) {
         console.log("Error loading dashboard:", error);
-        res.status(responseCodes.INTERNAL_SERVER_ERROR).send("Dashboard error");
+        res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR).redirect('/admin/internal-server-error');
     }
 };
 

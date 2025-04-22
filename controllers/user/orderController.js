@@ -11,7 +11,8 @@ const {validateWebhookSignature} = require('razorpay/dist/utils/razorpay-utils')
 const TemporaryOrder = require('../../models/tempRazorpayOrderSchema')
 const walletHelper = require('../../helpers/walletHelper')
 const walletSchema = require('../../models/walletSchema')
-const responseCodes = require('../../helpers/StatusCodes')
+const RESPONSE_CODES = require('../../utils/StatusCodes')
+const MESSAGES = require('../../utils/responseMessages')
 
 
 
@@ -25,7 +26,7 @@ const createOrder = async (req, res) => {
     const user = await userSchema.findOne({ _id: userId, isBlocked: false, isOTPVerified: true })
       .select('name email phone cart addresses');
 
-    if (!user) return res.status(responseCodes.NOT_FOUND).json({ message: 'User not found' });
+    if (!user) return res.status(RESPONSE_CODES.NOT_FOUND).json({ message: MESSAGES.NOT_FOUND });
 
     let checkTotalQuantity = 0, checkGrandTotal = 0, checkTotalAmount = 0;
 
@@ -37,13 +38,13 @@ const createOrder = async (req, res) => {
           { path: 'size', select: 'size' }
         ]).lean();
 
-      if (!product) return res.status(responseCodes.NOT_FOUND).json({ message: `Product not found` });
+      if (!product) return res.status(RESPONSE_CODES.NOT_FOUND).json({ message: MESSAGES.PRODUCT_NOT_FOUND });
 
       if (item.quantity > product.quantity)
-        return res.status(responseCodes.NOT_FOUND).json({ message: `Not enough stock for '${product.productName}'` });
+        return res.status(RESPONSE_CODES.NOT_FOUND).json({ message: `Not enough stock for '${product.productName}'` });
 
       if (product.brand.isBlocked || !product.category.isListed)
-        return res.status(responseCodes.NOT_FOUND).json({ message: `Product '${product.productName}' is not available for sale` });
+        return res.status(RESPONSE_CODES.NOT_FOUND).json({ message: `Product '${product.productName}' is not available for sale` });
 
       checkTotalQuantity += item.quantity;
       checkTotalAmount += product.promotionalPrice * item.quantity;
@@ -52,7 +53,7 @@ const createOrder = async (req, res) => {
     }));
 
     if (checkTotalQuantity !== totalQuantity || checkTotalAmount !== totalAmount)
-      return res.status(responseCodes.BAD_REQUEST).json({ message: 'Mismatch in cart totals. Please reinitiate checkout.' });
+      return res.status(RESPONSE_CODES.BAD_REQUEST).json({ message: MESSAGES.MISMATCH_IN_TOTAL_AMOUNT });
 
     let checkShipping = 0;
     if (checkTotalQuantity >= 1 && checkTotalQuantity <= 5) checkShipping = 0;
@@ -63,14 +64,14 @@ const createOrder = async (req, res) => {
     checkGrandTotal = checkShipping + checkTotalAmount;
 
     if (checkShipping !== shipping)
-      return res.status(responseCodes.BAD_REQUEST).json({ message: 'Error in calculating shipping' });
+      return res.status(RESPONSE_CODES.BAD_REQUEST).json({ message: MESSAGES.ERROR_IN_CALCULATING_SHIPPING });
 
     if (checkGrandTotal !== grandTotal)
-      return res.status(responseCodes.BAD_REQUEST).json({ message: 'Error in calculating grand total' });
+      return res.status(RESPONSE_CODES.BAD_REQUEST).json({ message: MESSAGES.ERROR_IN_CALCULATING_GRAND_TOTAL });
 
     const shippingAddress = await addressSchema.findOne({ _id: addressId, userId });
     if (!shippingAddress)
-      return res.status(responseCodes.NOT_FOUND).json({ message: 'Address not found' });
+      return res.status(RESPONSE_CODES.NOT_FOUND).json({ message: MESSAGES.ADDRESS_NOT_FOUND });
 
     const orderedItems = cart.map(item => ({
       product: item.product._id,
@@ -107,7 +108,7 @@ const createOrder = async (req, res) => {
     });
 
     if (paymentType === 'cod') {
-      if(grandTotal >1000) return res.status(responseCodes.BAD_REQUEST).json({message:'Cash On Delivery(COD) is only availabe for payments below 1000, Kindly use RazorPay to make this Order.'})
+      if(grandTotal >1000) return res.status(RESPONSE_CODES.BAD_REQUEST).json({message: MESSAGES.COD_ONLY_ABOVE_1000})
 
       await newOrder.save();
     } else if (paymentType === 'razorpay') {
@@ -121,7 +122,7 @@ const createOrder = async (req, res) => {
     else if(paymentType ==='wallet'){
       let userWallet = await walletSchema.findOne({userId})
       if(userWallet.balance<grandTotal){
-        return res.status(responseCodes.BAD_REQUEST).json({message:'Not Enough Balance in your Wallet'})
+        return res.status(RESPONSE_CODES.BAD_REQUEST).json({message: MESSAGES.NOT_ENOUGH_BALANCE_IN_WALLET })
       }
       await newOrder.save()
       await walletHelper.deductAmount(userId,grandTotal,'PURCHASE_DEDUCT',newOrder.orderId, )
@@ -139,11 +140,11 @@ const createOrder = async (req, res) => {
       productSchema.updateOne({ _id: item.product._id }, { $inc: { quantity: -item.quantity } })
     ));
 
-    res.status(responseCodes.CREATED).json({ message: 'Order placed successfully', orderId: newOrder.orderId });
+    res.status(RESPONSE_CODES.CREATED).json({ message: MESSAGES.ORDER_PLACED_SUCCESSFULLY , orderId: newOrder.orderId });
 
   } catch (error) {
     console.error(error);
-    res.status(responseCodes.INTERNAL_SERVER_ERROR).json({ message: `Server error: ${error.message}` });
+    res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR).json({ message: `Server error: ${error.message}` });
   }
 };
 
@@ -181,7 +182,7 @@ const createOrderRazorpay = async (req, res) => {
     res.json(order);
   } catch (error) {
     console.error(error);
-    res.status(responseCodes.INTERNAL_SERVER_ERROR).send('Error creating order');
+    res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR).send('Error creating order');
   }
 };
 
@@ -195,31 +196,38 @@ const verifyRazorpayPayment = async (req, res) => {
     const isValidSignature = validateWebhookSignature(body, razorpay_signature, secret);
 
     if (!isValidSignature)
-      return res.status(responseCodes.BAD_REQUEST).json({ status: 'verification_failed' });
+      return res.status(RESPONSE_CODES.BAD_REQUEST).json({ status: 'verification_failed' });
 
     const tempOrder = await TemporaryOrder.findOne({ order_id: razorpay_order_id });
 
     if (!tempOrder)
-      return res.status(responseCodes.NOT_FOUND).json({ status: 'order_not_found' });
+      return res.status(RESPONSE_CODES.NOT_FOUND).json({ status: MESSAGES.ORDER_NOT_FOUND });
 
     tempOrder.status = 'paid';
     tempOrder.payment_id = razorpay_payment_id;
 
     await tempOrder.save();
 
-    res.status(responseCodes.OK).json({ status: 'ok', tempOrder });
+    res.status(RESPONSE_CODES.OK).json({ status: 'ok', tempOrder });
 
   } catch (error) {
     console.error(error);
-    res.status(responseCodes.INTERNAL_SERVER_ERROR).json({ status: 'error', message: 'Error verifying payment' });
+    res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR).json({ status: 'error', message: MESSAGES.ERROR_VERIFYING_PAYMENT });
   }
 };
 
 const viewOrders = async (req,res)=>{
-    const userId = req.session._id
+  const userId = req.session._id
+    let totalItems, limit=5, totalPages,currentPage
+    currentPage = parseInt(req.query.page,10) ||1
+    if(currentPage<1) currentPage=1
+    let allOrders = await orderSchema.find({userId})
+    totalItems = allOrders.length
+    totalPages = Math.ceil(totalItems/limit)
     const user = await  userSchema.findById(userId)
     const orders = await orderSchema.find({userId}).sort({invoiceDate:-1})
-    res.render('users/ordersList',{user,orders})
+    .skip((currentPage-1)*limit).limit(limit)
+    res.render('users/ordersList',{user,orders,totalItems, limit, totalPages,currentPage})
 }
 
 const orderDetail = async (req,res)=>{
@@ -228,12 +236,12 @@ const orderDetail = async (req,res)=>{
     
     
     const orderExist = await orderSchema.exists({orderId})
-    if(!orderExist) return res.status(responseCodes.NOT_FOUND).redirect('/pagenotfound')
+    if(!orderExist) return res.status(RESPONSE_CODES.NOT_FOUND).redirect('/pagenotfound')
 
 
     const order = await orderSchema.findOne({orderId})
    
-    if(!order) return res.status(responseCodes.NOT_FOUND).json({message:'order no3t found'})
+    if(!order) return res.status(RESPONSE_CODES.NOT_FOUND).json({message:MESSAGES.ORDER_NOT_FOUND})
     
     res.render('users/orderDetail',{order})
 
@@ -243,16 +251,19 @@ catch(error){
 }
 }
 
+
 const orderTrack = async (req,res)=>{
     try {
         const userId = req.session.id
         const orderId = req.params.orderId
         const orderExists =await  orderSchema.exists({orderId})
-        if(!orderExists) return res.status(responseCodes.NOT_FOUND).redirect('/pagenotfound')
+        if(!orderExists) return res.status(RESPONSE_CODES.NOT_FOUND).redirect('/pagenotfound')
         const order = await orderSchema.findOne({orderId})
-        return res.render('users/trackOrder',{order})
+        return res.status(RESPONSE_CODES.OK).render('users/trackOrder',{order})
     } catch (error) {
         console.log(error)
+        res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR).redirect('/admin/internal-server-error')
+
     }
 }
 
@@ -264,7 +275,7 @@ const createInvoice = async (req, res) => {
       // Fetch the order
       const order = await orderSchema.findOne({ orderId, userId }).lean();
       if (!order) {
-        return res.status(responseCodes.NOT_FOUND).json({ message: 'Order not found!' });
+        return res.status(RESPONSE_CODES.NOT_FOUND).json({ message: MESSAGES.ORDER_NOT_FOUND });
       }
   
       // Fetch user data if needed
@@ -274,7 +285,7 @@ const createInvoice = async (req, res) => {
       generateInvoice(order, user, res);
     } catch (error) {
       console.log('Invoice generation error:', error);
-      return res.status(responseCodes.INTERNAL_SERVER_ERROR).json({ message: 'Server error while generating invoice.' });
+      return res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR).json({ message: MESSAGES.INTERNAL_SERVER_ERROR });
     }
   }
 
@@ -289,19 +300,19 @@ const cancelOrder =async (req, res) => {
       const order = await orderSchema.findOne({ orderId, userId });
   
       if (!order) {
-        return res.status(responseCodes.NOT_FOUND).json({ message: 'Order not found' });
+        return res.status(RESPONSE_CODES.NOT_FOUND).json({ message: MESSAGES.ORDER_NOT_FOUND });
       }
   
       if (order.status === 'Delivered') {
-        return res.status(responseCodes.BAD_REQUEST).json({ message: 'Delivered orders cannot be cancelled' });
+        return res.status(RESPONSE_CODES.BAD_REQUEST).json({ message: MESSAGES.DELIVERED_ORDERS_CANNOT_BE_CANCELLED});
       }
 
       if (order.status === 'Returned' || order.status === 'Return Requested') {
-        return res.status(responseCodes.BAD_REQUEST).json({ message: 'This order is requested for Return or had been returned' });
+        return res.status(RESPONSE_CODES.BAD_REQUEST).json({ message: MESSAGES.THIS_ORDER_IS_REQUESTED_FOR_RETURN  });
       }
   
       if (order.status === 'Cancelled') {
-        return res.status(responseCodes.BAD_REQUEST).json({ message: 'Order already cancelled' });
+        return res.status(RESPONSE_CODES.BAD_REQUEST).json({ message: MESSAGES.ORDER_ALREADY_CANCELLED  });
       }
       // ✅ Update the order status
       order.orderedItems
@@ -313,7 +324,7 @@ const cancelOrder =async (req, res) => {
           order.orderedItems[nos].status = 'Cancelled';
           order.orderedItems[nos].cancellationReason = reason
         } 
-        else return res.status(responseCodes.BAD_REQUEST).json({message:"One of the producs is not cancellable"})
+        else return res.status(RESPONSE_CODES.BAD_REQUEST).json({message: MESSAGES.ONE_OF_THE_PRODUCTS_IS_NOT_CANCELLABLE })
       }
 
       await order.save();
@@ -335,10 +346,10 @@ const cancelOrder =async (req, res) => {
       walletHelper.addCredit(userId,order.finalAmount,'ORDER_CANCEL_REFUND',order._id,)
       walletHelper.updateAdminWallet(userId,'DEBIT',order.finalAmount,'Order_Cancellation',order.orderId,``)
     }
-      res.status(responseCodes.OK).json({ok:true, message: 'Order cancelled!' });
+      res.status(RESPONSE_CODES.OK).json({ok:true, message: MESSAGES.ORDER_CANCELLED });
     } catch (error) {
       console.error('Error cancelling order:', error);
-      res.status(responseCodes.INTERNAL_SERVER_ERROR).json({ message: 'Server error while cancelling order.' });
+      res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR).json({ message: MESSAGES.INTERNAL_SERVER_ERROR });
     }
   }
 
@@ -348,7 +359,7 @@ const createOrderViaCod =async(req,res)=>{
      const { grandTotal ,shipping ,totalAmount,totalQuantity }= req.session
      const formData = req.body
      console.log('final after razorpay succedds',userId,formData,grandTotal ,shipping ,totalAmount,totalQuantity )
-     if(grandTotal >1000) return res.status(responseCodes.BAD_REQUEST).json({message:'Cash On Delivery(COD) is availabe for payments below 1000, Kindly use RazorPay to make Payment.'})
+     if(grandTotal >1000) return res.status(RESPONSE_CODES.BAD_REQUEST).json({message:MESSAGES.COD_ONLY_ABOVE_1000})
      
     // Copy address fields into a plain object
     const copiedAddress = {
@@ -424,11 +435,11 @@ const createOrderViaCod =async(req,res)=>{
   }));
 
 
-  return res.status(responseCodes.CREATED).json({ message: 'Order placed successfully', orderId: newOrder.orderId });
+  return res.status(RESPONSE_CODES.CREATED).json({ message: MESSAGES.ORDER_PLACED_SUCCESSFULLY , orderId: newOrder.orderId });
 
     } catch (error) {
       console.log(error)
-      return res.status(responseCodes.INTERNAL_SERVER_ERROR).json({message:error})
+      return res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR).json({message:error})
     }
   }
 
@@ -439,14 +450,14 @@ const cancelSingleProduct = async (req,res)=>{
     try {
       const order = await orderSchema.findOne({orderId})
       const restockProduct = await productSchema.findById(itemId)  //PRODUCT TO RESTOCK
-      if(!order) return res.status(responseCodes.NOT_FOUND).json({message:'Order Not Found'})
+      if(!order) return res.status(RESPONSE_CODES.NOT_FOUND).json({message:MESSAGES.ORDER_NOT_FOUND})
       const productIndex = order.orderedItems.findIndex(item=>item.product.toString()=== itemId)
       if(!productIndex){
         
-       if(productIndex!==0) return res.status(responseCodes.NOT_FOUND).json({message:'Product Not Found in order'})
+       if(productIndex!==0) return res.status(RESPONSE_CODES.NOT_FOUND).json({message: MESSAGES.PRODUCT_NOT_FOUND_IN_ORDER })
       }
       if(['Delivered', 'Cancelled', 'Return Requested', 'Returned'].some(val=>{ val ==  order.orderedItems[productIndex].status }) ){
-        return res.status(responseCodes.BAD_REQUEST).json({message:'cannot cancel or return this product'})
+        return res.status(RESPONSE_CODES.BAD_REQUEST).json({message:MESSAGES.CANNOT_CANCEL_OR_RETURN_THIS_PRODUCT})
       }
       
       //changing sttatus or order
@@ -470,11 +481,12 @@ const cancelSingleProduct = async (req,res)=>{
        if(order.paymentMethod !=='cod'){
         walletHelper.addCredit(userId,(order.orderedItems[productIndex].price*order.orderedItems[productIndex].quantity),'PRODUCT_CANCEL_REFUND',order._id,order.orderedItems[productIndex].product,reason)
         }
-        res.status(responseCodes.OK).json({message:'Product Cancelled Succesfully'})
+        res.status(RESPONSE_CODES.OK).json({message: MESSAGES.PRODUCT_CANCELLED_SUCCESS })
 
       
     } catch (error) {
       console.log(error)
+      res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR).redirect('/admin/internal-server-error')
     }
   }
 
@@ -483,13 +495,13 @@ const requestProductReturn = async (req,res)=>{
     const { orderId, itemId, reason,  } = req.body;
 
     const order = await orderSchema.findOne({ orderId });
-    if (!order) return res.status(responseCodes.NOT_FOUND).json({ message: "Order not found!" });
+    if (!order) return res.status(RESPONSE_CODES.NOT_FOUND).json({ message: MESSAGES.ORDER_NOT_FOUND });
 
     const item = order.orderedItems.find(item => item.product.toString() === itemId);
-    if (!item) return res.status(responseCodes.NOT_FOUND).json({ message: "Item not found in order!" });
+    if (!item) return res.status(RESPONSE_CODES.NOT_FOUND).json({ message: MESSAGES.ITEM_NOT_FOUND_IN_ORDER });
 
     if (item.status !== "Delivered") {
-        return res.status(responseCodes.BAD_REQUEST).json({ message: "Only delivered items can be returned." });
+        return res.status(RESPONSE_CODES.BAD_REQUEST).json({ message: MESSAGES.ONLY_DELIVERED_ITEMS_CAN_BE_RETURNED });
     }
 
     item.status = "Return Requested";
@@ -497,14 +509,35 @@ const requestProductReturn = async (req,res)=>{
     item.returnRequestedOn = new Date(Date.now());
     
     await order.save();
-    res.json({ message: "Return request submitted successfully!" });
+    res.status(RESPONSE_CODES.OK).json({ message: MESSAGES.RETURN_REQUESTED_SUBMITTED_SUCCESSFULLY  });
 } catch (error) {
     console.error(error);
-    res.status(responseCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error while requesting return." });
+    res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR).json({ message: MESSAGES.INTERNAL_SERVER_ERROR });
 }
 
+}
+
+const OrderDetail = async (req,res)=>{
+  try{ const userId = req.session._id
+   const orderId = req.params._id
+   
+   const orderExist = await orderSchema.exists({_id:orderId})
+   if(!orderExist) return res.status(RESPONSE_CODES.NOT_FOUND).redirect('/pagenotfound')
+
+
+   const order = await orderSchema.findOne({_id:orderId})
+  
+   if(!order) return res.status(RESPONSE_CODES.NOT_FOUND).json({message: MESSAGES.ORDER_NOT_FOUND })
+   
+   res.status(RESPONSE_CODES.OK).render('users/orderDetail',{order})
+
+}
+catch(error){
+  console.log(error)
+  res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR).redirect('/admin/internal-server-error')
+}
 }
 
 module.exports ={createOrder,viewOrders,orderDetail,orderTrack,createInvoice,cancelOrder,
                   createOrderRazorpay,verifyRazorpayPayment,createOrderViaCod,cancelSingleProduct,
-                  requestProductReturn,}
+                  requestProductReturn,OrderDetail}

@@ -17,29 +17,7 @@
             </div>
         </div>
         <div class="card mb-4">
-            <header class="card-header">
-                <div class="row gx-3">
-                    <div class="col-lg-4 mb-lg-0 mb-15 me-auto">
-                        <input type="text" placeholder="Search..." class="form-control">
-                    </div>
-                    <div class="col-lg-2 col-6">
-                        <div class="custom_select">
-                            <select class="form-select select-nice">
-                                <option selected>Categories</option>
-                                <option>Technology</option>
-                                <option>Fashion</option>
-                                <option>Home Decor</option>
-                                <option>Healthy</option>
-                                <option>Travel</option>
-                                <option>Auto-car</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-6">
-                        <input type="date" class="form-control" name="">
-                    </div>
-                </div>
-            </header> <!-- card-header end// -->
+          
             
             <div class="card-body">
                 <div class="row gx-3">
@@ -67,12 +45,56 @@
                 </div> <!-- row.// -->
             </div> <!-- card-body end// -->
         </div> <!-- card end// -->
+         <!--pagination-->
+         <div class="pagination-area mt-15 mb-sm-5 mb-lg-0">
+            <nav aria-label="Page navigation example">
+                
+                <div class="row">
+                   <div class="col-4">
+                    <% if(totalItems>0){ %>
+                      <p>Currenly Showing page<strong class="text-brand"> <%=currentPage%></strong> of total <strong class="text-brand"><%=totalPages%> </strong> pages</p><br>
+                        <% }%>
+                    </div> 
+                   <div class="col-8">
+                    <ul class="pagination justify-content-end">
+
+                    <% if (currentPage>1){ %>
+                        <li class="page-item"><a class="page-link" data-page="<%= currentPage-1 %>" href="#">
+                            <i class="material-icons md-chevron_left"></i></a></li>
+                    <%}%>
+                    <% for(let x = 1 ; x<=totalPages ; x++){ %>
+                    <% if(x==currentPage ) { %>
+                        <li class="page-item active"><a class="page-link" data-page="<%= x%>" href="#"><%= x %></a></li>
+                    <% }else{ %>
+                        <li class="page-item"><a class="page-link" data-page="<%= x %>" href="#"><%= x  %></a></li>
+                    <% }} %>
+                   
+                    <% if (currentPage<totalPages ) { %>
+                    <li class="page-item"><a class="page-link" data-page="<%= currentPage+1 %>" href="#">
+                        <i class="material-icons md-chevron_right"></i></a></li>
+                    <%}%>
+                </ul>
+                   </div>
+                </div>
+                
+            </nav>
+        </div>
     </section> <!-- content-main end// -->
 
 
     <script>
         document.getElementById("brands12e").classList.add("active");
 
+         // page selection event
+ document.querySelectorAll(".page-link").forEach(item => {
+        item.addEventListener("click", function (e) {
+            e.preventDefault();
+           const url = new URL(window.location.href)
+           url.searchParams.set('page',this.getAttribute('data-page'))
+      
+        window.location.href=url
+        });
+    });
         //open details of brand
 
        function openBrandDetails(name,description,offer=0,image,isBlocked){

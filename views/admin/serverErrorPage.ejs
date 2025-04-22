@@ -1,0 +1,24 @@
+<%- include('partials/headSection.ejs') %>
+
+<div class="screen-overlay"></div>
+<%- include('partials/sidebar.ejs') %>
+<main class="main-wrap">
+    <%- include('partials/header.ejs') %>
+
+    <section class="content-main">
+        <div class="row mt-60">
+            <div class="col-sm-12">
+                <div class="w-50 mx-auto text-center">
+                    <img src="/assets/imgs/theme/500.png" width="350" alt="Internal Server Error">
+                    <h3 class="mt-40 mb-15">Uh-oh! Something went wrong</h3>
+                    <p>Our server encountered an internal error and was unable to complete your request. We're working on it — please try again later.</p>
+                    <a href="/admin/dashboard" class="btn btn-primary mt-4">
+                        <i class="material-icons md-keyboard_return"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <%- include('partials/footer.ejs') %>
+</main>

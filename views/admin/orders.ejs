@@ -17,28 +17,7 @@
         <div class="row">
             <div class="col-md-9">
                 <div class="card mb-4">
-                    <header class="card-header">
-                        <div class="row gx-3">
-                            <div class="col-lg-4 col-md-6 me-auto">
-                                <input type="text" placeholder="Search..." class="form-control">
-                            </div>
-                            <div class="col-lg-2 col-md-3 col-6">
-                                <select class="form-select">
-                                    <option>Status</option>
-                                    <option>Active</option>
-                                    <option>Disabled</option>
-                                    <option>Show all</option>
-                                </select>
-                            </div>
-                            <div class="col-lg-2 col-md-3 col-6">
-                                <select class="form-select">
-                                    <option>Show 20</option>
-                                    <option>Show 30</option>
-                                    <option>Show 40</option>
-                                </select>
-                            </div>
-                        </div>
-                    </header> <!-- card-header end// -->
+                   
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-hover">
@@ -59,7 +38,7 @@
                                         style="background-color: rgba(191, 34, 23, 0.338);"
                                         <% }%>
                                     >
-                                        <td><%= index+1 %></td>
+                                        <td><%= (( currentPage-1 )*limit)+ index+1 %></td>
                                         <td><a href="">orderId</a></td>
                                         <td><b><a href="/admin/customer"><%= item.address.fullname %></a></b></td>
                                         <td>₹ <%= item.finalAmount %></td>
@@ -149,22 +128,54 @@
                 </div> <!-- card end// -->
             </div>
         </div>
-        <div class="pagination-area mt-15 mb-50">
+        <!--pagination-->
+        <div class="pagination-area mt-15 mb-sm-5 mb-lg-0">
             <nav aria-label="Page navigation example">
-                <ul class="pagination justify-content-start">
-                    <li class="page-item active"><a class="page-link" href="#">01</a></li>
-                    <li class="page-item"><a class="page-link" href="#">02</a></li>
-                    <li class="page-item"><a class="page-link" href="#">03</a></li>
-                    <li class="page-item"><a class="page-link dot" href="#">...</a></li>
-                    <li class="page-item"><a class="page-link" href="#">16</a></li>
-                    <li class="page-item"><a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a></li>
+                
+                <div class="row">
+                   <div class="col-4">
+                    <% if(totalItems>0){ %>
+                      <p>Currenly Showing page<strong class="text-brand"> <%=currentPage%></strong> of total <strong class="text-brand"><%=totalPages%> </strong> pages</p><br>
+                        <% }%>
+                    </div> 
+                   <div class="col-8">
+                    <ul class="pagination justify-content-end">
+
+                    <% if (currentPage>1){ %>
+                        <li class="page-item"><a class="page-link" data-page="<%= currentPage-1 %>" href="#">
+                            <i class="material-icons md-chevron_left"></i></a></li>
+                    <%}%>
+                    <% for(let x = 1 ; x<=totalPages ; x++){ %>
+                    <% if(x==currentPage ) { %>
+                        <li class="page-item active"><a class="page-link" data-page="<%= x%>" href="#"><%= x %></a></li>
+                    <% }else{ %>
+                        <li class="page-item"><a class="page-link" data-page="<%= x %>" href="#"><%= x  %></a></li>
+                    <% }} %>
+                   
+                    <% if (currentPage<totalPages){ %>
+                    <li class="page-item"><a class="page-link" data-page="<%= currentPage+1 %>" href="#">
+                        <i class="material-icons md-chevron_right"></i></a></li>
+                    <%}%>
                 </ul>
+                   </div>
+                </div>
+                
             </nav>
         </div>
     </section> <!-- content-main end// -->
 
 
     <script>
+         // page selection event
+ document.querySelectorAll(".page-link").forEach(item => {
+        item.addEventListener("click", function (e) {
+            e.preventDefault();
+           const url = new URL(window.location.href)
+           url.searchParams.set('page',this.getAttribute('data-page'))
+      
+        window.location.href=url
+        });
+    });
         document.getElementById("orders12e").classList.add("active");
     
         document.addEventListener("DOMContentLoaded", () => {

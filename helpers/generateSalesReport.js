@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const Order = require('../models/orderSchema'); // Ensure the correct path to your Order model
 const PDFDocument= require('pdfkit')
-const responseCodes = require('./StatusCodes')
+const RESPONSE_CODES = require('../utils/StatusCodes')
 const generateExcelReport = async (fromDate, toDate, res) => {
     try {
         let filter = {};
@@ -20,7 +20,7 @@ const generateExcelReport = async (fromDate, toDate, res) => {
         const orders = await Order.find(filter).populate('orderedItems.product');
 
         if (orders.length === 0) {
-            return res.status(responseCodes.NOT_FOUND).json({ error: "No sales data found for the selected period." });
+            return res.status(RESPONSE_CODES.NOT_FOUND).json({ error: "No sales data found for the selected period." });
         }
 
         // Prepare data for the sales report
@@ -77,7 +77,7 @@ const generateExcelReport = async (fromDate, toDate, res) => {
 
     } catch (error) {
         console.error("Excel Report Generation Error:", error);
-        return res.status(responseCodes.INTERNAL_SERVER_ERROR).json({ error: "Error generating Excel report" });
+        return res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR).json({ error: "Error generating Excel report" });
     }
 };
 
@@ -95,7 +95,7 @@ const generatePDFReport = async (fromDate, toDate, res) => {
         const orders = await Order.find(filter).populate('orderedItems.product');
 
         if (orders.length === 0) {
-            return res.status(responseCodes.NOT_FOUND).json({ error: "No sales data found for the selected period." });
+            return res.status(RESPONSE_CODES.NOT_FOUND).json({ error: "No sales data found for the selected period." });
         }
 
         let totalSales = 0;
@@ -138,7 +138,7 @@ const generatePDFReport = async (fromDate, toDate, res) => {
         doc.end();
     } catch (error) {
         console.error("PDF Report Generation Error:", error);
-        return res.status(responseCodes.INTERNAL_SERVER_ERROR).json({ error: "Error generating PDF report" });
+        return res.status(RESPONSE_CODES.INTERNAL_SERVER_ERROR).json({ error: "Error generating PDF report" });
     }
 };
 

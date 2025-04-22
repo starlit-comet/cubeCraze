@@ -66,7 +66,7 @@
                                             <a class="nav-link"  href="/cart"  ><i class="fi-rs-shopping-bag mr-10"></i>My Cart</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" id="wallet-tab" data-bs-toggle="tab" href="#wallet" role="tab" aria-controls="wallet" aria-selected="true"><i class="fi-rs-money mr-10"></i>My Wallet</a>
+                                            <a class="nav-link" id="wallet-tab"  href="/wallet" role="tab" ><i class="fi-rs-money mr-10"></i>My Wallet</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" id="referral-tab" data-bs-toggle="tab" href="#referral" role="tab" aria-controls="referral" aria-selected="true"><i class="fi-rs-money mr-10"></i>Referral Program</a>
@@ -93,54 +93,7 @@
                                            
                                         </div>
                                     </div>
-                                    <div class="tab-pane fade  show" id="wallet" role="tabpanel" aria-labelledby="wallet-tab">
-                                        <div class="card">
-                                            <div class="card-header">
-                                                <h5 class="mb-0">Hello <%= userData.name %> ! </h5><br><br>
-                                                <h4 class="justify-content-middle">Wallet Balance: ₹ <%= userWallet?.balance || 0 %></h4>
-                                            </div>
-                                            <div class="card-body">
-                                                <h5>Recent Transactions </h5>
-                                                <div class="table-responsive">
-                                                    <table class="table">
-                                                        <thead>
-                                                            <tr> <th>Sl.No</th>
-                                                                <th>Type</th>
-                                                                <th>Date</th>
-                                                                <th>Amount</th>
-                                                                <th>Reason</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <% for(let x= userWallet.transactions.length-1,y=1;x>-1;x--,y++){ %>
-                                                                <tr>
-                                                                    <td><%= y %></td>
-                                                                    <td><%= userWallet.transactions[x].type %></td>
-                                                                    <td>
-                                                                        <%= new Date(userWallet.transactions[x].createdAt).toLocaleString('en-IN', {
-                                                                            year: 'numeric',
-                                                                            month: 'short',
-                                                                            day: 'numeric',
-                                                                            hour: '2-digit',
-                                                                            minute: '2-digit'
-                                                                          }) %>
-                                                                    </td>
-                                                                    <td>
-                                                                       <%= userWallet.transactions[x].amount%>
-                                                                    </td>
-                                                                    <td><%= userWallet.transactions[x].reason %></td>
-                                                                </tr>
-                                                                <% }%>
-                                                           
-                                                            
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-
-                                            </div>
-                                           
-                                        </div>
-                                    </div>
+                                
                                     <div class="tab-pane fade" id="referral" role="tabpanel" aria-labelledby="referral-tab">
                                         <div class="card">
                                             <div class="card-header">
