@@ -15,9 +15,9 @@ const isUserLoggedOut=async (req,res,next)=>{
 
     try{
         if(!req.session._id){
-            req.session._id= '67e7e5e8be981778f5096161'
-            next()
-         // return  res.redirect('/login')
+            // req.session._id= '67e7e5e8be981778f5096161'
+            // next()
+         return  res.redirect('/login')
         }
         else {
         const user = await UserSchema.findOne({_id:req.session._id})

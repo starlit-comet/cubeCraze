@@ -39,17 +39,28 @@
                         <small class="text-muted">Order ID: <%= order.orderId %></small>
                     </div>
                     <div class="col-lg-6 col-md-6 ms-auto text-md-end">
-                    
-                        <h4>current Status: <%= order.status %></h4>
+                        <% let statusOfAllProducts = [] %>
+                        <% order.orderedItems.forEach((item,index)=>{  %>
+                            <% statusOfAllProducts.push(item.status) %>
+                            <%})%>
+                            <% if(statusOfAllProducts.every(val=>val===statusOfAllProducts[0]) && ['Processing', 'Shipped', 'Delivered', 'Cancelled', 'Return Requested', 'Returned','Return Cancelled'].some(val=>val===statusOfAllProducts[0]) ){ %>
 
+
+                        <h4>Current Status: <%= order.status %></h4>
+                        <%} else { %>
+                            <h6>Current Status: Kindly Check in Individual Products</h6>
+
+                            <%}%>
+                            <% if(statusOfAllProducts.some( val=>['Processing', 'Shipped'].includes(val)  )){ %>
                         <% if(order.status =='Pending') {%>
-                        <select id="statusSelect_<%=order.orderId%>" class="form-select status-select">
-                            <option value="">Pending</option>
-                            <option value="Processing">Processing</option>
-                            <option value="Shipped">Shipped</option>
-                            <option value="Delivered">Delivered</option>
-                            <option value="Cancelled">Cancelled</option>
-                          </select>
+                            <select id="statusSelect_<%=order.orderId%>" class="form-select status-select">
+                                <option value="">Pending</option>
+                                <option value="Processing">Processing</option>
+                                <option value="Shipped">Shipped</option>
+                                <option value="Delivered">Delivered</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                            
                           
                           <!-- Button to trigger status update -->
                           <button onclick="changeOrderStatus('<%= order.orderId%>')" class="btn btn-primary">Update Status</button>
@@ -88,7 +99,8 @@
                                           
                                           <!-- Button to trigger status update -->
                                           <button onclick="changeOrderStatus('<%= order.orderId%>')" class="btn btn-primary">Update Status</button>
-                                          <% }%>
+                                          <% } } %>
+                                           
 
                      </div>
                 </div>

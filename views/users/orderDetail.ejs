@@ -114,6 +114,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <% let statusOfAllProducts = [] %>
                                         <% order.orderedItems.forEach((item,index)=>{  %>
                                         <tr>
                                             <td><%= index+1 %></td>
@@ -127,7 +128,8 @@
                                                     <div class="info"> <%= item.productDetails.name %> </div>
                                                     <div class="data">Brand: <%= item.productDetails.brand %>  </div>
                                                     <div class="data">Category: <%= item.productDetails.category %>  </div>
-                                                    <div class="data">Status : <%=item.status %></div>
+                                                    <% statusOfAllProducts.push(item.status) %>
+                                                    <div class="data ">Status : <h5 ><%=item.status %></h5></div>
                                                 </a>
                                             </td>
                                             <!-- Modify the Actions column in the table -->
@@ -154,22 +156,28 @@
                                             <td class="text-end"> <%= item.price * item.quantity %> </td>
                                         </tr>
                                         <% }) %>
-                                            <td colspan="6">
-                                                <article class="float-end">
-                                                    <dl class="dlist">
-                                                        <dt>Subtotal :  ₹ <%= order.totalPrice %></dt>
-                                                        <!-- <dd>$973.35</dd> -->
-                                                    </dl>
-                                                    <dl class="dlist">
-                                                        <dt>Shipping cost: ₹ <%= order.shippingCharge %></dt>
-                                                        <!-- <dd>$10.00</dd> -->
-                                                    </dl>
-                                                    <dl class="dlist">
-                                                        <dt>Grand total: <b class="h5">  ₹ <%= order.finalAmount %></b></dt>
-                                                        <!-- <dd> <b class="h5">$983.00</b> </dd> -->
-                                                    </dl>
-                                                    <dl class="dlist">
-                                                        <dt class="text-color h4    ">Status: <%= order.status%></dt>
+                                        <td colspan="6">
+                                            <article class="float-end">
+                                                <dl class="dlist">
+                                                    <dt>Subtotal :  ₹ <%= order.totalPrice %></dt>
+                                                    <!-- <dd>$973.35</dd> -->
+                                                </dl>
+                                                <dl class="dlist">
+                                                    <dt>Shipping cost: ₹ <%= order.shippingCharge %></dt>
+                                                    <!-- <dd>$10.00</dd> -->
+                                                </dl>
+                                                <dl class="dlist">
+                                                    <dt>Grand total: <b class="h5">  ₹ <%= order.finalAmount %></b></dt>
+                                                    <!-- <dd> <b class="h5">$983.00</b> </dd> -->
+                                                </dl>
+                                                <dl class="dlist">
+                                                    <% if(statusOfAllProducts.every(val=>val===statusOfAllProducts[0]) && ['Processing', 'Shipped', 'Delivered', 'Cancelled', 'Return Requested', 'Returned','Return Cancelled'].some(val=>val===statusOfAllProducts[0]) ){ %>
+                                                    <dt class="text-color h4 ">Status: <%= order.status%></dt>
+                                                        <%} else { %>
+                                                            <dt class="text-color h6 ">Status: Kindly Refer to<br> Individual Product status </dt>
+
+                                                            <% } %>
+
                                                         <dd>
                                                             <span class="badge rounded-pill alert-success text-success">Payment done</span>
                                                         </dd>

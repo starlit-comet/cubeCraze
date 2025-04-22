@@ -180,7 +180,6 @@ const checkout = async (req,res)=>{
         }
         let coupons = await couponSchema.find({isActive:true}) || []
         const dateNow = new Date()
-        console.log(dateNow,'dateNow')
         coupons = coupons.filter(item=>{
             if(item.expiresAt>dateNow && item.minPurchase<totalAmount){
                 return true
