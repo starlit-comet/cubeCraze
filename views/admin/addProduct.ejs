@@ -33,16 +33,22 @@
                                         <textarea placeholder="Type here" name="description" class="form-control" id="description" rows="4" required></textarea>
                                     </div>
                                     <div class="row">
-                                        <div class="col-lg-6">
+                                        <div class="col-lg-4">
                                             <div class="mb-4">
                                                 <label for="regular_price" class="form-label">Regular Price (₹)</label>
                                                 <input name="regularPrice" type="number" class="form-control" id="regular_price" min="0" required>
                                             </div>
                                         </div>
-                                        <div class="col-lg-6">
+                                        <div class="col-lg-4">
                                             <div class="mb-4">
                                                 <label for="promotional_price" class="form-label">Promotional Price (₹)</label>
                                                 <input name="promotionalPrice" type="number" class="form-control" id="promotional_price" min="0">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="mb-4">
+                                                <label for="product_offer" class="form-label">Product Offer (%) </label>
+                                                <input name="productOffer" type="number" class="form-control" id="product_offer" min="0" max="100" disabled>
                                             </div>
                                         </div>
                                     </div>
@@ -151,6 +157,12 @@
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
                     <script>
+                        document.getElementById('promotional_price').addEventListener('change',function(){
+                            let sp = parseInt(this.value,10)
+                            cp = parseInt( document.getElementById('regular_price').value ,10)
+                            document.getElementById('product_offer').value = ((cp-sp)/cp)*100
+                        })
+
                     document.getElementById("addProduct12e").classList.add("active");
 
                         document.querySelectorAll(".img-input").forEach((input) => {
@@ -239,7 +251,7 @@ document.querySelector("#productForm").addEventListener("submit", async function
                 alert("At least one image is required!");
                 return;
             }
-            // console.log([...formData])
+            console.log([...formData])
             
             try {
                 let response = await fetch("/admin/addProduct", {

@@ -8,8 +8,8 @@
                     <div class="col-xl-3 col-lg-4">
                         <div class="header-info">
                             <ul>
-                                <li><i class="fi-rs-smartphone"></i> <a href="#">(+91) 90-1234-5678</a></li>
-                                <li><i class="fi-rs-marker"></i><a  href="#">Our location</a></li>
+                                <li> <a href="/home"> <strong>  CUBE CRAZEE</strong></a></li>
+
                             </ul>
                         </div>
                     </div>
@@ -288,18 +288,14 @@
                                     </div>
                                     <div class="product-content-wrap">
                                         <div class="product-category">
-                                            <a href="">Puzzles</a>
+                                            <a href=""><%= item.brand.brandName %></a>
                                         </div>
                                         <h2><a href="/viewProduct/<%= item._id %>"><%= item.productName %></a></h2>
-                                        <div class="rating-result" title="90%">
-                                            <span>
-                                                <span>90%</span>
-                                            </span>
-                                        </div>
+                                        
                                         <div class="product-price">
                                             <span>₹<%= item.promotionalPrice %></span>
                                             <span class="old-price">₹<%= item.regularPrice %></span>
-                                            <span class="save-price font-xxs color3 ml-15">  <%= Math.floor(((item.regularPrice-item.promotionalPrice)/item.regularPrice)*100) %>% Off</span>
+                                            <span class="save-price font-xxs color3 ml-15">  <%= item.productOffer %>% Off</span>
 
                                         </div>
                                         <div class="product-action-1 show">

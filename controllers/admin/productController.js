@@ -37,14 +37,16 @@ const addProduct = async (req,res)=>{
         }
 
         const imageUrls = req.files.map(file => file.path); // Extract Cloudinary URLs
-
+        let productOffer = ((regularPrice-promotionalPrice)/regularPrice)*100
+        productOffer = Math.floor(productOffer)
+        if(productOffer < 0 || productOffer > 100) productOffer = 0
         const newProduct = new productSchema({
             productName,  description, regularPrice,
-            promotionalPrice,  brand,  category,
+            promotionalPrice,  brand,  category, productOffer,
             size:cubeSize,  productImages: imageUrls,quantity:productQuantity
         });
-
-        await newProduct.save();
+        console.log(newProduct)
+       await newProduct.save();
         res.status(RESPONSE_CODES.OK).json({ success: true, message: MESSAGES.PRODUCT_ADDED_SUCCESSFULLY  });
         
 
